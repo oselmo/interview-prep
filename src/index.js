@@ -97,12 +97,13 @@ const LANG_LABELS = {
 };
 
 function getAvailableLanguages(question) {
+  // suitableLanguages is an explicit allowlist — respect it exactly
   if (question.suitableLanguages?.length) return question.suitableLanguages;
-  if (question.starterCode) {
-    const langs = ['js', 'typescript', 'python', 'java'].filter(l => question.starterCode[l]);
-    if (langs.length) return langs;
-  }
-  return ['js', 'typescript', 'python'];
+  // Otherwise: include any lang with an explicit starterCode, plus always include java
+  // (workspace.js generates a generic class Solution template when no java key exists)
+  const fromStarter = ['js', 'typescript', 'python'].filter(l => question.starterCode?.[l]);
+  const base = fromStarter.length ? fromStarter : ['js', 'typescript', 'python'];
+  return [...base, 'java'];
 }
 
 async function pickLanguageForQuestion(question) {

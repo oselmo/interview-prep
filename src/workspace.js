@@ -155,6 +155,41 @@ export async function runSolution(filepath, language, question) {
   ensureWorkspace();
 
   const solutionCode = readSolutionFile(filepath) || '';
+
+  // ── Java: compile then run ─────────────────────────────────────────────────
+  // Appending text doesn't work for compiled code, so Java uses its own runner
+  // that generates a second class (_HiddenTestRunner) compiled alongside Solution.
+  if (language === 'java') {
+    const javaHasCases = !!(question?.functionName && question?.testCases?.length > 0
+      && !question.classTest && !question.treeTest && !question.cycleTest
+      && !question.linkedListRoundTrip && !question.lcaTest
+      && !question.memoizeTest && !question.debounceTest
+      && !question.functionNames?.length);
+
+    let javaRunFile = filepath;
+    let javaTempFile = null;
+
+    if (javaHasCases) {
+      const runner = _buildJavaStandardRunner(question);
+      const tempName = `_test_${question.id.replace(/-/g, '_')}.java`;
+      javaTempFile = join(WORKSPACE_DIR, tempName);
+      writeFileSync(javaTempFile, solutionCode + '\n\n' + runner, 'utf8');
+      javaRunFile = javaTempFile;
+    }
+
+    const compileResult = await spawnWithTimeout(`javac "${javaRunFile}"`, WORKSPACE_DIR, 15_000);
+    if (compileResult.exitCode !== 0 || compileResult.timedOut) {
+      if (javaTempFile) try { unlinkSync(javaTempFile); } catch {}
+      return { ...compileResult, hasTestCases: javaHasCases };
+    }
+
+    const runClass = javaHasCases ? '_HiddenTestRunner' : 'Solution';
+    const runResult = await spawnWithTimeout(`java -cp . ${runClass}`, WORKSPACE_DIR, 10_000);
+    if (javaTempFile) try { unlinkSync(javaTempFile); } catch {}
+    return { ...runResult, hasTestCases: javaHasCases };
+  }
+
+  // ── JS / TS / Python: append test runner to a temp file ───────────────────
   const hasCases = (question?.functionName && question?.testCases?.length > 0)
     || (question?.functionNames?.length > 0 && question?.testCases?.length > 0)
     || (question?.classTest && question?.testCases?.length > 0)
@@ -177,17 +212,6 @@ export async function runSolution(filepath, language, question) {
     tempFile = join(WORKSPACE_DIR, `.test_${question.id}.${ext}`);
     writeFileSync(tempFile, solutionCode + '\n\n' + runner, 'utf8');
     runFile = tempFile;
-  }
-
-  // Java: two-step compile then run; test injection not supported for compiled languages
-  if (language === 'java') {
-    if (tempFile) try { unlinkSync(tempFile); } catch {}   // no injection for Java
-    const compileResult = await spawnWithTimeout(`javac "${filepath}"`, WORKSPACE_DIR, 15_000);
-    if (compileResult.exitCode !== 0 || compileResult.timedOut) {
-      return { ...compileResult, hasTestCases: false };
-    }
-    const runResult = await spawnWithTimeout(`java -cp . Solution`, WORKSPACE_DIR, 10_000);
-    return { ...runResult, hasTestCases: false };
   }
 
   let cmd;
@@ -1100,6 +1124,86 @@ function toFourSpaces(code) {
   }).join('\n');
 }
 
+// Convert a JS value to a Java literal expression
+function _javaLiteral(val) {
+  if (val === null || val === undefined) return '(Object)null';
+  if (typeof val === 'boolean') return val.toString();
+  if (typeof val === 'number') {
+    if (Number.isInteger(val)) return val.toString();
+    return val + 'd';
+  }
+  if (typeof val === 'string') {
+    return `"${val.replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\n/g, '\\n')}"`;
+  }
+  if (Array.isArray(val)) {
+    if (val.length === 0) return 'new int[]{}';
+    const first = val[0];
+    if (Array.isArray(first)) {
+      if (!first.length || typeof first[0] === 'number') {
+        const inner = val.map(row => `{${row.join(',')}}`).join(',');
+        return `new int[][]{${inner}}`;
+      }
+      if (typeof first[0] === 'string') {
+        const inner = val.map(row => `{${row.map(s => `"${s.replace(/"/g, '\\"')}"`).join(',')}}`).join(',');
+        return `new String[][]{${inner}}`;
+      }
+    }
+    if (typeof first === 'number' && Number.isInteger(first)) return `new int[]{${val.join(',')}}`;
+    if (typeof first === 'number') return `new double[]{${val.join(',')}}`;
+    if (typeof first === 'string') return `new String[]{${val.map(s => `"${s.replace(/"/g, '\\"')}"`).join(',')}}`;
+    if (typeof first === 'boolean') return `new boolean[]{${val.join(',')}}`;
+  }
+  return '(Object)null';
+}
+
+function _buildJavaStandardRunner(question) {
+  const { testCases, functionName } = question;
+
+  const cases = testCases.map((t, i) => {
+    const args = t.args.map(_javaLiteral).join(', ');
+    const expected = _javaLiteral(t.expected);
+    const sort = !!t.sortResult;
+    const desc = t.desc.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+    return `        { // ${t.desc}
+            Object _actual; try { _actual = Solution.${functionName}(${args}); } catch (Exception _e) { _actual = "ERROR: " + _e.getMessage(); }
+            Object _expected = ${expected};
+            String _a = ${sort} ? _sortS(_actual) : _s(_actual);
+            String _e = ${sort} ? _sortS(_expected) : _s(_expected);
+            boolean _ok = _a.equals(_e);
+            System.out.println((_ok ? "\\u2713" : "\\u2717") + " ${desc}");
+            if (!_ok) { System.out.println("  expected: " + _e); System.out.println("  got:      " + _a); }
+            if (_ok) pass++;
+            total++;
+        }`;
+  }).join('\n');
+
+  return `
+// ─── Hidden Tests (Java) ──────────────────────────────────────────────────────
+class _HiddenTestRunner {
+    static String _s(Object o) {
+        if (o == null) return "null";
+        if (o instanceof int[])     return java.util.Arrays.toString((int[])o);
+        if (o instanceof long[])    return java.util.Arrays.toString((long[])o);
+        if (o instanceof boolean[]) return java.util.Arrays.toString((boolean[])o);
+        if (o instanceof double[])  return java.util.Arrays.toString((double[])o);
+        if (o instanceof String[])  return java.util.Arrays.toString((String[])o);
+        if (o instanceof int[][])   return java.util.Arrays.deepToString((int[][])o);
+        if (o instanceof String[][]) return java.util.Arrays.deepToString((String[][])o);
+        return String.valueOf(o);
+    }
+    static String _sortS(Object o) {
+        if (o instanceof int[]) { int[] a = ((int[])o).clone(); java.util.Arrays.sort(a); return java.util.Arrays.toString(a); }
+        return _s(o);
+    }
+    public static void main(String[] args) {
+        int pass = 0, total = 0;
+${cases}
+        System.out.println("\\n" + pass + "/" + total + " passed");
+    }
+}
+`;
+}
+
 function _buildJavaGenericStarter(question) {
   const fn = question.functionName || 'solve';
   return `class Solution {
@@ -1125,8 +1229,9 @@ function buildCodingTemplate(question, language) {
  *
 ${promptLines}
  *
- * NOTE: Java solutions are compile-and-run only — hidden test injection is
- * not available. Write your own test calls in main() and run to verify.
+ * NOTE: Standard function problems have hidden tests that compile alongside
+ * your solution and run automatically. Class/tree/cycle problems do not —
+ * add your own test calls in main() for those.
  */
 
 ${starter}
