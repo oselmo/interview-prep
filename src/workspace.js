@@ -28,7 +28,7 @@ export function createSolutionFile(question, language = 'js') {
   ensureWorkspace();
 
   const isCoding = question.category === 'coding';
-  const extMap = { python: 'py', typescript: 'ts', js: 'js' };
+  const extMap = { python: 'py', typescript: 'ts', js: 'js', java: 'java' };
   const ext = isCoding ? (extMap[language] || 'js') : 'md';
   const filename = `solution_${question.id}.${ext}`;
   const filepath = join(WORKSPACE_DIR, filename);
@@ -46,7 +46,7 @@ export function createSolutionFile(question, language = 'js') {
 
 export function resetSolutionFile(question, language = 'js') {
   ensureWorkspace();
-  const extMap = { python: 'py', typescript: 'ts', js: 'js' };
+  const extMap = { python: 'py', typescript: 'ts', js: 'js', java: 'java' };
   const isCoding = question.category === 'coding';
   const ext = isCoding ? (extMap[language] || 'js') : 'md';
   const filename = `solution_${question.id}.${ext}`;
@@ -177,6 +177,17 @@ export async function runSolution(filepath, language, question) {
     tempFile = join(WORKSPACE_DIR, `.test_${question.id}.${ext}`);
     writeFileSync(tempFile, solutionCode + '\n\n' + runner, 'utf8');
     runFile = tempFile;
+  }
+
+  // Java: two-step compile then run; test injection not supported for compiled languages
+  if (language === 'java') {
+    if (tempFile) try { unlinkSync(tempFile); } catch {}   // no injection for Java
+    const compileResult = await spawnWithTimeout(`javac "${filepath}"`, WORKSPACE_DIR, 15_000);
+    if (compileResult.exitCode !== 0 || compileResult.timedOut) {
+      return { ...compileResult, hasTestCases: false };
+    }
+    const runResult = await spawnWithTimeout(`java -cp . Solution`, WORKSPACE_DIR, 10_000);
+    return { ...runResult, hasTestCases: false };
   }
 
   let cmd;
@@ -1089,7 +1100,39 @@ function toFourSpaces(code) {
   }).join('\n');
 }
 
+function _buildJavaGenericStarter(question) {
+  const fn = question.functionName || 'solve';
+  return `class Solution {
+    public static void ${fn}(/* TODO: add parameters and return type */) {
+        // your solution here
+    }
+
+    public static void main(String[] args) {
+        // test your solution here
+        // System.out.println(${fn}(...));
+    }
+}`;
+}
+
 function buildCodingTemplate(question, language) {
+  // Java gets its own template path — compiled language, no test injection
+  if (language === 'java') {
+    const starter = question.starterCode?.java || _buildJavaGenericStarter(question);
+    const promptLines = question.prompt.split('\n').map(l => ` * ${l}`).join('\n');
+    return `/**
+ * ${question.title}
+ * Category: ${question.category} | Difficulty: ${question.difficulty}
+ *
+${promptLines}
+ *
+ * NOTE: Java solutions are compile-and-run only — hidden test injection is
+ * not available. Write your own test calls in main() and run to verify.
+ */
+
+${starter}
+`;
+  }
+
   let starter = question.starterCode?.[language] || '';
   let tsNote = '';
 

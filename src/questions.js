@@ -6345,6 +6345,5266 @@ print(oranges_rotting([[0,2]]))                     # 0
 `,
     },
   },
+
+  {
+    id: 'coding-41',
+    category: 'coding',
+    difficulty: 'medium',
+    pattern: 'Sliding Window',
+    title: 'Longest Substring Without Repeating Characters',
+    functionName: 'lengthOfLongestSubstring',
+    testCases: [
+      { desc: 'abcabcbb',        args: ['abcabcbb'], expected: 3 },
+      { desc: 'all same chars',  args: ['bbbbb'],    expected: 1 },
+      { desc: 'pwwkew',          args: ['pwwkew'],   expected: 3 },
+      { desc: 'empty string',    args: [''],         expected: 0 },
+      { desc: 'dvdf',            args: ['dvdf'],      expected: 3 },
+    ],
+    prompt: `Given a string s, find the length of the longest substring without repeating characters.
+
+Example:
+  "abcabcbb" -> 3   ("abc")
+  "bbbbb"    -> 1   ("b")
+  "pwwkew"   -> 3   ("wke")
+
+This is the canonical variable-size sliding window. Expand the right edge; when you hit a duplicate, shrink the left edge until the window is valid again. Track the max window size seen.`,
+    hints: [
+      'Use a set or a map of char -> last index. Expand right; on a duplicate, advance left past the previous occurrence.',
+      'Each character enters and leaves the window at most once, so the whole scan is O(n).',
+      'Track the answer as right - left + 1 at every step.',
+    ],
+    tags: ['sliding window', 'strings', 'hash maps'],
+    starterCode: {
+      js: `function lengthOfLongestSubstring(s) {
+  // variable-size sliding window
+}
+
+console.log(lengthOfLongestSubstring("abcabcbb")); // 3
+console.log(lengthOfLongestSubstring("bbbbb"));    // 1
+console.log(lengthOfLongestSubstring("pwwkew"));   // 3
+`,
+      typescript: `function lengthOfLongestSubstring(s: string): number {
+  // variable-size sliding window
+  return 0;
+}
+
+console.log(lengthOfLongestSubstring("abcabcbb")); // 3
+console.log(lengthOfLongestSubstring("pwwkew"));   // 3
+`,
+      python: `def length_of_longest_substring(s):
+    # variable-size sliding window
+    pass
+
+print(length_of_longest_substring("abcabcbb"))  # 3
+print(length_of_longest_substring("bbbbb"))      # 1
+print(length_of_longest_substring("pwwkew"))     # 3
+`,
+      java: `class Solution {
+    public static int lengthOfLongestSubstring(String s) {
+        // variable-size sliding window
+        return 0;
+    }
+
+    public static void main(String[] args) {
+        System.out.println(lengthOfLongestSubstring("abcabcbb")); // 3
+        System.out.println(lengthOfLongestSubstring("bbbbb"));    // 1
+        System.out.println(lengthOfLongestSubstring("pwwkew"));   // 3
+    }
+}
+`,
+    },
+  },
+
+
+  {
+    id: 'coding-42',
+    category: 'coding',
+    difficulty: 'medium',
+    pattern: 'Trees',
+    title: 'Validate Binary Search Tree',
+    functionName: 'isValidBST',
+    treeTest: true,
+    testCases: [
+      { desc: '[2,1,3] valid',                args: [[2,1,3]],                 expected: true },
+      { desc: '[5,1,4,null,null,3,6] invalid', args: [[5,1,4,null,null,3,6]],  expected: false },
+      { desc: 'single node',                   args: [[1]],                     expected: true },
+      { desc: '[5,4,6,null,null,3,7] invalid', args: [[5,4,6,null,null,3,7]],  expected: false },
+    ],
+    prompt: `Given the root of a binary tree, determine whether it is a valid binary search tree (BST).
+
+A valid BST requires: for every node, ALL values in the left subtree are strictly less than the node, and ALL values in the right subtree are strictly greater. This must hold for the entire subtree, not just the immediate children.
+
+Example:
+      5
+     / \
+    1   4       -> false (3 and 6 are under 4, but 3 < 5 so it violates the BST property)
+       / \
+      3   6
+
+The classic trap: checking only node.left < node < node.right. You must carry down a valid (min, max) range, or do an in-order traversal and verify it is strictly increasing.`,
+    hints: [
+      'Carry a (low, high) bound down the recursion. Left child tightens high to node.val; right child tightens low to node.val.',
+      'Alternative: in-order traversal of a BST yields strictly increasing values. Track the previous value and verify each is greater.',
+      'Watch the strictness: equal values are NOT allowed in a standard BST.',
+    ],
+    tags: ['trees', 'BST', 'DFS', 'recursion'],
+    starterCode: {
+      js: `class TreeNode {
+  constructor(val, left = null, right = null) {
+    this.val = val; this.left = left; this.right = right;
+  }
+}
+
+function isValidBST(root) {
+  // carry a (low, high) range down, or do an in-order check
+}
+`,
+      typescript: `class TreeNode {
+  val: number; left: TreeNode | null; right: TreeNode | null;
+  constructor(val: number, left: TreeNode | null = null, right: TreeNode | null = null) {
+    this.val = val; this.left = left; this.right = right;
+  }
+}
+
+function isValidBST(root: TreeNode | null): boolean {
+  return true;
+}
+`,
+      python: `class TreeNode:
+    def __init__(self, val=0, left=None, right=None):
+        self.val = val; self.left = left; self.right = right
+
+def is_valid_bst(root):
+    # carry a (low, high) range down, or do an in-order check
+    pass
+`,
+      java: `class Solution {
+    static class TreeNode {
+        int val; TreeNode left, right;
+        TreeNode(int val) { this.val = val; }
+        TreeNode(int val, TreeNode left, TreeNode right) {
+            this.val = val; this.left = left; this.right = right;
+        }
+    }
+
+    public static boolean isValidBST(TreeNode root) {
+        // carry a (low, high) range down, or do an in-order check
+        return true;
+    }
+
+    public static void main(String[] args) {
+        TreeNode root = new TreeNode(2, new TreeNode(1), new TreeNode(3));
+        System.out.println(isValidBST(root)); // true
+    }
+}
+`,
+    },
+  },
+
+
+  {
+    id: 'coding-43',
+    category: 'coding',
+    difficulty: 'medium',
+    pattern: 'Dynamic Programming',
+    title: 'Coin Change (Fewest Coins)',
+    functionName: 'coinChange',
+    testCases: [
+      { desc: 'coins [1,2,5] amount 11 -> 3',        args: [[1,2,5], 11],         expected: 3 },
+      { desc: 'coins [2] amount 3 -> impossible',     args: [[2], 3],              expected: -1 },
+      { desc: 'amount 0 -> 0 coins',                  args: [[1], 0],              expected: 0 },
+      { desc: 'coins [1,5,11] amount 11 -> 1',        args: [[1,5,11], 11],        expected: 1 },
+      { desc: 'large amount',                         args: [[186,419,83,408], 6249], expected: 20 },
+    ],
+    prompt: `You are given an array of coin denominations and a target amount. Return the fewest number of coins needed to make up that amount. If it cannot be made, return -1. You have an unlimited supply of each coin.
+
+Example:
+  coins = [1, 2, 5], amount = 11 -> 3   (5 + 5 + 1)
+  coins = [2],       amount = 3  -> -1  (cannot make an odd amount)
+  coins = [1, 5, 11], amount = 11 -> 1  (just the 11)
+
+This is an unbounded-knapsack-style DP. Define dp[x] = fewest coins to make amount x. dp[0] = 0, everything else starts at infinity.`,
+    hints: [
+      'dp[x] = min over all coins c of dp[x - c] + 1, for c <= x. Initialize dp[0] = 0, rest = Infinity.',
+      'A greedy "take the largest coin first" approach does NOT work in general (e.g., coins [1,3,4], amount 6).',
+      'If dp[amount] is still Infinity at the end, the amount is unreachable -> return -1.',
+    ],
+    tags: ['dynamic programming', 'unbounded knapsack', 'arrays'],
+    starterCode: {
+      js: `function coinChange(coins, amount) {
+  // dp[x] = fewest coins to make x
+}
+
+console.log(coinChange([1,2,5], 11)); // 3
+console.log(coinChange([2], 3));       // -1
+console.log(coinChange([1], 0));       // 0
+`,
+      typescript: `function coinChange(coins: number[], amount: number): number {
+  return -1;
+}
+
+console.log(coinChange([1,2,5], 11)); // 3
+console.log(coinChange([2], 3));       // -1
+`,
+      python: `def coin_change(coins, amount):
+    # dp[x] = fewest coins to make x
+    pass
+
+print(coin_change([1,2,5], 11))  # 3
+print(coin_change([2], 3))        # -1
+print(coin_change([1], 0))        # 0
+`,
+      java: `class Solution {
+    public static int coinChange(int[] coins, int amount) {
+        // dp[x] = fewest coins to make x
+        return -1;
+    }
+
+    public static void main(String[] args) {
+        System.out.println(coinChange(new int[]{1,2,5}, 11)); // 3
+        System.out.println(coinChange(new int[]{2}, 3));       // -1
+    }
+}
+`,
+    },
+  },
+
+
+  {
+    id: 'coding-44',
+    category: 'coding',
+    difficulty: 'easy',
+    pattern: 'Two Pointers',
+    title: 'Merge Two Sorted Arrays',
+    functionName: 'mergeSortedArrays',
+    testCases: [
+      { desc: 'interleaved',          args: [[1,2,4],[1,3,4]], expected: [1,1,2,3,4,4] },
+      { desc: 'both empty',           args: [[],[]],           expected: [] },
+      { desc: 'one empty',            args: [[],[0]],          expected: [0] },
+      { desc: 'other empty',          args: [[1],[]],          expected: [1] },
+      { desc: 'no overlap',           args: [[1,2,3],[4,5,6]], expected: [1,2,3,4,5,6] },
+    ],
+    prompt: `Given two arrays that are each already sorted in ascending order, merge them into one sorted array and return it. Do it in O(n + m) using the two-pointer merge technique (the merge step of merge sort) - do NOT just concatenate and re-sort.
+
+Example:
+  [1,2,4] and [1,3,4] -> [1,1,2,3,4,4]
+  []       and [0]    -> [0]
+
+Walk a pointer through each array, always taking the smaller front element next.`,
+    hints: [
+      'Two pointers i and j, one per array. Compare a[i] and b[j]; push the smaller and advance that pointer.',
+      'When one array is exhausted, append the rest of the other array.',
+      'This is exactly the merge half of merge sort. O(n + m) time, O(n + m) output space.',
+    ],
+    tags: ['two pointers', 'arrays', 'sorting', 'merge'],
+    starterCode: {
+      js: `function mergeSortedArrays(a, b) {
+  // two-pointer merge
+}
+
+console.log(mergeSortedArrays([1,2,4],[1,3,4])); // [1,1,2,3,4,4]
+console.log(mergeSortedArrays([],[0]));          // [0]
+`,
+      typescript: `function mergeSortedArrays(a: number[], b: number[]): number[] {
+  return [];
+}
+
+console.log(mergeSortedArrays([1,2,4],[1,3,4])); // [1,1,2,3,4,4]
+`,
+      python: `def merge_sorted_arrays(a, b):
+    # two-pointer merge
+    pass
+
+print(merge_sorted_arrays([1,2,4],[1,3,4]))  # [1,1,2,3,4,4]
+print(merge_sorted_arrays([],[0]))            # [0]
+`,
+      java: `import java.util.*;
+
+class Solution {
+    public static int[] mergeSortedArrays(int[] a, int[] b) {
+        // two-pointer merge
+        return new int[0];
+    }
+
+    public static void main(String[] args) {
+        System.out.println(Arrays.toString(mergeSortedArrays(new int[]{1,2,4}, new int[]{1,3,4}))); // [1, 1, 2, 3, 4, 4]
+    }
+}
+`,
+    },
+  },
+
+
+  {
+    id: 'coding-45',
+    category: 'coding',
+    difficulty: 'medium',
+    pattern: 'Monotonic Stack',
+    title: 'Daily Temperatures',
+    functionName: 'dailyTemperatures',
+    testCases: [
+      { desc: 'mixed',          args: [[73,74,75,71,69,72,76,73]], expected: [1,1,4,2,1,1,0,0] },
+      { desc: 'strictly rising', args: [[30,40,50,60]],            expected: [1,1,1,0] },
+      { desc: 'three rising',    args: [[30,60,90]],                expected: [1,1,0] },
+      { desc: 'strictly falling', args: [[90,80,70,60]],           expected: [0,0,0,0] },
+    ],
+    prompt: `Given an array of daily temperatures, return an array answer where answer[i] is the number of days you have to wait after day i to get a warmer temperature. If there is no future warmer day, answer[i] = 0.
+
+Example:
+  [73,74,75,71,69,72,76,73] -> [1,1,4,2,1,1,0,0]
+
+This is the canonical monotonic (decreasing) stack problem. Keep a stack of indices whose warmer day has not been found yet; when a warmer temperature arrives, pop everything it resolves.`,
+    hints: [
+      'Maintain a stack of indices with a monotonically decreasing temperature.',
+      'For each day i: while the stack is non-empty and temps[i] > temps[stack.top], pop j and set answer[j] = i - j.',
+      'Push i. Each index is pushed and popped at most once -> O(n).',
+    ],
+    tags: ['monotonic stack', 'stack', 'arrays'],
+    starterCode: {
+      js: `function dailyTemperatures(temps) {
+  // monotonic decreasing stack of indices
+}
+
+console.log(dailyTemperatures([73,74,75,71,69,72,76,73])); // [1,1,4,2,1,1,0,0]
+console.log(dailyTemperatures([30,40,50,60]));             // [1,1,1,0]
+`,
+      typescript: `function dailyTemperatures(temps: number[]): number[] {
+  return [];
+}
+
+console.log(dailyTemperatures([73,74,75,71,69,72,76,73])); // [1,1,4,2,1,1,0,0]
+`,
+      python: `def daily_temperatures(temps):
+    # monotonic decreasing stack of indices
+    pass
+
+print(daily_temperatures([73,74,75,71,69,72,76,73]))  # [1,1,4,2,1,1,0,0]
+print(daily_temperatures([30,40,50,60]))               # [1,1,1,0]
+`,
+      java: `import java.util.*;
+
+class Solution {
+    public static int[] dailyTemperatures(int[] temps) {
+        // monotonic decreasing stack of indices
+        return new int[0];
+    }
+
+    public static void main(String[] args) {
+        System.out.println(Arrays.toString(dailyTemperatures(new int[]{73,74,75,71,69,72,76,73}))); // [1, 1, 4, 2, 1, 1, 0, 0]
+    }
+}
+`,
+    },
+  },
+
+
+  {
+    id: 'starter-oop',
+    category: 'coding',
+    difficulty: 'starter',
+    pattern: 'OOP',
+    teacherMode: true,
+    title: 'Starter: Design an Animal Hierarchy (OOP)',
+    prompt: `Design a small class hierarchy that demonstrates the four pillars of object-oriented programming.
+
+Build:
+  - A base class Animal with a name, a speak() method, and a move() method.
+  - A Dog subclass that overrides speak() to return "Woof".
+  - A Cat subclass that overrides speak() to return "Meow".
+  - A small loop that holds a list of mixed animals and calls speak() on each - the SAME call dispatches to different behavior. That is polymorphism.
+
+Example output:
+  Rex says Woof
+  Whiskers says Meow
+
+Things to think about as you build it:
+  - Encapsulation: keep the name as instance state; expose behavior through methods.
+  - Inheritance: Dog and Cat reuse Animal's move() without rewriting it.
+  - Polymorphism: one loop, one speak() call, many behaviors.
+  - Abstraction: a caller iterating the list only needs to know "it is an Animal that can speak()".
+
+This is not a trick problem - it is the OOP vocabulary you must be able to speak fluently and demonstrate in code.`,
+    followUpQuestions: [
+      "Which of the four OOP pillars does the speak() override demonstrate, and why?",
+      "If Animal.speak() should never be called directly, how would you express that in your language (abstract method / raising NotImplementedError)?",
+      "When would you favor composition over this inheritance hierarchy?",
+    ],
+    hints: [
+      'Define behavior once in the base class (move) and override only what differs (speak).',
+      'Polymorphism shows up when you store Dog and Cat in one list typed as Animal and call speak() uniformly.',
+      'In TS/Java mark the base method/class abstract; in Python raise NotImplementedError; in JS just override it.',
+    ],
+    tags: ['OOP', 'inheritance', 'polymorphism', 'classes'],
+    starterCode: {
+      js: `class Animal {
+  constructor(name) { this.name = name; }
+  speak() { return "..."; }          // override in subclasses
+  move()  { return this.name + " moves"; }
+}
+
+class Dog extends Animal {
+  // override speak() to return "Woof"
+}
+
+class Cat extends Animal {
+  // override speak() to return "Meow"
+}
+
+const animals = [new Dog("Rex"), new Cat("Whiskers")];
+for (const a of animals) console.log(a.name + " says " + a.speak());
+`,
+      typescript: `abstract class Animal {
+  constructor(public name: string) {}
+  abstract speak(): string;          // each subclass must implement
+  move(): string { return \`\${this.name} moves\`; }
+}
+
+class Dog extends Animal {
+  // override speak() to return "Woof"
+  speak(): string { return ""; }
+}
+
+class Cat extends Animal {
+  // override speak() to return "Meow"
+  speak(): string { return ""; }
+}
+
+const animals: Animal[] = [new Dog("Rex"), new Cat("Whiskers")];
+for (const a of animals) console.log(\`\${a.name} says \${a.speak()}\`);
+`,
+      python: `class Animal:
+    def __init__(self, name):
+        self.name = name
+    def speak(self):
+        raise NotImplementedError  # override in subclasses
+    def move(self):
+        return f"{self.name} moves"
+
+class Dog(Animal):
+    # override speak() to return "Woof"
+    pass
+
+class Cat(Animal):
+    # override speak() to return "Meow"
+    pass
+
+animals = [Dog("Rex"), Cat("Whiskers")]
+for a in animals:
+    print(f"{a.name} says {a.speak()}")
+`,
+      java: `import java.util.*;
+
+abstract class Animal {
+    protected String name;
+    Animal(String name) { this.name = name; }
+    abstract String speak();        // each subclass must implement
+    String move() { return name + " moves"; }
+}
+
+class Dog extends Animal {
+    Dog(String name) { super(name); }
+    // override speak() to return "Woof"
+    String speak() { return ""; }
+}
+
+class Cat extends Animal {
+    Cat(String name) { super(name); }
+    // override speak() to return "Meow"
+    String speak() { return ""; }
+}
+
+class Solution {
+    public static void main(String[] args) {
+        List<Animal> animals = List.of(new Dog("Rex"), new Cat("Whiskers"));
+        for (Animal a : animals) System.out.println(a.name + " says " + a.speak());
+    }
+}
+`,
+    },
+  },
+
+
+  {
+    id: 'coding-46',
+    category: 'coding',
+    difficulty: 'medium',
+    pattern: 'OOP',
+    title: 'Design a Parking Lot',
+    classTest: true,
+    className: 'ParkingLot',
+    testCases: [
+      {
+        desc: 'park fills lowest spots and reports availability',
+        constructorArgs: [3],
+        steps: [
+          { method: 'availableSpots', args: [], returns: 3 },
+          { method: 'park', args: ['ABC-1'], returns: 0 },
+          { method: 'park', args: ['ABC-2'], returns: 1 },
+          { method: 'availableSpots', args: [], returns: 1 },
+        ],
+      },
+      {
+        desc: 'lot full returns -1',
+        constructorArgs: [2],
+        steps: [
+          { method: 'park', args: ['A'], returns: 0 },
+          { method: 'park', args: ['B'], returns: 1 },
+          { method: 'park', args: ['C'], returns: -1 },
+          { method: 'availableSpots', args: [], returns: 0 },
+        ],
+      },
+      {
+        desc: 'unpark frees the spot and is reused',
+        constructorArgs: [2],
+        steps: [
+          { method: 'park', args: ['A'], returns: 0 },
+          { method: 'park', args: ['B'], returns: 1 },
+          { method: 'unpark', args: ['A'], returns: true },
+          { method: 'availableSpots', args: [], returns: 1 },
+          { method: 'park', args: ['C'], returns: 0 },
+        ],
+      },
+      {
+        desc: 'unpark unknown plate returns false',
+        constructorArgs: [2],
+        steps: [
+          { method: 'unpark', args: ['NOPE'], returns: false },
+          { method: 'park', args: ['A'], returns: 0 },
+          { method: 'unpark', args: ['A'], returns: true },
+          { method: 'unpark', args: ['A'], returns: false },
+        ],
+      },
+    ],
+    prompt: `Design a ParkingLot class.
+
+  new ParkingLot(capacity)   - a lot with the given number of numbered spots (0..capacity-1)
+  park(plate)                - park the car, return the spot number it took (the LOWEST free spot). If the lot is full, return -1.
+  unpark(plate)              - remove the car. Return true if it was parked, false otherwise.
+  availableSpots()           - return the count of currently free spots.
+
+Example:
+  const lot = new ParkingLot(2);
+  lot.park("A")          -> 0
+  lot.park("B")          -> 1
+  lot.park("C")          -> -1   (full)
+  lot.unpark("A")        -> true
+  lot.availableSpots()   -> 1
+  lot.park("C")          -> 0    (reuses spot 0)
+
+This exercises OOP state management: pick data structures that make each operation efficient. Think about what you need to look up by plate vs. by spot.`,
+    hints: [
+      'Track which spots are free (a min-heap or a sorted set / boolean array) so park() always returns the lowest free spot.',
+      'Keep a map plate -> spot so unpark() is O(1) and you can detect unknown plates.',
+      'availableSpots() should be O(1) if you maintain a running count.',
+    ],
+    tags: ['OOP', 'design', 'data structures', 'classes'],
+    starterCode: {
+      js: `class ParkingLot {
+  constructor(capacity) {
+    // set up your spot tracking and plate -> spot map
+  }
+  park(plate) {
+    // return the lowest free spot number, or -1 if full
+  }
+  unpark(plate) {
+    // return true if removed, false if not parked
+  }
+  availableSpots() {
+    // return count of free spots
+  }
+}
+`,
+      typescript: `class ParkingLot {
+  constructor(capacity: number) {}
+  park(plate: string): number { return -1; }
+  unpark(plate: string): boolean { return false; }
+  availableSpots(): number { return 0; }
+}
+`,
+      python: `class ParkingLot:
+    def __init__(self, capacity):
+        # set up your spot tracking and plate -> spot map
+        pass
+    def park(self, plate):
+        # return the lowest free spot number, or -1 if full
+        pass
+    def unpark(self, plate):
+        # return True if removed, False if not parked
+        pass
+    def available_spots(self):
+        # return count of free spots
+        pass
+`,
+      java: `import java.util.*;
+
+class ParkingLot {
+    ParkingLot(int capacity) {}
+    int park(String plate) { return -1; }
+    boolean unpark(String plate) { return false; }
+    int availableSpots() { return 0; }
+}
+
+class Solution {
+    public static void main(String[] args) {
+        ParkingLot lot = new ParkingLot(2);
+        System.out.println(lot.park("A"));         // 0
+        System.out.println(lot.park("B"));         // 1
+        System.out.println(lot.park("C"));         // -1
+        System.out.println(lot.unpark("A"));       // true
+        System.out.println(lot.availableSpots());  // 1
+    }
+}
+`,
+    },
+  },
+
+
+  {
+    id: 'coding-47',
+    category: 'coding',
+    difficulty: 'medium',
+    pattern: 'OOP',
+    title: 'Implement a Stack Using Two Queues',
+    classTest: true,
+    className: 'MyStack',
+    testCases: [
+      {
+        desc: 'push/pop LIFO order',
+        constructorArgs: [],
+        steps: [
+          { method: 'push', args: [1] },
+          { method: 'push', args: [2] },
+          { method: 'top', args: [], returns: 2 },
+          { method: 'pop', args: [], returns: 2 },
+          { method: 'pop', args: [], returns: 1 },
+          { method: 'empty', args: [], returns: true },
+        ],
+      },
+      {
+        desc: 'empty on fresh stack',
+        constructorArgs: [],
+        steps: [
+          { method: 'empty', args: [], returns: true },
+          { method: 'push', args: [42] },
+          { method: 'empty', args: [], returns: false },
+        ],
+      },
+      {
+        desc: 'top does not remove',
+        constructorArgs: [],
+        steps: [
+          { method: 'push', args: [5] },
+          { method: 'push', args: [6] },
+          { method: 'top', args: [], returns: 6 },
+          { method: 'top', args: [], returns: 6 },
+          { method: 'pop', args: [], returns: 6 },
+        ],
+      },
+      {
+        desc: 'interleaved operations',
+        constructorArgs: [],
+        steps: [
+          { method: 'push', args: [1] },
+          { method: 'pop', args: [], returns: 1 },
+          { method: 'push', args: [2] },
+          { method: 'push', args: [3] },
+          { method: 'pop', args: [], returns: 3 },
+          { method: 'top', args: [], returns: 2 },
+        ],
+      },
+    ],
+    prompt: `Implement a LIFO stack using only queue operations (push to back, pop from front, peek front, size, is-empty). You may use one or two queues internally, but the public behavior must be a stack.
+
+  push(x)  - push x onto the stack
+  pop()    - remove and return the top element
+  top()    - return (without removing) the top element
+  empty()  - return true if the stack is empty
+
+Example:
+  s.push(1); s.push(2);
+  s.top()   -> 2
+  s.pop()   -> 2
+  s.empty() -> false
+
+The trick: a queue is FIFO but a stack is LIFO. The common approach makes push O(n) (rotate the queue so the newest element is at the front) and pop/top O(1) - or the reverse. Be able to explain the trade-off.`,
+    hints: [
+      'One-queue approach: on push, enqueue x, then rotate the queue size-1 times so x ends up at the front. push is O(n), pop/top are O(1).',
+      'Two-queue approach: keep a main queue and a helper; on pop, move all but the last element across. Decide which operation you want to be cheap.',
+      'empty() is just "is the queue empty"; top() returns the front element under the one-queue scheme.',
+    ],
+    tags: ['OOP', 'stack', 'queue', 'data structures', 'design'],
+    starterCode: {
+      js: `class MyStack {
+  constructor() {
+    // use an array as a queue: push() to back, shift() from front
+  }
+  push(x) {}
+  pop() {}
+  top() {}
+  empty() {}
+}
+`,
+      typescript: `class MyStack {
+  constructor() {}
+  push(x: number): void {}
+  pop(): number { return 0; }
+  top(): number { return 0; }
+  empty(): boolean { return true; }
+}
+`,
+      python: `from collections import deque
+
+class MyStack:
+    def __init__(self):
+        # use deque(s) as queue(s): append to back, popleft from front
+        pass
+    def push(self, x):
+        pass
+    def pop(self):
+        pass
+    def top(self):
+        pass
+    def empty(self):
+        pass
+`,
+      java: `import java.util.*;
+
+class MyStack {
+    MyStack() {}
+    void push(int x) {}
+    int pop() { return 0; }
+    int top() { return 0; }
+    boolean empty() { return true; }
+}
+
+class Solution {
+    public static void main(String[] args) {
+        MyStack s = new MyStack();
+        s.push(1); s.push(2);
+        System.out.println(s.top());    // 2
+        System.out.println(s.pop());    // 2
+        System.out.println(s.empty());  // false
+    }
+}
+`,
+    },
+  },
+
+
+  {
+    id: 'coding-48',
+    category: 'coding',
+    difficulty: 'medium',
+    pattern: 'Hash Maps & Arrays',
+    title: 'Group Anagrams (Count Groups)',
+    functionName: 'countAnagramGroups',
+    testCases: [
+      { desc: 'classic - 3 groups',  args: [['eat','tea','tan','ate','nat','bat']], expected: 3 },
+      { desc: 'single empty string', args: [['']],          expected: 1 },
+      { desc: 'single char',         args: [['a']],          expected: 1 },
+      { desc: 'no anagrams',         args: [['abc','def']],  expected: 2 },
+      { desc: 'all anagrams',        args: [['abc','bca','cab']], expected: 1 },
+    ],
+    prompt: `Given an array of strings, group the anagrams together and return HOW MANY distinct anagram groups there are. Two words belong to the same group iff one is a rearrangement of the other.
+
+Example:
+  ["eat","tea","tan","ate","nat","bat"]
+    groups: {eat,tea,ate}, {tan,nat}, {bat}  ->  3
+  ["abc","bca","cab"] -> 1
+
+The key insight: two words are anagrams iff their sorted characters (or 26-letter count signature) are equal. Use that canonical form as a hash-map key, then count the distinct keys.`,
+    hints: [
+      'Canonical key: sort the letters of each word (or build a 26-length count signature). Anagrams share the same key.',
+      'Put every key into a Set (or Map) and return its size - that is the number of groups.',
+      'The 26-count signature avoids the O(k log k) sort per word if performance matters.',
+    ],
+    tags: ['hash maps', 'strings', 'sorting', 'grouping'],
+    starterCode: {
+      js: `function countAnagramGroups(words) {
+  // map each word to its sorted-letter key; count distinct keys
+}
+
+console.log(countAnagramGroups(["eat","tea","tan","ate","nat","bat"])); // 3
+console.log(countAnagramGroups(["abc","bca","cab"]));                    // 1
+`,
+      typescript: `function countAnagramGroups(words: string[]): number {
+  return 0;
+}
+
+console.log(countAnagramGroups(["eat","tea","tan","ate","nat","bat"])); // 3
+`,
+      python: `def count_anagram_groups(words):
+    # map each word to its sorted-letter key; count distinct keys
+    pass
+
+print(count_anagram_groups(["eat","tea","tan","ate","nat","bat"]))  # 3
+print(count_anagram_groups(["abc","bca","cab"]))                     # 1
+`,
+      java: `import java.util.*;
+
+class Solution {
+    public static int countAnagramGroups(String[] words) {
+        return 0;
+    }
+
+    public static void main(String[] args) {
+        System.out.println(countAnagramGroups(new String[]{"eat","tea","tan","ate","nat","bat"})); // 3
+        System.out.println(countAnagramGroups(new String[]{"abc","bca","cab"}));                    // 1
+    }
+}
+`,
+    },
+  },
+
+
+  {
+    id: 'coding-49',
+    category: 'coding',
+    difficulty: 'medium',
+    pattern: 'Arrays / Prefix',
+    title: 'Product of Array Except Self',
+    functionName: 'productExceptSelf',
+    testCases: [
+      { desc: 'basic',            args: [[1,2,3,4]],   expected: [24,12,8,6] },
+      { desc: 'with a zero',      args: [[-1,1,0,-3,3]], expected: [0,0,9,0,0] },
+      { desc: 'two elements',     args: [[2,3]],       expected: [3,2] },
+      { desc: 'all ones',         args: [[1,1,1]],     expected: [1,1,1] },
+    ],
+    prompt: `Given an integer array nums, return an array answer where answer[i] is the product of all elements of nums EXCEPT nums[i]. You must do it in O(n) WITHOUT using division (so a zero anywhere does not break it).
+
+Example:
+  [1,2,3,4] -> [24,12,8,6]
+  [-1,1,0,-3,3] -> [0,0,9,0,0]
+
+The trick: answer[i] = (product of everything to the left of i) * (product of everything to the right of i). Compute prefix products in one pass, suffix products in a second pass.`,
+    hints: [
+      'First pass left-to-right: answer[i] = product of all elements before i (prefix).',
+      'Second pass right-to-left: multiply answer[i] by the running product of all elements after i (suffix).',
+      'No division needed, and it naturally handles zeros. O(n) time, O(1) extra space (besides the output).',
+    ],
+    tags: ['arrays', 'prefix product', 'no division'],
+    starterCode: {
+      js: `function productExceptSelf(nums) {
+  // prefix pass then suffix pass
+}
+
+console.log(productExceptSelf([1,2,3,4])); // [24,12,8,6]
+`,
+      typescript: `function productExceptSelf(nums: number[]): number[] {
+  return [];
+}
+
+console.log(productExceptSelf([1,2,3,4])); // [24,12,8,6]
+`,
+      python: `def product_except_self(nums):
+    # prefix pass then suffix pass
+    pass
+
+print(product_except_self([1,2,3,4]))  # [24,12,8,6]
+`,
+      java: `import java.util.*;
+
+class Solution {
+    public static int[] productExceptSelf(int[] nums) {
+        return new int[0];
+    }
+
+    public static void main(String[] args) {
+        System.out.println(Arrays.toString(productExceptSelf(new int[]{1,2,3,4}))); // [24, 12, 8, 6]
+    }
+}
+`,
+    },
+  },
+
+
+  {
+    id: 'coding-50',
+    category: 'coding',
+    difficulty: 'medium',
+    pattern: 'Heaps / Top K',
+    title: 'Kth Largest Element in an Array',
+    functionName: 'findKthLargest',
+    testCases: [
+      { desc: 'k=2',                args: [[3,2,1,5,6,4], 2],         expected: 5 },
+      { desc: 'k=4 with dups',      args: [[3,2,3,1,2,4,5,5,6], 4],   expected: 4 },
+      { desc: 'k=1 (max)',          args: [[1], 1],                   expected: 1 },
+      { desc: 'k = length (min)',   args: [[7,6,5,4,3,2,1], 7],       expected: 1 },
+    ],
+    prompt: `Find the kth largest element in an unsorted array. Note this is the kth largest in sorted ORDER, not the kth distinct element.
+
+Example:
+  [3,2,1,5,6,4], k=2 -> 5
+  [3,2,3,1,2,4,5,5,6], k=4 -> 4
+
+The clean approach is a size-k min-heap: keep the k largest seen so far; the heap root is the answer. That is O(n log k). (Quickselect gives O(n) average.)`,
+    hints: [
+      'Min-heap of size k: push each number; if the heap grows beyond k, pop the smallest. The root is the kth largest.',
+      'Why a MIN-heap for the kth LARGEST? The smallest of the k largest sits at the root and is exactly the answer.',
+      'Alternative: quickselect partitions around a pivot for O(n) average time, but the heap is simpler to get right.',
+    ],
+    tags: ['heap', 'priority queue', 'top k', 'quickselect'],
+    starterCode: {
+      js: `function findKthLargest(nums, k) {
+  // size-k min-heap, or sort, or quickselect
+}
+
+console.log(findKthLargest([3,2,1,5,6,4], 2)); // 5
+`,
+      typescript: `function findKthLargest(nums: number[], k: number): number {
+  return 0;
+}
+
+console.log(findKthLargest([3,2,1,5,6,4], 2)); // 5
+`,
+      python: `import heapq
+
+def find_kth_largest(nums, k):
+    # size-k min-heap, or sort, or quickselect
+    pass
+
+print(find_kth_largest([3,2,1,5,6,4], 2))  # 5
+`,
+      java: `import java.util.*;
+
+class Solution {
+    public static int findKthLargest(int[] nums, int k) {
+        return 0;
+    }
+
+    public static void main(String[] args) {
+        System.out.println(findKthLargest(new int[]{3,2,1,5,6,4}, 2)); // 5
+    }
+}
+`,
+    },
+  },
+
+
+  {
+    id: "arch-14",
+    category: 'architecture',
+    difficulty: "hard",
+    title: "Design a Chat System (WhatsApp-like)",
+    prompt: "Design the following system.\n\nRequirements:\n  - 1-on-1 and group messaging, up to 500 members per group\n  - Online/offline presence and last-seen\n  - Delivery + read receipts (sent / delivered / read)\n  - Message history synced across a user's devices\n  - ~50M daily active users, billions of messages/day\n  - Media attachments (images, short video)\n  - End-to-end latency under ~500ms for online users\n\nAddress:\n  - Connection model: persistent WebSocket vs long-poll, and how you route a message to the recipient's connection\n  - Message storage and fan-out for large groups (write fan-out vs read fan-out)\n  - Presence tracking at scale without hammering the DB\n  - How offline delivery and multi-device sync work\n  - How you guarantee ordering and at-least-once delivery",
+    hints: [
+      "Persistent connections need a way to find which server holds a given user's socket - think a connection/session registry.",
+      "Group fan-out is the scaling pain point: 500 members x billions of messages. Compare fan-out-on-write vs fan-out-on-read.",
+      "Presence is high-write, low-value data - consider a TTL heartbeat in an in-memory store rather than durable writes.",
+    ],
+    tags: ["system design", "chat", "websockets", "messaging", "real-time", "fan-out"],
+  },
+
+
+  {
+    id: "arch-15",
+    category: 'architecture',
+    difficulty: "hard",
+    title: "Design a Video Streaming Platform (YouTube)",
+    prompt: "Design the following system.\n\nRequirements:\n  - Upload, transcode, and stream video to a global audience\n  - Adaptive bitrate streaming on flaky networks\n  - Billions of views/day; long-tail + viral spikes\n  - View counts, likes, comments\n  - Recommendations on the home feed\n  - Store petabytes of video durably\n\nAddress:\n  - Upload + transcoding pipeline (multiple resolutions/codecs) and why it is async\n  - How adaptive bitrate streaming works (HLS/DASH, chunking, manifests)\n  - CDN strategy for global delivery and cache warming for viral videos\n  - Metadata storage vs blob storage separation\n  - How you count views at massive scale (approximate vs exact)",
+    hints: [
+      "Transcoding is CPU-heavy and async: upload -> queue -> transcode to a ladder of bitrates -> store -> publish.",
+      "ABR splits each rendition into small segments and a manifest; the client picks a bitrate per segment based on bandwidth.",
+      "The CDN does the heavy lifting for delivery; origin should rarely be hit. Think about cache hit ratio and eviction.",
+    ],
+    tags: ["system design", "video", "streaming", "CDN", "transcoding", "adaptive bitrate"],
+  },
+
+
+  {
+    id: "arch-16",
+    category: 'architecture',
+    difficulty: "hard",
+    title: "Design a Distributed File Storage System (Dropbox)",
+    prompt: "Design the following system.\n\nRequirements:\n  - Upload/download files, sync across a user's devices\n  - File versioning and conflict resolution\n  - Share files/folders with other users\n  - Efficient sync of large files that changed slightly\n  - Petabyte scale, strong durability\n  - Offline edits that reconcile on reconnect\n\nAddress:\n  - Chunking + content-addressed storage and how it enables dedup and delta sync\n  - Sync protocol: how a client learns what changed (metadata service vs polling)\n  - Conflict resolution when two devices edit the same file offline\n  - Metadata vs block storage separation and consistency between them\n  - How you achieve durability (replication / erasure coding)",
+    hints: [
+      "Split files into content-hashed chunks: only changed chunks are uploaded (delta sync) and identical chunks are deduplicated.",
+      "Separate a metadata service (file tree, versions, chunk lists) from a block store (the actual bytes).",
+      "Conflicts: last-writer-wins is simplest but lossy; consider keeping both versions (conflicted copy) like real Dropbox does.",
+    ],
+    tags: ["system design", "storage", "sync", "chunking", "deduplication", "durability"],
+  },
+
+
+  {
+    id: "arch-17",
+    category: 'architecture',
+    difficulty: "medium",
+    title: "Design a Search Autocomplete System",
+    prompt: "Design the following system.\n\nRequirements:\n  - Suggest top completions as the user types each keystroke\n  - Rank suggestions by popularity/frequency\n  - Sub-100ms response per keystroke\n  - Tens of millions of queries/day\n  - Suggestions update as trends change (daily is fine)\n  - Handle typos gracefully (optional stretch)\n\nAddress:\n  - Data structure for prefix lookup (trie) and how you attach top-k to each node\n  - How you precompute and cache top-k completions to hit the latency target\n  - How the suggestion data is built/updated from query logs (batch pipeline)\n  - Sharding the trie across the keyspace\n  - Client-side vs server-side debouncing of keystrokes",
+    hints: [
+      "A trie gives prefix matching; store the top-k completions at each node (or use a separate ranked store) so you do not traverse the whole subtree per keystroke.",
+      "This is read-heavy and latency-critical: precompute and cache aggressively; the update path can be a slow batch job.",
+      "Debounce keystrokes on the client and cap results to top ~10 to keep payloads tiny.",
+    ],
+    tags: ["system design", "autocomplete", "trie", "caching", "search", "top-k"],
+  },
+
+
+  {
+    id: "arch-18",
+    category: 'architecture',
+    difficulty: "medium",
+    title: "Design a Notification Service (push, email, SMS)",
+    prompt: "Design the following system.\n\nRequirements:\n  - Send notifications across channels: push, email, SMS, in-app\n  - Per-user channel preferences and opt-outs\n  - Templating and localization\n  - Rate limiting / batching to avoid spamming users\n  - Millions of notifications/day with retries\n  - Track delivery status\n\nAddress:\n  - How you decouple producers from channel delivery (queue + workers per channel)\n  - Handling third-party provider failures and retries (idempotency, dead-letter queue)\n  - Respecting user preferences and quiet hours\n  - Templating/localization pipeline\n  - Deduplication so the same event does not notify twice",
+    hints: [
+      "A message queue between producers and per-channel workers gives buffering, retries, and isolation between channels.",
+      "Provider calls are unreliable: retry with backoff, use idempotency keys, and route permanent failures to a dead-letter queue.",
+      "Preference checks and dedup should happen before you fan out to channels.",
+    ],
+    tags: ["system design", "notifications", "message queue", "push", "email", "SMS"],
+  },
+
+
+  {
+    id: "arch-19",
+    category: 'architecture',
+    difficulty: "hard",
+    title: "Design a Content Delivery Network (CDN)",
+    prompt: "Design the following system.\n\nRequirements:\n  - Cache and serve static assets close to users globally\n  - High cache hit ratio; low origin load\n  - Cache invalidation / purge of stale content\n  - Handle origin failures gracefully\n  - Support large objects (video segments) and small (images, CSS)\n  - TLS termination at the edge\n\nAddress:\n  - Edge cache hierarchy (edge -> regional -> origin) and request routing (anycast / GeoDNS)\n  - Cache key design, TTLs, and cache-control header handling\n  - Invalidation strategies (purge, versioned URLs, soft TTL + revalidate)\n  - Handling cache misses and the thundering-herd / cache stampede problem\n  - Consistency vs freshness trade-offs",
+    hints: [
+      "Route users to the nearest edge with anycast or GeoDNS; a tiered cache reduces origin hits further.",
+      "Prefer versioned/fingerprinted URLs (style.abc123.css) over purges - they are immutable and cache forever.",
+      "Guard against stampedes on miss with request coalescing / a short lock so only one request fetches from origin.",
+    ],
+    tags: ["system design", "CDN", "caching", "edge", "invalidation", "geo-routing"],
+  },
+
+
+  {
+    id: "arch-20",
+    category: 'architecture',
+    difficulty: "hard",
+    title: "Design a Distributed Cache (Redis-like)",
+    prompt: "Design the following system.\n\nRequirements:\n  - In-memory key-value cache with get/set/expire\n  - Horizontal scale beyond one node's memory\n  - Handle node failures without losing the whole cache\n  - Eviction when memory is full\n  - Optional persistence/replication\n  - Low single-digit-ms latency\n\nAddress:\n  - Data partitioning across nodes (consistent hashing) and how you minimize reshuffling on add/remove\n  - Replication for availability and the consistency trade-off\n  - Eviction policies (LRU/LFU/TTL) and how you implement them efficiently\n  - Handling hot keys and the thundering herd on miss\n  - Client routing: client-side hashing vs a proxy",
+    hints: [
+      "Consistent hashing with virtual nodes keeps key movement small when a node joins/leaves.",
+      "Eviction: an approximate LRU (sampling) is cheaper than exact LRU at scale; combine with TTLs.",
+      "Hot keys can overwhelm one shard - consider client-side caching or replicating the hot key.",
+    ],
+    tags: ["system design", "cache", "consistent hashing", "redis", "eviction", "partitioning"],
+  },
+
+
+  {
+    id: "arch-21",
+    category: 'architecture',
+    difficulty: "hard",
+    title: "Design a Payment Processing System",
+    prompt: "Design the following system.\n\nRequirements:\n  - Charge cards, handle refunds, track transaction state\n  - Exactly-once charging - never double-charge on retry\n  - Integrate multiple payment providers\n  - Strong auditability and consistency\n  - PCI compliance considerations\n  - Reconciliation with provider settlement reports\n\nAddress:\n  - Idempotency: how you guarantee a retried charge does not double-charge\n  - Transaction state machine (pending -> authorized -> captured -> settled / failed / refunded)\n  - Consistency model - why payments lean toward strong consistency\n  - Handling provider timeouts where you do not know if the charge succeeded\n  - Auditing and reconciliation",
+    hints: [
+      "Idempotency keys are the heart of this: store key -> result; a retry returns the stored result instead of re-charging.",
+      "Model the payment as an explicit state machine and persist every transition for auditability.",
+      "On a provider timeout you are in an unknown state - reconcile via a status query or webhook before retrying.",
+    ],
+    tags: ["system design", "payments", "idempotency", "consistency", "state machine", "transactions"],
+  },
+
+
+  {
+    id: "arch-22",
+    category: 'architecture',
+    difficulty: "medium",
+    title: "Design a Hotel Reservation System",
+    prompt: "Design the following system.\n\nRequirements:\n  - Search availability by date range and location\n  - Book a room and prevent double-booking\n  - Handle cancellations and modifications\n  - Pricing that varies by date\n  - Thousands of hotels, high read volume\n  - Hold a room briefly during checkout\n\nAddress:\n  - Modeling inventory and availability over date ranges\n  - Preventing double-booking under concurrent requests (locking / atomic reservation)\n  - Read-heavy search vs write-consistent booking - splitting the two paths\n  - Temporary holds during checkout and how they expire\n  - Caching search results vs keeping availability fresh",
+    hints: [
+      "Double-booking is the core concurrency problem: use an atomic conditional update / row lock / reservation row so two bookings cannot claim the same room-night.",
+      "Search is read-heavy and can tolerate slight staleness (cache it); the booking write path needs strong consistency.",
+      "Holds can be a short-TTL reservation that auto-expires if checkout is not completed.",
+    ],
+    tags: ["system design", "reservations", "concurrency", "inventory", "double-booking"],
+  },
+
+
+  {
+    id: "arch-23",
+    category: 'architecture',
+    difficulty: "hard",
+    title: "Design a Ride-Sharing Service (Uber)",
+    prompt: "Design the following system.\n\nRequirements:\n  - Match riders with nearby drivers in real time\n  - Live driver location updates and ETAs\n  - Surge pricing under high demand\n  - Trip lifecycle: request -> match -> pickup -> dropoff -> pay\n  - Millions of location updates/sec at peak\n  - Map/routing for ETAs\n\nAddress:\n  - Geospatial indexing for \"nearby drivers\" (geohash / quadtree / S2 cells)\n  - Ingesting high-frequency location updates without overwhelming storage\n  - The matching algorithm and how you avoid matching the same driver twice\n  - Surge pricing computation by region\n  - Trip state management and payment at the end",
+    hints: [
+      "Index driver locations by geospatial cell (geohash/S2) so \"nearby\" is a cheap cell lookup rather than a full scan.",
+      "Location updates are massive write volume - keep current location in an in-memory store; you rarely need full history.",
+      "Matching must be atomic so one driver is not offered two rides simultaneously.",
+    ],
+    tags: ["system design", "ride-sharing", "geospatial", "matching", "real-time", "surge pricing"],
+  },
+
+
+  {
+    id: "arch-24",
+    category: 'architecture',
+    difficulty: "medium",
+    title: "Design a Web Crawler",
+    prompt: "Design the following system.\n\nRequirements:\n  - Crawl billions of web pages politely\n  - Respect robots.txt and per-domain rate limits\n  - Avoid re-crawling unchanged pages too often\n  - Detect and skip duplicate content\n  - Distributed across many workers\n  - Be resilient to slow/malicious sites\n\nAddress:\n  - The crawl frontier (URL queue) design and prioritization\n  - Politeness: per-domain rate limiting and robots.txt handling\n  - Deduplication of URLs and of page content (hashing / shingling)\n  - Distributing work across crawlers without overlap\n  - Detecting crawler traps and dead ends",
+    hints: [
+      "The frontier is a prioritized queue; politeness means per-domain queues with delays, not one global firehose.",
+      "Dedup URLs with a seen-set (bloom filter at scale) and dedup content with a hash/fingerprint of the page body.",
+      "Partition domains across workers so two crawlers do not hammer the same site.",
+    ],
+    tags: ["system design", "web crawler", "frontier", "dedup", "bloom filter", "politeness"],
+  },
+
+
+  {
+    id: "arch-25",
+    category: 'architecture',
+    difficulty: "hard",
+    title: "Design an Ad Click Aggregation System",
+    prompt: "Design the following system.\n\nRequirements:\n  - Ingest billions of ad-click events/day\n  - Aggregate clicks by ad/campaign over time windows\n  - Near-real-time dashboards (seconds to minutes)\n  - Accurate billing - clicks map to charges\n  - Detect and filter click fraud\n  - Replayable / correctable aggregates\n\nAddress:\n  - Streaming ingestion pipeline (event -> queue -> stream processor -> store)\n  - Windowed aggregation and handling late/out-of-order events\n  - Exactly-once vs at-least-once for billing accuracy\n  - Hot-partition / hot-campaign skew\n  - How you support both real-time and corrected batch numbers (lambda/kappa)",
+    hints: [
+      "This is a streaming aggregation problem: Kafka -> stream processor (windowed counts) -> OLAP store.",
+      "Late events break naive windows - use event-time windows with watermarks and allowed lateness.",
+      "Billing wants accuracy, so reconcile the fast streaming numbers with a slower exact batch recompute.",
+    ],
+    tags: ["system design", "streaming", "aggregation", "kafka", "windowing", "ad-tech"],
+  },
+
+
+  {
+    id: "arch-26",
+    category: 'architecture',
+    difficulty: "hard",
+    title: "Design a Stock Exchange",
+    prompt: "Design the following system.\n\nRequirements:\n  - Accept buy/sell orders and match them\n  - Maintain an order book per symbol with price-time priority\n  - Extremely low, predictable latency\n  - Strict correctness and fairness\n  - Market data feed to subscribers\n  - Durability/audit of every order\n\nAddress:\n  - The matching engine and order book data structure (price-time priority)\n  - Why a single-threaded per-symbol matcher is often used (determinism)\n  - Sequencing/ordering of incoming orders for fairness\n  - Market-data fan-out to many subscribers\n  - Durability and recovery without sacrificing latency",
+    hints: [
+      "Order book: two sorted structures (bids descending, asks ascending) with FIFO at each price level for time priority.",
+      "A single-threaded matcher per symbol gives deterministic, fair ordering and avoids lock contention; scale by sharding symbols.",
+      "Persist a sequenced log of orders so you can replay/recover the exact book state.",
+    ],
+    tags: ["system design", "stock exchange", "matching engine", "order book", "low latency", "fairness"],
+  },
+
+
+  {
+    id: "arch-27",
+    category: 'architecture',
+    difficulty: "medium",
+    title: "Design a Gaming Leaderboard",
+    prompt: "Design the following system.\n\nRequirements:\n  - Real-time top-N leaderboard by score\n  - Get a player's rank quickly\n  - Millions of players, frequent score updates\n  - Global and per-region/per-friend leaderboards\n  - Handle ties consistently\n  - Time-windowed boards (daily/weekly)\n\nAddress:\n  - Data structure for ranking (sorted set) and the cost of rank queries\n  - How you get a single player's rank without scanning everyone\n  - Sharding/partitioning when one sorted set is too big\n  - Time-windowed leaderboards and resets\n  - Caching the hot top-N",
+    hints: [
+      "A sorted set (e.g., Redis ZSET) gives O(log n) updates and O(log n) rank lookups - the natural fit.",
+      "Top-N is a cheap range query; a single player's rank uses the sorted set's rank operation.",
+      "For huge populations, shard by bucket/region and merge, or approximate exact rank below the top tiers.",
+    ],
+    tags: ["system design", "leaderboard", "sorted set", "ranking", "redis", "real-time"],
+  },
+
+
+  {
+    id: "arch-28",
+    category: 'architecture',
+    difficulty: "medium",
+    title: "Design a Proximity Service (Yelp / nearby places)",
+    prompt: "Design the following system.\n\nRequirements:\n  - Find businesses within a radius of a location\n  - Filter by category/rating\n  - Low-latency \"near me\" queries\n  - Tens of millions of places, heavy reads\n  - Place data updates infrequently\n  - Pagination of results\n\nAddress:\n  - Geospatial indexing approach (geohash vs quadtree vs S2) and the trade-offs\n  - How a radius query maps to index lookups (neighboring cells)\n  - Read-heavy caching strategy\n  - Handling dense areas (cities) vs sparse areas\n  - Keeping place data fresh",
+    hints: [
+      "Geohash/S2 turns \"within radius\" into \"look up these cells plus neighbors\" - much cheaper than scanning all places.",
+      "Quadtrees adapt to density (split crowded regions further) where fixed grids do not.",
+      "This is read-dominant and data is fairly static, so cache aggressively.",
+    ],
+    tags: ["system design", "geospatial", "geohash", "quadtree", "proximity", "search"],
+  },
+
+
+  {
+    id: "arch-29",
+    category: 'architecture',
+    difficulty: "hard",
+    title: "Design a Distributed Message Queue (Kafka-like)",
+    prompt: "Design the following system.\n\nRequirements:\n  - Durable, ordered, replayable message log\n  - Topics partitioned for parallelism\n  - At-least-once delivery; consumers track offsets\n  - High throughput, horizontal scale\n  - Survive broker failures\n  - Multiple independent consumer groups\n\nAddress:\n  - Partitioning and ordering guarantees (order within a partition, not across)\n  - Replication of partitions for durability (leader/follower, ISR)\n  - Consumer offset tracking and consumer-group rebalancing\n  - Delivery semantics: at-least-once vs exactly-once\n  - Retention and compaction of the log",
+    hints: [
+      "Order is only guaranteed within a partition; the partition key decides which partition a message lands in.",
+      "Each partition has a leader and follower replicas; writes go to the leader and replicate before acknowledgment for durability.",
+      "Consumers commit offsets to resume; rebalancing reassigns partitions when a consumer joins/leaves.",
+    ],
+    tags: ["system design", "message queue", "kafka", "partitioning", "replication", "offsets"],
+  },
+
+
+  {
+    id: "arch-30",
+    category: 'architecture',
+    difficulty: "medium",
+    title: "Design a Microservices API Gateway",
+    prompt: "Design the following system.\n\nRequirements:\n  - Single entry point routing to many backend services\n  - Authentication and authorization at the edge\n  - Rate limiting and quotas per client\n  - Request/response transformation and aggregation\n  - TLS termination\n  - Observability (logging, tracing)\n\nAddress:\n  - Responsibilities the gateway should own vs what belongs in services\n  - Routing and service discovery integration\n  - Where auth/rate-limiting/caching live and how they are configured\n  - Avoiding the gateway becoming a bottleneck or single point of failure\n  - BFF pattern - when to have per-client gateways",
+    hints: [
+      "The gateway centralizes cross-cutting concerns (auth, rate limit, TLS) so services do not each reimplement them.",
+      "Keep business logic OUT of the gateway - it routes and enforces policy, it does not own domain rules.",
+      "Run the gateway stateless and horizontally scaled behind a load balancer so it is not a SPOF.",
+    ],
+    tags: ["system design", "api gateway", "microservices", "routing", "auth", "rate limiting"],
+  },
+
+
+  {
+    id: "arch-31",
+    category: 'architecture',
+    difficulty: "medium",
+    title: "Design a Feature Flag / Configuration System",
+    prompt: "Design the following system.\n\nRequirements:\n  - Toggle features on/off without redeploy\n  - Target flags by user/segment/percentage rollout\n  - Near-instant propagation of changes\n  - Low-latency evaluation in the request path\n  - Audit who changed what\n  - Safe defaults if the config service is unreachable\n\nAddress:\n  - Flag evaluation in the request path - local cache vs remote call\n  - How flag changes propagate to all clients quickly (streaming/poll/SDK)\n  - Targeting rules and percentage rollouts (consistent bucketing)\n  - Failure mode: what happens if the config service is down\n  - Auditing and gradual rollout / kill-switch",
+    hints: [
+      "Evaluate flags locally from a cached ruleset so the hot path never makes a network call; refresh the cache via streaming or short polling.",
+      "Percentage rollouts need consistent hashing of the user id so a user stays in the same bucket across evaluations.",
+      "Always ship a safe default and last-known-good cache so a config outage does not take down the app.",
+    ],
+    tags: ["system design", "feature flags", "configuration", "rollout", "caching"],
+  },
+
+
+  {
+    id: "arch-32",
+    category: 'architecture',
+    difficulty: "medium",
+    title: "Design a Distributed Locking Service",
+    prompt: "Design the following system.\n\nRequirements:\n  - Mutual exclusion across distributed processes\n  - Locks must release if the holder crashes (no deadlock)\n  - Low latency acquire/release\n  - Avoid two holders believing they own the lock\n  - Fairness (optional)\n  - Survive node failures\n\nAddress:\n  - Lock representation and the role of TTL / lease\n  - Preventing a crashed holder from holding the lock forever\n  - The split-brain / expired-lease problem and fencing tokens\n  - Consensus-backed locks (ZooKeeper/etcd) vs Redis-based (Redlock) trade-offs\n  - Reentrancy and fairness",
+    hints: [
+      "Locks need a TTL/lease so a crashed holder's lock auto-expires; the holder must renew before expiry.",
+      "The classic danger: holder pauses (GC), lease expires, another acquires, then the first resumes - use fencing tokens (monotonic ids) so stale holders are rejected.",
+      "Consensus systems (etcd/ZooKeeper) give stronger guarantees than a single Redis instance.",
+    ],
+    tags: ["system design", "distributed lock", "lease", "fencing", "consensus", "concurrency"],
+  },
+
+
+  {
+    id: "arch-33",
+    category: 'architecture',
+    difficulty: "hard",
+    title: "Design a Real-Time Collaborative Document Editor (Google Docs)",
+    prompt: "Design the following system.\n\nRequirements:\n  - Multiple users edit the same document simultaneously\n  - Changes appear in near real time for all editors\n  - Convergence: everyone ends up with the same document\n  - Offline edits that merge on reconnect\n  - Cursor/presence of other users\n  - Revision history\n\nAddress:\n  - Concurrency model: Operational Transformation (OT) vs CRDTs and the trade-off\n  - How edits are broadcast and ordered among clients\n  - Convergence guarantee - why naive last-writer-wins fails for text\n  - Handling offline edits and reconnection merges\n  - Persistence and revision history",
+    hints: [
+      "OT transforms concurrent operations against each other; CRDTs make operations commutative so they merge without a central transform - know the difference.",
+      "A server (or peer protocol) sequences/relays operations; the algorithm guarantees all replicas converge regardless of order.",
+      "Naive character-position edits conflict; that is exactly why OT/CRDTs exist.",
+    ],
+    tags: ["system design", "collaboration", "OT", "CRDT", "real-time", "convergence"],
+  },
+
+
+  {
+    id: "arch-34",
+    category: 'architecture',
+    difficulty: "hard",
+    title: "Design a Recommendation Engine",
+    prompt: "Design the following system.\n\nRequirements:\n  - Recommend items (videos/products) per user\n  - Mix of personalization and popularity\n  - Serve recommendations with low latency\n  - Update as user behavior changes\n  - Cold-start for new users/items\n  - Billions of user-item interactions\n\nAddress:\n  - Candidate generation vs ranking (the two-stage funnel)\n  - Collaborative filtering vs content-based vs hybrid\n  - Offline training pipeline vs online serving\n  - Cold-start strategy for new users and items\n  - Feature store and serving latency",
+    hints: [
+      "A two-stage funnel is standard: cheaply generate a few hundred candidates, then a heavier model ranks them.",
+      "Collaborative filtering uses behavior (users like you); content-based uses item features - hybrids cover each other's gaps.",
+      "Train models offline in batch; precompute embeddings/candidates and serve from a fast store to hit latency targets.",
+    ],
+    tags: ["system design", "recommendations", "collaborative filtering", "ranking", "ML", "cold start"],
+  },
+
+
+  {
+    id: "arch-35",
+    category: 'architecture',
+    difficulty: "medium",
+    title: "Design a Log Aggregation System",
+    prompt: "Design the following system.\n\nRequirements:\n  - Collect logs from thousands of services/hosts\n  - Centralized search over recent and historical logs\n  - Near-real-time ingestion\n  - Retention tiers (hot/warm/cold)\n  - Handle ingestion spikes without dropping logs\n  - Alerting on patterns\n\nAddress:\n  - Ingestion pipeline (agents -> buffer/queue -> indexer -> store)\n  - Buffering to survive spikes and downstream slowness\n  - Indexing for search vs cost (full-text index is expensive)\n  - Retention tiering and archival\n  - Structured logging and correlation (trace ids)",
+    hints: [
+      "Agents ship logs to a buffer (Kafka) that absorbs spikes before indexing, so a slow indexer never drops data.",
+      "Full-text indexing is costly - index hot/recent data, archive old data to cheap cold storage.",
+      "Structured logs with trace ids make cross-service correlation possible.",
+    ],
+    tags: ["system design", "logging", "observability", "ingestion", "search", "retention"],
+  },
+
+
+  {
+    id: "arch-36",
+    category: 'architecture',
+    difficulty: "medium",
+    title: "Design a Rate Limiter",
+    prompt: "Design the following system.\n\nRequirements:\n  - Limit requests per client (e.g., 100 req/min)\n  - Work across a distributed fleet of servers\n  - Low overhead in the request path\n  - Return clear throttling responses (429 + Retry-After)\n  - Support different limits per tier/endpoint\n  - Allow controlled bursts\n\nAddress:\n  - Algorithm choice: token bucket vs leaky bucket vs sliding-window counter, and the trade-offs\n  - Where state lives so the limit is enforced across all servers (shared store)\n  - Atomicity of the check-and-decrement under concurrency\n  - Handling the shared store being slow/unavailable\n  - Per-client vs global limits and burst allowance",
+    hints: [
+      "Token bucket allows bursts up to capacity while bounding the average rate - the most common choice. Walk through its refill math.",
+      "Distributed enforcement needs shared state (e.g., Redis) with an atomic check-and-decrement (Lua script / INCR with TTL).",
+      "Decide the failure mode: fail-open (allow) keeps you up but unprotected; fail-closed protects but can cause outages.",
+    ],
+    tags: ["system design", "rate limiting", "token bucket", "sliding window", "redis", "throttling"],
+  },
+
+
+  {
+    id: "arch-37",
+    category: 'architecture',
+    difficulty: "medium",
+    title: "Design a Circuit Breaker Service",
+    prompt: "Design the following system.\n\nRequirements:\n  - Protect callers from a failing downstream dependency\n  - Fail fast when the dependency is unhealthy\n  - Automatically probe for recovery\n  - Per-dependency isolation\n  - Configurable thresholds\n  - Metrics on trips and recoveries\n\nAddress:\n  - The three states (closed / open / half-open) and the transitions between them\n  - What signals trip the breaker (error rate, latency, consecutive failures)\n  - How half-open probing tests recovery without a flood\n  - Combining with timeouts, retries, and bulkheads\n  - Per-dependency configuration and observability",
+    hints: [
+      "Closed = pass and count failures; Open = fail fast for a cooldown; Half-open = allow a trial request to test recovery.",
+      "Trip on an error-rate or consecutive-failure threshold, not a single blip; latency can also trip it.",
+      "Pair the breaker with timeouts and bulkheads - the breaker reacts, the timeout/bulkhead prevents resource exhaustion in the first place.",
+    ],
+    tags: ["system design", "circuit breaker", "resilience", "fault tolerance", "timeouts"],
+  },
+
+
+  {
+    id: "arch-38",
+    category: 'architecture',
+    difficulty: "medium",
+    title: "Design a Distributed Tracing System",
+    prompt: "Design the following system.\n\nRequirements:\n  - Trace a request across many microservices\n  - Show where latency is spent per hop\n  - Low overhead in instrumented services\n  - Sampling to control data volume\n  - Search traces by id/service/latency\n  - Correlate with logs and metrics\n\nAddress:\n  - Trace context propagation (trace id + span id) across service boundaries\n  - The span model: parent/child spans forming a trace tree\n  - Sampling strategies (head-based vs tail-based) and why\n  - Collection pipeline and storage of spans\n  - Correlating traces with logs/metrics",
+    hints: [
+      "Propagate a trace id and span id in headers on every hop; each service emits spans tagged with them (OpenTelemetry standardizes this).",
+      "A trace is a tree of spans; each span records start/end and parent so you can see the critical path.",
+      "Sampling controls cost: head-based decides up front; tail-based keeps interesting (slow/error) traces but needs buffering.",
+    ],
+    tags: ["system design", "tracing", "observability", "spans", "sampling", "opentelemetry"],
+  },
+
+
+  {
+    id: "arch-39",
+    category: 'architecture',
+    difficulty: "medium",
+    title: "REST API Design Best Practices",
+    prompt: "Design the following system.\n\nRequirements:\n  - Design a clean, consistent REST API for a resource (e.g., orders)\n  - Correct use of HTTP verbs and status codes\n  - Pagination, filtering, sorting\n  - Error response format\n  - Versioning and backward compatibility\n  - Idempotency for unsafe operations\n\nAddress:\n  - Resource modeling - nouns, nesting, and verb usage (GET/POST/PUT/PATCH/DELETE)\n  - Status code choices for success and error cases\n  - Pagination approach (offset vs cursor) and filtering/sorting conventions\n  - A consistent error response shape\n  - Idempotency for retried POSTs and how versioning is handled",
+    hints: [
+      "Model resources as nouns and let HTTP verbs express the action; reserve verbs-in-the-path for rare RPC-style actions.",
+      "Cursor pagination is more stable than offset under inserts/deletes at scale.",
+      "Make unsafe operations idempotent with an Idempotency-Key so retries do not duplicate effects.",
+    ],
+    tags: ["REST", "api design", "HTTP", "pagination", "idempotency", "versioning"],
+  },
+
+
+  {
+    id: "arch-40",
+    category: 'architecture',
+    difficulty: "medium",
+    title: "GraphQL vs REST vs gRPC Trade-offs",
+    prompt: "Design the following system.\n\nRequirements:\n  - Choose an API style for a new system\n  - Support varied frontends (web, mobile, third-party)\n  - Internal service-to-service calls\n  - Performance and payload-size considerations\n  - Tooling, caching, and evolvability\n  - Streaming needs\n\nAddress:\n  - When GraphQL wins (varied client data needs, over/under-fetching) and its costs (caching, N+1, complexity)\n  - When gRPC wins (internal, high-throughput, typed contracts, streaming) and its limits (browser support)\n  - When plain REST is the right default\n  - Caching differences across the three\n  - Schema/contract evolution in each",
+    hints: [
+      "GraphQL lets clients fetch exactly what they need in one round trip, at the cost of harder caching and N+1 query risk.",
+      "gRPC (Protobuf/HTTP-2) is fast and strongly typed - ideal internally, weak in browsers.",
+      "REST is the simplest, most cacheable default; reach for the others only when a specific need justifies the cost.",
+    ],
+    tags: ["api design", "GraphQL", "REST", "gRPC", "trade-offs", "protocols"],
+  },
+
+
+  {
+    id: "arch-41",
+    category: 'architecture',
+    difficulty: "medium",
+    title: "Database Sharding Strategies",
+    prompt: "Design the following system.\n\nRequirements:\n  - Scale a database beyond one node's capacity\n  - Distribute data across shards\n  - Route queries to the right shard\n  - Avoid hot shards\n  - Support growth (resharding)\n  - Cross-shard queries where unavoidable\n\nAddress:\n  - Sharding key selection and its impact on hotspots and query routing\n  - Range vs hash vs directory-based sharding and the trade-offs\n  - Handling cross-shard queries and joins\n  - Rebalancing/resharding with minimal disruption (consistent hashing)\n  - Avoiding hot shards from skewed keys",
+    hints: [
+      "The shard key makes or breaks this: it must spread load evenly AND keep common queries on a single shard.",
+      "Range sharding allows range scans but risks hotspots; hash sharding spreads evenly but kills range scans.",
+      "Consistent hashing minimizes data movement when adding/removing shards.",
+    ],
+    tags: ["system design", "sharding", "databases", "partitioning", "consistent hashing", "scaling"],
+  },
+
+
+  {
+    id: "arch-42",
+    category: 'architecture',
+    difficulty: "medium",
+    title: "CAP Theorem Applied: Choosing a Database",
+    prompt: "Design the following system.\n\nRequirements:\n  - Pick a datastore for a given workload\n  - Reason about consistency vs availability under partition\n  - Map requirements to CP vs AP systems\n  - Latency and geo-distribution needs\n  - Read vs write patterns\n  - Acceptable staleness\n\nAddress:\n  - State CAP precisely - during a network partition you choose Consistency OR Availability\n  - Give an example workload that demands CP (e.g., banking) and one that tolerates AP (e.g., social feed)\n  - How eventual consistency and tunable consistency (quorums) fit in\n  - Latency implications of strong consistency across regions\n  - Mapping a concrete requirement to a database choice",
+    hints: [
+      "CAP only forces a choice DURING a partition: a CP store rejects/blocks to stay consistent; an AP store stays up and reconciles later.",
+      "Banking-style correctness wants CP; a like-count or feed can accept AP with eventual consistency.",
+      "Quorum systems (R + W > N) let you tune the consistency/availability balance rather than pick a hard extreme.",
+    ],
+    tags: ["system design", "CAP theorem", "consistency", "availability", "databases", "partitions"],
+  },
+
+
+  {
+    id: "arch-43",
+    category: 'architecture',
+    difficulty: "hard",
+    title: "Event Sourcing and CQRS",
+    prompt: "Design the following system.\n\nRequirements:\n  - Persist state as a log of events rather than current state\n  - Separate read and write models\n  - Rebuild state and derived views by replaying events\n  - Full audit trail / time travel\n  - Eventually consistent read projections\n  - Handle event schema evolution\n\nAddress:\n  - Event sourcing: storing events vs current state, and how you derive current state (replay + snapshots)\n  - CQRS: why split command (write) and query (read) models, and how they stay in sync\n  - The eventual consistency between write and read sides\n  - Event schema evolution / versioning\n  - When this complexity is justified vs over-engineering",
+    hints: [
+      "Event sourcing stores the append-only sequence of changes; current state is a fold over events, with snapshots to avoid replaying everything.",
+      "CQRS pairs naturally: events update denormalized read projections asynchronously, so reads are fast but eventually consistent.",
+      "This is powerful but heavy - justify it with real audit/temporal/scaling needs, not as a default.",
+    ],
+    tags: ["system design", "event sourcing", "CQRS", "events", "audit", "eventual consistency"],
+  },
+
+
+  {
+    id: "arch-44",
+    category: 'architecture',
+    difficulty: "hard",
+    title: "Saga Pattern for Distributed Transactions",
+    prompt: "Design the following system.\n\nRequirements:\n  - Coordinate a transaction spanning multiple services\n  - No distributed ACID transaction available\n  - Roll back partial work on failure\n  - Maintain data consistency across services\n  - Idempotent, retryable steps\n  - Observability of the saga\n\nAddress:\n  - Why 2-phase commit is avoided across microservices and what a saga replaces it with\n  - Choreography vs orchestration and the trade-offs\n  - Compensating transactions and how rollback works (semantic, not literal undo)\n  - Idempotency and handling partial failures / retries\n  - Observability - tracking a saga in flight",
+    hints: [
+      "A saga is a sequence of local transactions, each with a compensating action to undo it - there is no global rollback.",
+      "Choreography (services react to events) is decoupled but hard to follow; orchestration (a coordinator drives steps) is explicit but centralizes logic.",
+      "Compensations are semantic (issue a refund), not a literal DB rollback, since each step already committed.",
+    ],
+    tags: ["system design", "saga", "distributed transactions", "compensation", "choreography", "orchestration"],
+  },
+
+
+  {
+    id: "arch-45",
+    category: 'architecture',
+    difficulty: "medium",
+    title: "Zero-Downtime Deployments",
+    prompt: "Design the following system.\n\nRequirements:\n  - Deploy new versions with no user-visible downtime\n  - Safe rollback if the new version misbehaves\n  - Database migrations without breaking running code\n  - Gradual exposure to limit blast radius\n  - Health checks gate traffic\n  - Observability during rollout\n\nAddress:\n  - Blue-green vs canary vs rolling deployments and the trade-offs\n  - Backward/forward-compatible database migrations (expand-contract)\n  - How traffic is shifted and how rollback works in each strategy\n  - Health/readiness checks gating new instances\n  - Detecting a bad release quickly (metrics, automated rollback)",
+    hints: [
+      "Blue-green flips all traffic at once (instant rollback, double infra); canary exposes a small % first; rolling replaces instances gradually.",
+      "DB migrations must be backward compatible (expand-contract): add columns before code uses them, remove only after old code is gone.",
+      "Readiness probes prevent traffic hitting an instance before it is ready; watch error/latency metrics to trigger rollback.",
+    ],
+    tags: ["system design", "deployment", "blue-green", "canary", "rolling", "migrations"],
+  },
+
+
+  {
+    id: "arch-46",
+    category: 'architecture',
+    difficulty: "medium",
+    title: "Kubernetes: Scheduling, Health Checks, Autoscaling",
+    prompt: "Design the following system.\n\nRequirements:\n  - Run a containerized service reliably on Kubernetes\n  - Restart crashed/hung pods automatically\n  - Scale with load\n  - Gate traffic to only-ready pods\n  - Control where pods land\n  - Roll out updates safely\n\nAddress:\n  - Pod scheduling basics (requests/limits, node selectors/affinity, taints/tolerations)\n  - Liveness vs readiness vs startup probes and what each controls\n  - Horizontal Pod Autoscaler - what it scales on and its limits\n  - Rolling updates and rollbacks via Deployments\n  - Resource requests/limits and their effect on scheduling and stability",
+    hints: [
+      "Liveness restarts a hung pod; readiness gates traffic; startup protects slow-booting apps from premature liveness kills - know the distinction.",
+      "HPA scales replica count on CPU/memory/custom metrics; it needs requests set to compute utilization.",
+      "Requests/limits drive scheduling and prevent a noisy neighbor from starving others.",
+    ],
+    tags: ["system design", "kubernetes", "scheduling", "health checks", "HPA", "autoscaling"],
+  },
+
+
+  {
+    id: "arch-47",
+    category: 'architecture',
+    difficulty: "medium",
+    title: "OAuth2 and JWT Authorization Flow",
+    prompt: "Design the following system.\n\nRequirements:\n  - Let a third-party app act on a user's behalf without their password\n  - Issue and validate access tokens\n  - Stateless authorization across services\n  - Token refresh and expiry\n  - Scope-limited access\n  - Revocation considerations\n\nAddress:\n  - The OAuth2 roles (resource owner, client, auth server, resource server) and the Authorization Code + PKCE flow\n  - What a JWT contains and how a resource server validates it without a DB lookup\n  - Access vs refresh tokens and expiry strategy\n  - Scopes and least-privilege access\n  - JWT revocation problem and mitigations",
+    hints: [
+      "Walk the Authorization Code + PKCE flow: user logs in -> auth code -> exchange for access + refresh tokens -> bearer token on API calls.",
+      "A JWT is signed, so the resource server verifies the signature + claims (exp, scopes) statelessly - no DB hit.",
+      "JWTs cannot be easily revoked before expiry; mitigate with short TTLs + refresh tokens or a denylist.",
+    ],
+    tags: ["security", "OAuth2", "JWT", "authorization", "authentication", "tokens"],
+  },
+
+
+  {
+    id: "arch-48",
+    category: 'architecture',
+    difficulty: "medium",
+    title: "API Versioning Strategies",
+    prompt: "Design the following system.\n\nRequirements:\n  - Evolve an API without breaking existing clients\n  - Support multiple versions during migration\n  - Clear deprecation path\n  - Minimize version proliferation\n  - Communicate breaking vs non-breaking changes\n  - Routing requests to the right version\n\nAddress:\n  - Versioning approaches: URI (/v1), header (Accept), query param - trade-offs of each\n  - Distinguishing breaking from non-breaking changes (additive vs removal/rename)\n  - How long you support old versions and the deprecation/sunset process\n  - Routing and maintaining multiple versions without code duplication\n  - Communicating changes to consumers",
+    hints: [
+      "URI versioning is the most visible and simplest to route; header versioning keeps URLs clean but is less discoverable.",
+      "Most changes can be additive (new optional fields) and need NO new version - only breaking changes (removal/rename/semantic change) force a bump.",
+      "Define a sunset policy and signal deprecation (headers, docs) so clients have time to migrate.",
+    ],
+    tags: ["api design", "versioning", "backward compatibility", "deprecation", "REST"],
+  },
+
+
+  {
+    id: "arch-49",
+    category: 'architecture',
+    difficulty: "medium",
+    title: "Service Mesh (Istio / Linkerd)",
+    prompt: "Design the following system.\n\nRequirements:\n  - Manage service-to-service traffic in a microservices fleet\n  - Consistent mTLS, retries, timeouts without app code changes\n  - Fine-grained traffic control (canary, mirroring)\n  - Observability of inter-service calls\n  - Policy enforcement (authz between services)\n  - Decide when a mesh is worth it\n\nAddress:\n  - What a service mesh does and how (sidecar proxies / data plane vs control plane)\n  - Cross-cutting concerns it moves out of app code (mTLS, retries, timeouts, circuit breaking)\n  - Traffic management features (canary, traffic splitting, mirroring)\n  - Observability the mesh provides for free\n  - When a mesh is overkill vs when it pays off",
+    hints: [
+      "A mesh injects a sidecar proxy next to each service; the data plane handles traffic, the control plane configures policy centrally.",
+      "It moves mTLS, retries, timeouts, and circuit breaking out of every service's code into the platform.",
+      "It adds operational complexity and latency - justify it only when you have enough services that reimplementing these everywhere is the bigger cost.",
+    ],
+    tags: ["system design", "service mesh", "istio", "linkerd", "mTLS", "sidecar"],
+  },
+
+
+  {
+    id: "arch-50",
+    category: 'architecture',
+    difficulty: "medium",
+    title: "Microservices Data Management: Database-per-Service",
+    prompt: "Design the following system.\n\nRequirements:\n  - Each service owns its data; no shared database\n  - Maintain loose coupling between services\n  - Handle queries that span multiple services\n  - Keep data consistent across services\n  - Allow each service to pick the right datastore\n  - Evolve schemas independently\n\nAddress:\n  - Why database-per-service (loose coupling, independent scaling/schema) and its cost (no cross-service joins/transactions)\n  - How to satisfy a query that needs data from several services (API composition vs CQRS read model)\n  - Maintaining consistency without distributed transactions (sagas, events)\n  - Avoiding the shared-database anti-pattern and the distributed monolith\n  - Handling reporting/analytics across services",
+    hints: [
+      "Owning your own DB is what makes a service independently deployable - a shared DB couples everyone and recreates a monolith.",
+      "Cross-service queries are solved by API composition (call each service and join in code) or a maintained CQRS read model fed by events.",
+      "Consistency without 2PC means sagas + events and accepting eventual consistency.",
+    ],
+    tags: ["system design", "microservices", "database-per-service", "data management", "CQRS", "coupling"],
+  },
+
+
+  {
+    id: "trivia-33",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "OOP Principles: The Four Pillars & SOLID",
+    prompt: "Answer each of the following:\n\n  a) Name the four pillars of object-oriented programming and define each in one sentence.\n  b) What is encapsulation and why does hiding internal state behind methods matter?\n  c) What is the difference between inheritance and composition, and what does \"favor composition over inheritance\" mean?\n  d) What is polymorphism? Distinguish method overriding from method overloading.\n  e) Name the five SOLID principles and explain the Single Responsibility and Dependency Inversion principles.",
+    hints: [
+      "The four pillars: Encapsulation (bundle data + behavior, hide internals), Abstraction (expose a simple interface, hide complexity), Inheritance (subclass reuses/extends a base), Polymorphism (one interface, many implementations).",
+      "Encapsulation protects invariants: callers change state only through methods that can validate, so an object can never enter an invalid state.",
+      "Inheritance is an \"is-a\" relationship; composition is \"has-a\". Composition is more flexible because it avoids rigid hierarchies and tight coupling to a base class.",
+      "Overriding = a subclass replaces a base method (runtime dispatch); overloading = same method name, different parameter lists (compile-time resolution).",
+      "SOLID: Single Responsibility (one reason to change), Open/Closed (open to extension, closed to modification), Liskov Substitution (subtypes substitutable for base), Interface Segregation (small focused interfaces), Dependency Inversion (depend on abstractions, not concretions).",
+    ],
+    followUps: [
+      "When does deep inheritance become a liability?",
+      "How does the Liskov Substitution Principle relate to polymorphism?",
+    ],
+    tags: ["OOP", "SOLID", "encapsulation", "inheritance", "polymorphism", "design"],
+  },
+
+
+  {
+    id: "trivia-34",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Sliding Window & Two Pointers: Fixed vs Variable Windows",
+    prompt: "Answer each of the following:\n\n  a) What distinguishes a fixed-size window from a variable-size (shrinkable) window?\n  b) Give one classic problem for each.\n  c) What signals that a problem needs a shrinkable window?",
+    hints: [
+      "Fixed: window is always exactly k elements. Variable: expand right, shrink left when a constraint breaks.",
+      "Fixed: max sum of k elements. Variable: longest substring without repeating characters.",
+      "A \"longest/shortest subarray satisfying condition X\" phrasing usually means a variable window.",
+    ],
+    tags: ["sliding window", "two pointers", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-35",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Sliding Window & Two Pointers: Why O(n)",
+    prompt: "Answer each of the following:\n\n  a) Why is a sliding window O(n) despite looking like a nested loop?\n  b) What is the amortized argument?\n  c) When does the window approach NOT apply?",
+    hints: [
+      "Each element enters and leaves the window at most once.",
+      "Total work across all left-pointer moves is bounded by n, so it is linear amortized.",
+      "It fails when the property is not monotonic over the window (shrinking does not reliably restore validity).",
+    ],
+    tags: ["sliding window", "two pointers", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-36",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Sliding Window & Two Pointers: Two-pointer convergence",
+    prompt: "Answer each of the following:\n\n  a) Describe the converging two-pointer technique (pointers from both ends).\n  b) What precondition does it usually require?\n  c) Give an example problem it solves in O(n).",
+    hints: [
+      "Two pointers start at opposite ends and move toward each other based on a comparison.",
+      "Usually a sorted array (or a symmetry like palindrome).",
+      "Two-sum in a sorted array, or container-with-most-water, or valid palindrome.",
+    ],
+    tags: ["sliding window", "two pointers", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-37",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Sliding Window & Two Pointers: Tracking window contents",
+    prompt: "Answer each of the following:\n\n  a) When do you track window contents with a Set vs a Map/counter?\n  b) Why is a counter needed for \"at most K distinct\" problems?\n  c) What is the cost of these structures?",
+    hints: [
+      "Set when you only need presence (no duplicates allowed); Map/counter when you need counts (duplicates, frequencies).",
+      "You must know how many of each element are in the window to decide when a distinct count drops.",
+      "O(1) average per operation, O(window size) space.",
+    ],
+    tags: ["sliding window", "two pointers", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-38",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Sliding Window & Two Pointers: At most vs exactly K",
+    prompt: "Answer each of the following:\n\n  a) How do you compute \"exactly K distinct\" from \"at most K distinct\"?\n  b) Why is the direct \"exactly K\" window awkward?\n  c) Write the identity.",
+    hints: [
+      "exactly(K) = atMost(K) - atMost(K-1).",
+      "A window for exactly K is not monotonic - you cannot simply shrink to restore the exact count.",
+      "count(exactly K) = count(atMost K) minus count(atMost K-1).",
+    ],
+    tags: ["sliding window", "two pointers", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-39",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Sliding Window & Two Pointers: Slow/fast same-direction",
+    prompt: "Answer each of the following:\n\n  a) Describe same-direction two pointers (slow/fast) for in-place array work.\n  b) Give an example like remove-duplicates or move-zeroes.\n  c) Why is it O(1) extra space?",
+    hints: [
+      "A slow pointer marks the write position; a fast pointer scans; you copy qualifying elements to slow.",
+      "Remove duplicates from a sorted array: slow writes unique values as fast scans.",
+      "You overwrite in place, allocating no auxiliary array.",
+    ],
+    tags: ["sliding window", "two pointers", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-40",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Sliding Window & Two Pointers: Window sum updates",
+    prompt: "Answer each of the following:\n\n  a) In a fixed window, how do you update the sum without re-summing?\n  b) What is the per-step work?\n  c) Why does this matter for large k?",
+    hints: [
+      "Subtract the element leaving and add the element entering: sum += nums[r] - nums[l-1].",
+      "O(1) per slide.",
+      "Re-summing would be O(k) per step -> O(nk); the incremental update keeps it O(n).",
+    ],
+    tags: ["sliding window", "two pointers", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-41",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Sliding Window & Two Pointers: Minimum-window problems",
+    prompt: "Answer each of the following:\n\n  a) Outline the approach for \"minimum window substring containing all of T\".\n  b) When do you record the answer?\n  c) What do you shrink on?",
+    hints: [
+      "Expand right until the window contains all required chars; then shrink left while still valid, recording the min.",
+      "Record whenever the window is valid (contains all of T), trying to make it smaller.",
+      "Shrink while the validity condition still holds, stopping when removing one more would break it.",
+    ],
+    tags: ["sliding window", "two pointers", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-42",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Sliding Window & Two Pointers: Common bugs",
+    prompt: "Answer each of the following:\n\n  a) What are two common off-by-one or initialization bugs in window code?\n  b) How do you guard the empty-input case?\n  c) What about when k > array length?",
+    hints: [
+      "Forgetting to update the answer before shrinking, and mismanaging left when removing elements.",
+      "Return early (0 / empty) when the input length is 0.",
+      "Define behavior explicitly: often return 0 or the whole-array result depending on the problem.",
+    ],
+    tags: ["sliding window", "two pointers", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-43",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Sliding Window & Two Pointers: Choosing the pattern",
+    prompt: "Answer each of the following:\n\n  a) Given a contiguous-subarray problem, how do you decide window vs two-pointer vs prefix sums?\n  b) When are prefix sums better?\n  c) What about problems needing negative numbers?",
+    hints: [
+      "Contiguous + a running constraint -> window; sorted/converging -> two pointers; many range-sum queries -> prefix sums.",
+      "Prefix sums shine for repeated range-sum queries or \"subarray sum equals K\" with a hashmap.",
+      "With negatives, the shrink-on-violation invariant can break - prefix sums + hashmap is often safer.",
+    ],
+    tags: ["sliding window", "two pointers", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-44",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Fast & Slow Pointers: Floyd cycle detection",
+    prompt: "Answer each of the following:\n\n  a) How does Floyd's tortoise-and-hare detect a cycle?\n  b) Why must they meet if a cycle exists?\n  c) What is the time/space cost?",
+    hints: [
+      "Slow moves 1 step, fast moves 2; if there is a cycle, fast laps slow and they meet.",
+      "Inside a cycle the gap between them shrinks by 1 each step, so it eventually reaches 0.",
+      "O(n) time, O(1) space.",
+    ],
+    tags: ["fast-slow pointers", "linked lists", "cycle detection", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-45",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Fast & Slow Pointers: Cycle start",
+    prompt: "Answer each of the following:\n\n  a) After they meet, how do you find the node where the cycle begins?\n  b) Why does resetting one pointer to head work?\n  c) State the key distance relationship.",
+    hints: [
+      "Reset one pointer to head; move both 1 step at a time; they meet at the cycle start.",
+      "The distance from head to the cycle start equals the distance from the meeting point to the cycle start (mod cycle length).",
+      "The math: 2(a+b) = a+b+kC simplifies so head-to-start = meet-to-start.",
+    ],
+    tags: ["fast-slow pointers", "linked lists", "cycle detection", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-46",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Fast & Slow Pointers: Middle of list",
+    prompt: "Answer each of the following:\n\n  a) How do you find the middle node in one pass?\n  b) Where does slow end up for even-length lists?\n  c) How do you make it land on the first vs second middle?",
+    hints: [
+      "Advance slow by 1 and fast by 2; when fast hits the end, slow is at the middle.",
+      "It depends on the loop condition - it can land on either of the two middles.",
+      "Adjust whether you loop while fast and fast.next vs fast.next and fast.next.next.",
+    ],
+    tags: ["fast-slow pointers", "linked lists", "cycle detection", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-47",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Fast & Slow Pointers: Happy number",
+    prompt: "Answer each of the following:\n\n  a) How do fast/slow pointers apply to the happy-number problem?\n  b) What plays the role of \"next node\"?\n  c) What does a cycle mean here?",
+    hints: [
+      "Treat the sum-of-squared-digits transform as the \"next\" function and detect a cycle on the number sequence.",
+      "The next value is the sum of squares of digits.",
+      "A cycle that is not 1 means the number is not happy.",
+    ],
+    tags: ["fast-slow pointers", "linked lists", "cycle detection", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-48",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Fast & Slow Pointers: Palindrome linked list",
+    prompt: "Answer each of the following:\n\n  a) Outline checking if a linked list is a palindrome in O(1) space.\n  b) Which two techniques combine?\n  c) What should you do afterward?",
+    hints: [
+      "Find the middle with fast/slow, reverse the second half, compare both halves.",
+      "Fast/slow to find the middle, plus in-place reversal.",
+      "Optionally restore the list by re-reversing the second half.",
+    ],
+    tags: ["fast-slow pointers", "linked lists", "cycle detection", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-49",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Fast & Slow Pointers: Why two speeds",
+    prompt: "Answer each of the following:\n\n  a) Why specifically 1x and 2x speeds rather than other ratios?\n  b) Would 1x and 3x still detect a cycle?\n  c) What is the trade-off of larger gaps?",
+    hints: [
+      "1 and 2 guarantee they meet and keep the meeting-point math clean.",
+      "Yes, any faster pointer will eventually lap, but the cycle-start math is simplest with 2x.",
+      "Larger gaps can still work but complicate the distance proof and offer no benefit.",
+    ],
+    tags: ["fast-slow pointers", "linked lists", "cycle detection", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-50",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Fast & Slow Pointers: Nth from end",
+    prompt: "Answer each of the following:\n\n  a) How do you find the nth node from the end in one pass?\n  b) Is this fast/slow or fixed-gap two pointers?\n  c) Watch out for what edge case?",
+    hints: [
+      "Advance a lead pointer n steps, then move both until lead hits the end; trailing is at the nth-from-end.",
+      "It is a fixed-gap two-pointer (gap n), a cousin of fast/slow.",
+      "Removing the head itself - use a dummy node to simplify.",
+    ],
+    tags: ["fast-slow pointers", "linked lists", "cycle detection", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-51",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Fast & Slow Pointers: Detecting intersection",
+    prompt: "Answer each of the following:\n\n  a) How can two pointers find where two linked lists intersect?\n  b) What is the pointer-switching trick?\n  c) Why does it align them?",
+    hints: [
+      "Advance two pointers; when one hits the end, redirect it to the other list's head.",
+      "Each pointer traverses lenA + lenB, so they align at the intersection (or both hit null).",
+      "The path lengths equalize, so they reach the intersection simultaneously.",
+    ],
+    tags: ["fast-slow pointers", "linked lists", "cycle detection", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-52",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Fast & Slow Pointers: Loop length",
+    prompt: "Answer each of the following:\n\n  a) Once a cycle is detected, how do you measure its length?\n  b) From the meeting point, what do you do?\n  c) Why does that count the cycle?",
+    hints: [
+      "From the meeting point, keep one pointer fixed and walk the other until it returns; count the steps.",
+      "Move one pointer around the loop until it comes back to the meeting node.",
+      "It traverses exactly one full cycle, so the step count is the cycle length.",
+    ],
+    tags: ["fast-slow pointers", "linked lists", "cycle detection", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-53",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Fast & Slow Pointers: When not to use",
+    prompt: "Answer each of the following:\n\n  a) When are fast/slow pointers the wrong tool?\n  b) What if you need to count or store visited nodes?\n  c) Compare to a hash-set approach.",
+    hints: [
+      "When you need more than presence of a cycle - e.g., to record all visited nodes or handle non-linked structures.",
+      "A hash set of visited nodes is simpler if O(n) space is acceptable.",
+      "Hash set: O(n) space but trivial; fast/slow: O(1) space but trickier math.",
+    ],
+    tags: ["fast-slow pointers", "linked lists", "cycle detection", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-54",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Merge Intervals: Core merge",
+    prompt: "Answer each of the following:\n\n  a) What is the first step in almost every interval problem?\n  b) How do you decide two intervals overlap?\n  c) What is the overall complexity?",
+    hints: [
+      "Sort the intervals by start time.",
+      "They overlap if the next start <= current end.",
+      "O(n log n) dominated by the sort; the merge pass is O(n).",
+    ],
+    tags: ["merge intervals", "intervals", "sorting", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-55",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Merge Intervals: Merging logic",
+    prompt: "Answer each of the following:\n\n  a) After sorting, how do you merge overlapping intervals?\n  b) How do you extend the current interval?\n  c) When do you push a new interval?",
+    hints: [
+      "Iterate; if the next interval overlaps the current, merge; otherwise start a new one.",
+      "Set current end = max(current end, next end).",
+      "Push when the next start is strictly greater than the current end.",
+    ],
+    tags: ["merge intervals", "intervals", "sorting", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-56",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Merge Intervals: Insert interval",
+    prompt: "Answer each of the following:\n\n  a) How do you insert a new interval into a sorted, non-overlapping list?\n  b) What three phases does the scan have?\n  c) Is sorting needed?",
+    hints: [
+      "Add all intervals ending before the new one, merge all overlapping with it, then add the rest.",
+      "Before, overlapping (merge), after.",
+      "No - the list is already sorted, so it is a single O(n) pass.",
+    ],
+    tags: ["merge intervals", "intervals", "sorting", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-57",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Merge Intervals: Meeting rooms I",
+    prompt: "Answer each of the following:\n\n  a) How do you decide if a person can attend all meetings?\n  b) What do you check after sorting by start?\n  c) Complexity?",
+    hints: [
+      "Sort by start; if any meeting starts before the previous ends, they conflict.",
+      "Check adjacent pairs for overlap.",
+      "O(n log n).",
+    ],
+    tags: ["merge intervals", "intervals", "sorting", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-58",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Merge Intervals: Meeting rooms II",
+    prompt: "Answer each of the following:\n\n  a) How do you find the minimum number of rooms needed?\n  b) What data structure tracks active meetings?\n  c) What is the heap-free alternative?",
+    hints: [
+      "Sort by start; use a min-heap of end times; reuse a room if the earliest end <= current start.",
+      "A min-heap keyed on end time; its size is the rooms in use.",
+      "Sweep line: sort start and end events separately and track concurrent overlaps.",
+    ],
+    tags: ["merge intervals", "intervals", "sorting", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-59",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Merge Intervals: Sweep line",
+    prompt: "Answer each of the following:\n\n  a) Explain the sweep-line / chronological-ordering technique.\n  b) How do you represent starts and ends?\n  c) What do you track as you sweep?",
+    hints: [
+      "Process all endpoints in time order, +1 at a start, -1 at an end.",
+      "Two sorted arrays (or a sorted event list with type tags).",
+      "A running count of active intervals; the max is the answer for max-overlap problems.",
+    ],
+    tags: ["merge intervals", "intervals", "sorting", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-60",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Merge Intervals: Interval intersection",
+    prompt: "Answer each of the following:\n\n  a) How do you compute the intersection of two sorted interval lists?\n  b) What defines the overlap of two intervals [a,b] and [c,d]?\n  c) How do you advance pointers?",
+    hints: [
+      "Two pointers; for each pair compute max(starts) and min(ends); it is a valid intersection if start <= end.",
+      "Overlap = [max(a,c), min(b,d)] when that is non-empty.",
+      "Advance the pointer whose interval ends first.",
+    ],
+    tags: ["merge intervals", "intervals", "sorting", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-61",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Merge Intervals: Sort by start vs end",
+    prompt: "Answer each of the following:\n\n  a) When do you sort by start time vs end time?\n  b) Which problems prefer sorting by end?\n  c) Why does it matter for greedy interval scheduling?",
+    hints: [
+      "Merging/inserting sort by start; many greedy scheduling problems sort by end.",
+      "Activity selection / non-overlapping intervals: sort by end to maximize count.",
+      "Picking the earliest-finishing interval leaves the most room for future ones.",
+    ],
+    tags: ["merge intervals", "intervals", "sorting", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-62",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Merge Intervals: Non-overlapping removal",
+    prompt: "Answer each of the following:\n\n  a) How do you find the minimum intervals to remove so none overlap?\n  b) What greedy choice do you make?\n  c) Why end-time sorting?",
+    hints: [
+      "Sort by end; greedily keep intervals that do not overlap the last kept one; count the rest as removals.",
+      "Always keep the interval that finishes earliest among conflicts.",
+      "Earliest finish maximizes remaining space, minimizing removals.",
+    ],
+    tags: ["merge intervals", "intervals", "sorting", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-63",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Merge Intervals: Edge cases",
+    prompt: "Answer each of the following:\n\n  a) How do you treat intervals that merely touch (e.g., [1,2] and [2,3])?\n  b) Why must this be defined explicitly?\n  c) How do empty inputs behave?",
+    hints: [
+      "Depends on the problem: sometimes touching counts as overlap, sometimes not - decide and be consistent.",
+      "Off-by-one bugs come from inconsistent <= vs < comparisons at the boundary.",
+      "Empty input returns an empty result; guard before sorting.",
+    ],
+    tags: ["merge intervals", "intervals", "sorting", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-64",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Cyclic Sort: When to use",
+    prompt: "Answer each of the following:\n\n  a) What input pattern signals cyclic sort?\n  b) Why is it O(n) and O(1) space?\n  c) What is the placement rule?",
+    hints: [
+      "Arrays containing numbers in a known range like 1..n (or 0..n-1).",
+      "Each number is swapped to its correct index at most a constant number of times; in place.",
+      "Value v belongs at index v-1 (for 1..n) or v (for 0..n-1).",
+    ],
+    tags: ["cyclic sort", "arrays", "in-place", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-65",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Cyclic Sort: Mechanics",
+    prompt: "Answer each of the following:\n\n  a) Describe the swap loop of cyclic sort.\n  b) What is the loop condition?\n  c) Why a while, not an if?",
+    hints: [
+      "For each index, while the element is not in its correct slot, swap it there.",
+      "While nums[i] != i+1 (for 1..n), swap nums[i] with nums[correct index].",
+      "One swap may bring another out-of-place value, so you keep swapping until i is settled.",
+    ],
+    tags: ["cyclic sort", "arrays", "in-place", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-66",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Cyclic Sort: Missing number",
+    prompt: "Answer each of the following:\n\n  a) How do you find the missing number in 0..n after cyclic sort?\n  b) Where does it reveal itself?\n  c) What is the complexity?",
+    hints: [
+      "Cyclic-sort, then scan for the first index where the value does not match.",
+      "The first index i where nums[i] != i is the missing number.",
+      "O(n) time, O(1) space.",
+    ],
+    tags: ["cyclic sort", "arrays", "in-place", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-67",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Cyclic Sort: Find duplicate",
+    prompt: "Answer each of the following:\n\n  a) How does cyclic sort help find a duplicate in 1..n?\n  b) What happens during placement when a duplicate exists?\n  c) How is this different from Floyd's?",
+    hints: [
+      "Place each value; the value that wants an already-correctly-filled slot is the duplicate.",
+      "You detect a value that is already at its target index.",
+      "Floyd's treats the array as a linked list to find a cycle without modifying it.",
+    ],
+    tags: ["cyclic sort", "arrays", "in-place", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-68",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Cyclic Sort: All missing numbers",
+    prompt: "Answer each of the following:\n\n  a) How do you find all numbers missing from 1..n?\n  b) After sorting, what indicates a missing value?\n  c) Output?",
+    hints: [
+      "Cyclic-sort, then collect every index i where nums[i] != i+1.",
+      "A mismatch at index i means i+1 is missing.",
+      "A list of all missing numbers in O(n).",
+    ],
+    tags: ["cyclic sort", "arrays", "in-place", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-69",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Cyclic Sort: First missing positive",
+    prompt: "Answer each of the following:\n\n  a) How do you find the smallest missing positive integer?\n  b) Why ignore non-positive and out-of-range values?\n  c) Complexity constraints?",
+    hints: [
+      "Cyclic-sort placing v at index v-1 for 1<=v<=n; first mismatch index +1 is the answer.",
+      "Values <=0 or >n cannot be the first missing positive in range, so skip placing them.",
+      "O(n) time, O(1) space is the classic requirement.",
+    ],
+    tags: ["cyclic sort", "arrays", "in-place", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-70",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Cyclic Sort: Duplicate and missing",
+    prompt: "Answer each of the following:\n\n  a) How do you find both the duplicated and the missing number together?\n  b) After cyclic sort, what do you read off?\n  c) Why does the mismatch slot encode both?",
+    hints: [
+      "Cyclic-sort; at the mismatched index, the present value is the duplicate and index+1 is the missing one.",
+      "The single bad slot holds the duplicate; its expected value is missing.",
+      "One value is doubled and one absent, so exactly one slot is wrong.",
+    ],
+    tags: ["cyclic sort", "arrays", "in-place", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-71",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Cyclic Sort: Index as hash",
+    prompt: "Answer each of the following:\n\n  a) Why is cyclic sort described as \"using the index as a hash\"?\n  b) How does this relate to counting sort?\n  c) What constraint makes it possible?",
+    hints: [
+      "Each value maps deterministically to a home index, like a perfect hash.",
+      "It is a special case where keys are a dense integer range, so no collisions.",
+      "The values must lie in a known contiguous range with (near) one-to-one mapping to indices.",
+    ],
+    tags: ["cyclic sort", "arrays", "in-place", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-72",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Cyclic Sort: 0-based vs 1-based",
+    prompt: "Answer each of the following:\n\n  a) How does the placement formula change between 0..n-1 and 1..n?\n  b) What bug arises if you mix them?\n  c) How do you choose?",
+    hints: [
+      "0-based: value v -> index v. 1-based: value v -> index v-1.",
+      "An off-by-one that puts every value one slot wrong and breaks termination.",
+      "Match the formula to the problem's stated range.",
+    ],
+    tags: ["cyclic sort", "arrays", "in-place", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-73",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Cyclic Sort: Limitations",
+    prompt: "Answer each of the following:\n\n  a) When can you NOT use cyclic sort?\n  b) What if values are arbitrary integers?\n  c) What about read-only arrays?",
+    hints: [
+      "When values are not a bounded integer range mapping to indices.",
+      "Arbitrary or sparse values have no natural home index, so the swap logic fails.",
+      "Cyclic sort mutates the array; if it must stay read-only, use a different approach (e.g., binary search on value).",
+    ],
+    tags: ["cyclic sort", "arrays", "in-place", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-74",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Linked Lists & Heaps: Reversal",
+    prompt: "Answer each of the following:\n\n  a) How do you reverse a singly linked list iteratively?\n  b) Which three pointers do you track?\n  c) What is the time/space cost?",
+    hints: [
+      "Walk the list, repointing each node's next to the previous node.",
+      "prev, current, and next (saved before repointing).",
+      "O(n) time, O(1) space.",
+    ],
+    tags: ["linked lists", "heaps", "priority queue", "data structures"],
+  },
+
+
+  {
+    id: "trivia-75",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Linked Lists & Heaps: Dummy node",
+    prompt: "Answer each of the following:\n\n  a) Why use a dummy/sentinel head node?\n  b) Which operations does it simplify?\n  c) Give an example.",
+    hints: [
+      "It removes special-casing of the head, so insertions/deletions at the front behave like the middle.",
+      "Merging lists, removing the head, building a new list.",
+      "Merge two sorted lists: attach to dummy.next and return dummy.next.",
+    ],
+    tags: ["linked lists", "heaps", "priority queue", "data structures"],
+  },
+
+
+  {
+    id: "trivia-76",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Linked Lists & Heaps: Heap basics",
+    prompt: "Answer each of the following:\n\n  a) What ordering invariant does a binary heap maintain?\n  b) What are the costs of insert, peek, and extract?\n  c) How is it stored?",
+    hints: [
+      "Parent <= children (min-heap) or parent >= children (max-heap).",
+      "Peek O(1), insert and extract O(log n).",
+      "As an array; children of index i are at 2i+1 and 2i+2.",
+    ],
+    tags: ["linked lists", "heaps", "priority queue", "data structures"],
+  },
+
+
+  {
+    id: "trivia-77",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Linked Lists & Heaps: Heapify",
+    prompt: "Answer each of the following:\n\n  a) What is the cost of building a heap from n elements?\n  b) Why is bottom-up heapify O(n), not O(n log n)?\n  c) When do you use it?",
+    hints: [
+      "O(n) with bottom-up heapify.",
+      "Most nodes are near the leaves with tiny sift distances; the sum telescopes to O(n).",
+      "When you have all elements up front rather than inserting one at a time.",
+    ],
+    tags: ["linked lists", "heaps", "priority queue", "data structures"],
+  },
+
+
+  {
+    id: "trivia-78",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Linked Lists & Heaps: Top K",
+    prompt: "Answer each of the following:\n\n  a) How does a size-K heap solve \"K largest elements\"?\n  b) Min-heap or max-heap, and why?\n  c) Complexity?",
+    hints: [
+      "Keep a heap of K elements; evict the worst as you scan.",
+      "A MIN-heap of size K for K LARGEST - the root is the smallest of the kept K and is evicted first.",
+      "O(n log k).",
+    ],
+    tags: ["linked lists", "heaps", "priority queue", "data structures"],
+  },
+
+
+  {
+    id: "trivia-79",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Linked Lists & Heaps: Merge K lists",
+    prompt: "Answer each of the following:\n\n  a) How do you merge K sorted lists efficiently?\n  b) What goes into the heap?\n  c) What is the complexity vs naive?",
+    hints: [
+      "Push the head of each list into a min-heap; repeatedly pop the smallest and push its successor.",
+      "One node per list at a time (K nodes max in the heap).",
+      "O(N log K) vs O(NK) for naive pairwise scanning.",
+    ],
+    tags: ["linked lists", "heaps", "priority queue", "data structures"],
+  },
+
+
+  {
+    id: "trivia-80",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Linked Lists & Heaps: Two heaps / median",
+    prompt: "Answer each of the following:\n\n  a) How do two heaps maintain a running median?\n  b) Which heap holds which half?\n  c) How do you rebalance?",
+    hints: [
+      "A max-heap for the lower half and a min-heap for the upper half.",
+      "Max-heap = smaller half (root is the largest small value); min-heap = larger half.",
+      "Keep sizes within 1; the median is a root or the average of the two roots.",
+    ],
+    tags: ["linked lists", "heaps", "priority queue", "data structures"],
+  },
+
+
+  {
+    id: "trivia-81",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Linked Lists & Heaps: Cycle in list",
+    prompt: "Answer each of the following:\n\n  a) How do you detect a cycle in a linked list?\n  b) What is the O(1)-space method?\n  c) How do you find the cycle start?",
+    hints: [
+      "Fast/slow pointers (Floyd's) - they meet inside a cycle.",
+      "Tortoise (1x) and hare (2x); meeting implies a cycle.",
+      "Reset one to head and advance both by 1 until they meet at the start.",
+    ],
+    tags: ["linked lists", "heaps", "priority queue", "data structures"],
+  },
+
+
+  {
+    id: "trivia-82",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Linked Lists & Heaps: Heap vs BST",
+    prompt: "Answer each of the following:\n\n  a) When do you prefer a heap over a balanced BST?\n  b) What can a BST do that a heap cannot?\n  c) Why is a heap cheaper for priority queues?",
+    hints: [
+      "When you only need the min/max repeatedly, not full ordering or search.",
+      "A BST supports ordered traversal, predecessor/successor, and arbitrary search in O(log n).",
+      "A heap has a simpler array layout and O(1) peek with cheaper constant factors.",
+    ],
+    tags: ["linked lists", "heaps", "priority queue", "data structures"],
+  },
+
+
+  {
+    id: "trivia-83",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Linked Lists & Heaps: Doubly linked use",
+    prompt: "Answer each of the following:\n\n  a) When is a doubly linked list worth the extra pointer?\n  b) Give a structure that relies on it.\n  c) What is the cost?",
+    hints: [
+      "When you need O(1) removal given a node, or bidirectional traversal.",
+      "An LRU cache combines a hash map with a doubly linked list.",
+      "Extra memory per node and more pointer bookkeeping.",
+    ],
+    tags: ["linked lists", "heaps", "priority queue", "data structures"],
+  },
+
+
+  {
+    id: "trivia-84",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Trees & Binary Search Trees: Traversals",
+    prompt: "Answer each of the following:\n\n  a) Name the three DFS orders and the one BFS order.\n  b) Which DFS order yields sorted output on a BST?\n  c) How do you implement BFS?",
+    hints: [
+      "Pre-order, in-order, post-order (DFS); level-order (BFS).",
+      "In-order traversal of a BST yields ascending sorted values.",
+      "BFS uses a queue, processing nodes level by level.",
+    ],
+    tags: ["trees", "BST", "DFS", "BFS", "data structures"],
+  },
+
+
+  {
+    id: "trivia-85",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Trees & Binary Search Trees: BST property",
+    prompt: "Answer each of the following:\n\n  a) State the BST invariant precisely.\n  b) Why does checking only immediate children fail to validate a BST?\n  c) How do you validate correctly?",
+    hints: [
+      "For every node, all left-subtree values < node < all right-subtree values.",
+      "A node can satisfy its parent locally yet violate an ancestor's bound.",
+      "Carry a (min, max) range down, or verify in-order output is strictly increasing.",
+    ],
+    tags: ["trees", "BST", "DFS", "BFS", "data structures"],
+  },
+
+
+  {
+    id: "trivia-86",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Trees & Binary Search Trees: Complexity",
+    prompt: "Answer each of the following:\n\n  a) Average vs worst-case search/insert/delete in a BST?\n  b) What causes the worst case?\n  c) How is it fixed?",
+    hints: [
+      "Average O(log n) when balanced; worst O(n).",
+      "A skewed/degenerate tree (e.g., inserting sorted data) becomes a linked list.",
+      "Self-balancing trees (AVL, Red-Black) keep height O(log n).",
+    ],
+    tags: ["trees", "BST", "DFS", "BFS", "data structures"],
+  },
+
+
+  {
+    id: "trivia-87",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Trees & Binary Search Trees: Balanced trees",
+    prompt: "Answer each of the following:\n\n  a) What does \"balanced\" mean for a tree?\n  b) Name two self-balancing BSTs.\n  c) What do they cost on insert?",
+    hints: [
+      "Height stays O(log n) regardless of insertion order.",
+      "AVL trees and Red-Black trees.",
+      "Rotations on insert/delete keep operations O(log n).",
+    ],
+    tags: ["trees", "BST", "DFS", "BFS", "data structures"],
+  },
+
+
+  {
+    id: "trivia-88",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Trees & Binary Search Trees: LCA",
+    prompt: "Answer each of the following:\n\n  a) What is the lowest common ancestor problem?\n  b) How do you find the LCA in a BST efficiently?\n  c) In a general binary tree?",
+    hints: [
+      "The deepest node that is an ancestor of two given nodes.",
+      "Walk from the root: go left/right based on values; the split point is the LCA - O(h).",
+      "Recurse; the node where the two targets appear in different subtrees is the LCA.",
+    ],
+    tags: ["trees", "BST", "DFS", "BFS", "data structures"],
+  },
+
+
+  {
+    id: "trivia-89",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Trees & Binary Search Trees: Height vs depth",
+    prompt: "Answer each of the following:\n\n  a) Distinguish height from depth of a node.\n  b) How do you compute tree height recursively?\n  c) What is the base case?",
+    hints: [
+      "Depth = distance from root; height = distance to the deepest leaf below.",
+      "height(node) = 1 + max(height(left), height(right)).",
+      "An empty subtree has height 0 (or -1 by some conventions).",
+    ],
+    tags: ["trees", "BST", "DFS", "BFS", "data structures"],
+  },
+
+
+  {
+    id: "trivia-90",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Trees & Binary Search Trees: BFS vs DFS choice",
+    prompt: "Answer each of the following:\n\n  a) When is BFS clearly better than DFS on a tree?\n  b) When is DFS better?\n  c) What is the space trade-off?",
+    hints: [
+      "BFS for shortest-path-by-edges or level-by-level problems (e.g., level order, min depth).",
+      "DFS for path problems, subtree aggregates, or when recursion is natural.",
+      "BFS uses O(width) space; DFS uses O(height) stack space.",
+    ],
+    tags: ["trees", "BST", "DFS", "BFS", "data structures"],
+  },
+
+
+  {
+    id: "trivia-91",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Trees & Binary Search Trees: Serialize",
+    prompt: "Answer each of the following:\n\n  a) How do you serialize and deserialize a binary tree?\n  b) Why must nulls be encoded?\n  c) Which traversal is common?",
+    hints: [
+      "Record nodes in a fixed traversal order, encoding null children explicitly.",
+      "Without null markers the structure is ambiguous and cannot be rebuilt.",
+      "Pre-order (with null markers) or BFS level-order are both common.",
+    ],
+    tags: ["trees", "BST", "DFS", "BFS", "data structures"],
+  },
+
+
+  {
+    id: "trivia-92",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Trees & Binary Search Trees: Insert/delete in BST",
+    prompt: "Answer each of the following:\n\n  a) How do you insert into a BST?\n  b) What are the three delete cases?\n  c) Why is delete trickier?",
+    hints: [
+      "Walk down comparing values until you reach a null slot, then attach.",
+      "Leaf (remove), one child (splice), two children (replace with in-order successor/predecessor).",
+      "The two-child case requires finding a replacement and re-linking.",
+    ],
+    tags: ["trees", "BST", "DFS", "BFS", "data structures"],
+  },
+
+
+  {
+    id: "trivia-93",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Trees & Binary Search Trees: Tree DP",
+    prompt: "Answer each of the following:\n\n  a) What is \"tree DP\" / post-order aggregation?\n  b) Give an example like diameter or max path sum.\n  c) Why post-order?",
+    hints: [
+      "Compute a value for each node from its children's results in one DFS pass.",
+      "Diameter: at each node combine left and right heights; max path sum similarly.",
+      "You need children's results before the parent, which is exactly post-order.",
+    ],
+    tags: ["trees", "BST", "DFS", "BFS", "data structures"],
+  },
+
+
+  {
+    id: "trivia-94",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Subsets & Backtracking: Backtracking template",
+    prompt: "Answer each of the following:\n\n  a) Describe the general backtracking template.\n  b) What three things does each recursive call manage?\n  c) What is the time complexity ballpark?",
+    hints: [
+      "Choose, explore (recurse), un-choose (undo), repeating over options.",
+      "A partial solution, the choices remaining, and a base/goal condition.",
+      "Often exponential (e.g., O(2^n) for subsets, O(n!) for permutations).",
+    ],
+    tags: ["backtracking", "subsets", "recursion", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-95",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Subsets & Backtracking: Subsets",
+    prompt: "Answer each of the following:\n\n  a) How do you generate all subsets of a set?\n  b) How many subsets are there?\n  c) Two ways to enumerate them?",
+    hints: [
+      "Backtrack including/excluding each element, recording the current subset at each node.",
+      "2^n subsets.",
+      "Recursive include/exclude, or iterate a bitmask from 0 to 2^n-1.",
+    ],
+    tags: ["backtracking", "subsets", "recursion", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-96",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Subsets & Backtracking: Permutations",
+    prompt: "Answer each of the following:\n\n  a) How do you generate all permutations?\n  b) How do you avoid reusing an element?\n  c) Count?",
+    hints: [
+      "Backtrack picking an unused element at each position.",
+      "Track a used[] set/array or swap elements in place.",
+      "n! permutations.",
+    ],
+    tags: ["backtracking", "subsets", "recursion", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-97",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Subsets & Backtracking: Combinations",
+    prompt: "Answer each of the following:\n\n  a) How do you generate combinations of size k from n?\n  b) How do you avoid duplicates/order?\n  c) Count?",
+    hints: [
+      "Backtrack choosing the next element only from indices after the current one.",
+      "Enforce increasing indices so each combination is generated once.",
+      "C(n, k).",
+    ],
+    tags: ["backtracking", "subsets", "recursion", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-98",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Subsets & Backtracking: Pruning",
+    prompt: "Answer each of the following:\n\n  a) What is pruning and why does it matter?\n  b) Give an example pruning condition.\n  c) How does it affect complexity?",
+    hints: [
+      "Abandoning a branch early when it cannot lead to a valid/optimal solution.",
+      "In combination-sum, stop when the running sum exceeds the target.",
+      "It cuts the search tree dramatically though worst case can stay exponential.",
+    ],
+    tags: ["backtracking", "subsets", "recursion", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-99",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Subsets & Backtracking: Duplicates handling",
+    prompt: "Answer each of the following:\n\n  a) How do you avoid duplicate subsets/permutations with repeated elements?\n  b) What preprocessing helps?\n  c) What is the skip rule?",
+    hints: [
+      "Sort first, then skip an element equal to its predecessor at the same recursion depth.",
+      "Sorting groups equal elements adjacently.",
+      "At a given level, skip nums[i] if nums[i] == nums[i-1] and i-1 was not chosen this branch.",
+    ],
+    tags: ["backtracking", "subsets", "recursion", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-100",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Subsets & Backtracking: N-Queens",
+    prompt: "Answer each of the following:\n\n  a) How does backtracking solve N-Queens?\n  b) What conflicts must you check?\n  c) How do you check diagonals in O(1)?",
+    hints: [
+      "Place one queen per row, backtracking when a column/diagonal conflicts.",
+      "Same column, and both diagonals.",
+      "Track occupied columns and the two diagonal keys (row+col and row-col) in sets.",
+    ],
+    tags: ["backtracking", "subsets", "recursion", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-101",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Subsets & Backtracking: Word search / grid",
+    prompt: "Answer each of the following:\n\n  a) How do you backtrack on a grid (e.g., word search)?\n  b) How do you avoid revisiting a cell within a path?\n  c) How do you undo?",
+    hints: [
+      "DFS from each cell, matching characters and exploring neighbors.",
+      "Mark the cell visited (or temporarily mutate it) during the path.",
+      "Restore the cell on backtrack so other paths can use it.",
+    ],
+    tags: ["backtracking", "subsets", "recursion", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-102",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Subsets & Backtracking: Decision tree shape",
+    prompt: "Answer each of the following:\n\n  a) How does the branching factor differ for subsets vs permutations?\n  b) Why is permutations' tree wider?\n  c) How does this affect cost?",
+    hints: [
+      "Subsets: binary include/exclude per element; permutations: branch over all remaining elements.",
+      "Each permutation node branches over every unused element, shrinking by one each level.",
+      "That gives n! leaves vs 2^n for subsets.",
+    ],
+    tags: ["backtracking", "subsets", "recursion", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-103",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Subsets & Backtracking: When to use",
+    prompt: "Answer each of the following:\n\n  a) What problem signals point to backtracking?\n  b) How is it different from DP?\n  c) When should you prefer DP instead?",
+    hints: [
+      "\"Generate all\", \"find all combinations/paths\", or constraint-satisfaction phrasing.",
+      "Backtracking enumerates the search space; DP reuses overlapping subproblem results.",
+      "Use DP when subproblems overlap and you only need an optimal value/count, not every solution.",
+    ],
+    tags: ["backtracking", "subsets", "recursion", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-104",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Modified Binary Search: Invariant",
+    prompt: "Answer each of the following:\n\n  a) What loop invariant must binary search preserve?\n  b) What is the classic off-by-one pitfall?\n  c) How do you avoid infinite loops?",
+    hints: [
+      "The target, if present, always remains within [low, high].",
+      "Mishandling mid, low=mid vs low=mid+1, causing the range not to shrink.",
+      "Ensure the search space strictly shrinks each iteration; pick mid and bounds consistently.",
+    ],
+    tags: ["binary search", "arrays", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-105",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Modified Binary Search: Rotated array",
+    prompt: "Answer each of the following:\n\n  a) How do you search a rotated sorted array?\n  b) How do you decide which half is sorted?\n  c) Complexity?",
+    hints: [
+      "At each step, one half is sorted; check if the target lies within it to pick a side.",
+      "Compare nums[low], nums[mid], nums[high] to find the sorted half.",
+      "O(log n).",
+    ],
+    tags: ["binary search", "arrays", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-106",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Modified Binary Search: Find pivot",
+    prompt: "Answer each of the following:\n\n  a) How do you find the rotation point / minimum in a rotated array?\n  b) What comparison drives it?\n  c) Edge case?",
+    hints: [
+      "Binary search comparing nums[mid] to nums[high] to find where the order breaks.",
+      "If nums[mid] > nums[high], the min is to the right; else to the left (inclusive).",
+      "A non-rotated (already sorted) array - handle it as min at index 0.",
+    ],
+    tags: ["binary search", "arrays", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-107",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Modified Binary Search: First/last occurrence",
+    prompt: "Answer each of the following:\n\n  a) How do you find the first and last index of a target with duplicates?\n  b) How does the search bias toward an edge?\n  c) Why two searches?",
+    hints: [
+      "Binary search but keep going left (for first) or right (for last) after a match.",
+      "On a match, record it and continue toward the desired side instead of stopping.",
+      "One biased search for the leftmost, one for the rightmost.",
+    ],
+    tags: ["binary search", "arrays", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-108",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Modified Binary Search: Search on answer",
+    prompt: "Answer each of the following:\n\n  a) What is \"binary search on the answer\"?\n  b) Give an example like minimum capacity to ship in D days.\n  c) What must be monotonic?",
+    hints: [
+      "Binary-search the answer value and use a feasibility check at each midpoint.",
+      "Guess a capacity; check if it ships within D days; shrink the range accordingly.",
+      "The feasibility predicate must be monotonic in the candidate value.",
+    ],
+    tags: ["binary search", "arrays", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-109",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Modified Binary Search: Bound vs exact",
+    prompt: "Answer each of the following:\n\n  a) Distinguish finding an exact match from finding a boundary (lower/upper bound).\n  b) When do you want a boundary search?\n  c) How does the comparison change?",
+    hints: [
+      "Exact stops on equality; boundary keeps narrowing to the insertion point.",
+      "When inserting into sorted order or counting elements < / <= x.",
+      "Use < vs <= in the comparison to land on lower vs upper bound.",
+    ],
+    tags: ["binary search", "arrays", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-110",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Modified Binary Search: Infinite/unknown size",
+    prompt: "Answer each of the following:\n\n  a) How do you binary search an array of unknown length?\n  b) What is exponential probing?\n  c) Then what?",
+    hints: [
+      "Double an index until you overshoot, bounding the target, then binary search the range.",
+      "Probe indices 1,2,4,8,... until the value exceeds the target.",
+      "Binary search between the last in-range and the overshoot index.",
+    ],
+    tags: ["binary search", "arrays", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-111",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Modified Binary Search: Matrix search",
+    prompt: "Answer each of the following:\n\n  a) How do you search a row-and-column-sorted matrix?\n  b) What is the staircase method?\n  c) Complexity?",
+    hints: [
+      "Start at the top-right; move left if too big, down if too small.",
+      "Each step eliminates a row or column, walking a staircase.",
+      "O(m + n).",
+    ],
+    tags: ["binary search", "arrays", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-112",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Modified Binary Search: Peak element",
+    prompt: "Answer each of the following:\n\n  a) How do you find a peak element in O(log n)?\n  b) What does comparing mid to mid+1 tell you?\n  c) Why is a peak guaranteed?",
+    hints: [
+      "Binary search toward the higher neighbor.",
+      "If nums[mid] < nums[mid+1], a peak lies to the right; else to the left (inclusive).",
+      "With boundaries treated as -infinity, an ascending step always leads to a peak.",
+    ],
+    tags: ["binary search", "arrays", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-113",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Modified Binary Search: Common mistakes",
+    prompt: "Answer each of the following:\n\n  a) What are two frequent binary-search bugs?\n  b) How can integer overflow occur in mid?\n  c) How do you compute mid safely?",
+    hints: [
+      "Wrong bound updates causing infinite loops, and incorrect mid rounding for boundary searches.",
+      "low+high can overflow in fixed-width integers.",
+      "Use low + (high - low) / 2.",
+    ],
+    tags: ["binary search", "arrays", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-114",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Bitwise XOR & Bit Manipulation: XOR properties",
+    prompt: "Answer each of the following:\n\n  a) List the key XOR identities.\n  b) What is x ^ x and x ^ 0?\n  c) Is XOR commutative/associative?",
+    hints: [
+      "x^x=0, x^0=x, and XOR is its own inverse.",
+      "x^x = 0; x^0 = x.",
+      "Yes - both commutative and associative, so order does not matter.",
+    ],
+    tags: ["bitwise", "XOR", "bit manipulation", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-115",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Bitwise XOR & Bit Manipulation: Single number",
+    prompt: "Answer each of the following:\n\n  a) How does XOR find the one non-duplicated number when all others appear twice?\n  b) Why does it work?\n  c) Complexity?",
+    hints: [
+      "XOR all elements; pairs cancel to 0, leaving the unique value.",
+      "Equal values cancel (x^x=0) and 0 is the identity.",
+      "O(n) time, O(1) space.",
+    ],
+    tags: ["bitwise", "XOR", "bit manipulation", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-116",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Bitwise XOR & Bit Manipulation: Two single numbers",
+    prompt: "Answer each of the following:\n\n  a) When two numbers appear once and the rest twice, how do you find both?\n  b) What does the XOR of all give you?\n  c) How do you split into two groups?",
+    hints: [
+      "XOR all to get a^b; isolate a differing bit to partition elements into two groups.",
+      "It yields a^b (the XOR of the two unique numbers).",
+      "Pick any set bit of a^b; group by whether that bit is set, then XOR each group.",
+    ],
+    tags: ["bitwise", "XOR", "bit manipulation", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-117",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Bitwise XOR & Bit Manipulation: Isolate lowest bit",
+    prompt: "Answer each of the following:\n\n  a) How do you isolate the lowest set bit of x?\n  b) What does x & -x give?\n  c) Where is this used?",
+    hints: [
+      "Use x & (-x).",
+      "It returns a value with only the lowest set bit of x.",
+      "Fenwick/BIT indexing and bit-by-bit iteration.",
+    ],
+    tags: ["bitwise", "XOR", "bit manipulation", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-118",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Bitwise XOR & Bit Manipulation: Count set bits",
+    prompt: "Answer each of the following:\n\n  a) How do you count set bits (popcount)?\n  b) What does x & (x-1) do?\n  c) Complexity of the trick?",
+    hints: [
+      "Repeatedly clear the lowest set bit and count iterations.",
+      "It clears the lowest set bit of x.",
+      "O(number of set bits) rather than O(bit width).",
+    ],
+    tags: ["bitwise", "XOR", "bit manipulation", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-119",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Bitwise XOR & Bit Manipulation: Swap without temp",
+    prompt: "Answer each of the following:\n\n  a) How do you swap two values using XOR?\n  b) Write the three steps.\n  c) What is the caveat?",
+    hints: [
+      "a ^= b; b ^= a; a ^= b.",
+      "Each line XORs in place to exchange the values.",
+      "Fails if a and b are the same memory location (both become 0).",
+    ],
+    tags: ["bitwise", "XOR", "bit manipulation", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-120",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Bitwise XOR & Bit Manipulation: Missing number via XOR",
+    prompt: "Answer each of the following:\n\n  a) How do you find the missing number in 0..n with XOR?\n  b) What do you XOR together?\n  c) Why does it isolate the missing value?",
+    hints: [
+      "XOR all indices 0..n with all array values; the result is the missing number.",
+      "XOR of the full range and the present values.",
+      "Every present number cancels with its index match, leaving the absent one.",
+    ],
+    tags: ["bitwise", "XOR", "bit manipulation", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-121",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Bitwise XOR & Bit Manipulation: Masks and flags",
+    prompt: "Answer each of the following:\n\n  a) How do you set, clear, and test a bit?\n  b) Give the bit operations.\n  c) Where are bitmasks used in algorithms?",
+    hints: [
+      "Set: x | (1<<i); clear: x & ~(1<<i); test: (x >> i) & 1.",
+      "Shift a 1 to position i and OR/AND-NOT/AND.",
+      "Subset enumeration and bitmask DP (e.g., traveling salesman).",
+    ],
+    tags: ["bitwise", "XOR", "bit manipulation", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-122",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Bitwise XOR & Bit Manipulation: Power of two",
+    prompt: "Answer each of the following:\n\n  a) How do you test if n is a power of two?\n  b) Why does n & (n-1) == 0 work?\n  c) What about n = 0?",
+    hints: [
+      "Check n > 0 and (n & (n-1)) == 0.",
+      "A power of two has exactly one set bit; subtracting 1 flips it and the trailing zeros.",
+      "Must exclude 0 explicitly since 0 & -1 == 0.",
+    ],
+    tags: ["bitwise", "XOR", "bit manipulation", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-123",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Bitwise XOR & Bit Manipulation: XOR for parity/checksums",
+    prompt: "Answer each of the following:\n\n  a) How is XOR used for parity or simple error detection?\n  b) What does the XOR of a data block represent?\n  c) Limitation?",
+    hints: [
+      "XOR all bits/bytes to produce a parity bit or checksum.",
+      "It captures the parity (odd/even count of set bits) of the data.",
+      "It detects single-bit errors but misses many multi-bit errors.",
+    ],
+    tags: ["bitwise", "XOR", "bit manipulation", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-124",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "K-Way Merge: Core idea",
+    prompt: "Answer each of the following:\n\n  a) What problem does k-way merge solve?\n  b) What data structure drives it?\n  c) Complexity?",
+    hints: [
+      "Merging k sorted sequences into one sorted output.",
+      "A min-heap holding the current front of each sequence.",
+      "O(N log k) where N is total elements.",
+    ],
+    tags: ["k-way merge", "heaps", "sorting", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-125",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "K-Way Merge: Merge K lists",
+    prompt: "Answer each of the following:\n\n  a) How do you merge k sorted linked lists with a heap?\n  b) What do you push back after each pop?\n  c) Why only k items in the heap?",
+    hints: [
+      "Seed the heap with each list's head; pop the min and push its successor.",
+      "The next node from the same list as the popped node.",
+      "Only one node per list is in the heap at any time.",
+    ],
+    tags: ["k-way merge", "heaps", "sorting", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-126",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "K-Way Merge: Smallest range",
+    prompt: "Answer each of the following:\n\n  a) How do you find the smallest range covering at least one element from each of k lists?\n  b) What does the heap track?\n  c) How do you advance?",
+    hints: [
+      "Use a min-heap of one element per list; track the current max; the range is [heap min, max].",
+      "The smallest current element across lists plus the running max.",
+      "Pop the min and push the next from that same list, updating the range.",
+    ],
+    tags: ["k-way merge", "heaps", "sorting", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-127",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "K-Way Merge: Kth smallest in matrix",
+    prompt: "Answer each of the following:\n\n  a) How do you find the kth smallest in row-sorted (and column-sorted) matrix?\n  b) Heap approach?\n  c) Alternative?",
+    hints: [
+      "Treat each row as a sorted list and k-way merge until you pop k times.",
+      "Push the first element of each row; pop k times, pushing the next in the popped row.",
+      "Binary search on the value range with a count-of-<=x check.",
+    ],
+    tags: ["k-way merge", "heaps", "sorting", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-128",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "K-Way Merge: Merge vs heap-all",
+    prompt: "Answer each of the following:\n\n  a) Why not just concatenate all elements and sort?\n  b) When is k-way merge clearly better?\n  c) What does the heap save?",
+    hints: [
+      "Sorting everything is O(N log N); k-way merge is O(N log k) which is better when k << N.",
+      "When you have many short pre-sorted runs.",
+      "It only ever compares k front elements, not all N.",
+    ],
+    tags: ["k-way merge", "heaps", "sorting", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-129",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "K-Way Merge: External sort",
+    prompt: "Answer each of the following:\n\n  a) How does k-way merge enable sorting data larger than memory?\n  b) What are the runs?\n  c) What is the merge phase?",
+    hints: [
+      "Sort chunks that fit in memory into runs, then k-way merge the runs from disk.",
+      "Pre-sorted on-disk segments produced in the first pass.",
+      "Stream the fronts of all runs through a heap, writing sorted output.",
+    ],
+    tags: ["k-way merge", "heaps", "sorting", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-130",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "K-Way Merge: Heap contents",
+    prompt: "Answer each of the following:\n\n  a) What metadata must each heap entry carry in k-way merge?\n  b) Why store the source index?\n  c) Why the element position?",
+    hints: [
+      "The value plus which list it came from (and position in that list).",
+      "So you know which list to pull the next element from.",
+      "To fetch the successor in array-backed inputs.",
+    ],
+    tags: ["k-way merge", "heaps", "sorting", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-131",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "K-Way Merge: Stability",
+    prompt: "Answer each of the following:\n\n  a) Is k-way merge stable?\n  b) How do you break ties to preserve order?\n  c) Why might stability matter?",
+    hints: [
+      "It can be made stable with proper tie-breaking.",
+      "Break ties by source-list index (and original position).",
+      "To keep equal keys in their original relative order, e.g., for sorting records.",
+    ],
+    tags: ["k-way merge", "heaps", "sorting", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-132",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "K-Way Merge: Two-list special case",
+    prompt: "Answer each of the following:\n\n  a) How does k-way merge reduce to the classic two-pointer merge when k=2?\n  b) Do you need a heap then?\n  c) Complexity?",
+    hints: [
+      "With two lists you just compare two fronts - the merge step of merge sort.",
+      "No heap needed; a simple comparison suffices.",
+      "O(n+m).",
+    ],
+    tags: ["k-way merge", "heaps", "sorting", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-133",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "K-Way Merge: Streaming merge",
+    prompt: "Answer each of the following:\n\n  a) How do you merge k live/streaming sorted sources?\n  b) What assumption must hold?\n  c) What is the risk?",
+    hints: [
+      "Keep a heap of the latest value from each stream and emit the min as inputs arrive.",
+      "Each individual stream must arrive in sorted order.",
+      "A stalled stream can block progress since you cannot emit past its pending min.",
+    ],
+    tags: ["k-way merge", "heaps", "sorting", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-134",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Dynamic Programming: When DP applies",
+    prompt: "Answer each of the following:\n\n  a) What two properties must a problem have for DP?\n  b) Define each.\n  c) How is DP different from divide and conquer?",
+    hints: [
+      "Optimal substructure and overlapping subproblems.",
+      "Optimal substructure: the optimum is built from subproblem optima. Overlapping: the same subproblems recur.",
+      "Divide and conquer subproblems are independent (no overlap); DP reuses overlapping ones.",
+    ],
+    tags: ["dynamic programming", "DP", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-135",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Dynamic Programming: Memo vs tabulation",
+    prompt: "Answer each of the following:\n\n  a) Top-down vs bottom-up DP - define both.\n  b) What is the trade-off?\n  c) Which is easier to derive?",
+    hints: [
+      "Top-down: recursion + cache. Bottom-up: iterative table fill from base cases.",
+      "Top-down only computes needed states but has recursion overhead; bottom-up can be optimized for space.",
+      "Top-down often mirrors the recurrence more directly.",
+    ],
+    tags: ["dynamic programming", "DP", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-136",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Dynamic Programming: Defining state",
+    prompt: "Answer each of the following:\n\n  a) How do you identify the DP state?\n  b) Walk through state for the knapsack problem.\n  c) Why does a good state matter?",
+    hints: [
+      "State = the minimal information to describe a subproblem uniquely.",
+      "Knapsack state: (item index, remaining capacity) -> best value.",
+      "A poor state leads to wrong recurrences or exponential blowup.",
+    ],
+    tags: ["dynamic programming", "DP", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-137",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Dynamic Programming: 1D problems",
+    prompt: "Answer each of the following:\n\n  a) Outline the DP for climbing stairs / Fibonacci.\n  b) What is the recurrence?\n  c) Space optimization?",
+    hints: [
+      "dp[i] = ways to reach step i.",
+      "dp[i] = dp[i-1] + dp[i-2].",
+      "Keep only the last two values -> O(1) space.",
+    ],
+    tags: ["dynamic programming", "DP", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-138",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Dynamic Programming: Knapsack 0/1",
+    prompt: "Answer each of the following:\n\n  a) What is the 0/1 knapsack recurrence?\n  b) Why iterate capacity backward in the 1D version?\n  c) Complexity?",
+    hints: [
+      "dp[w] = max(dp[w], dp[w - weight] + value) for each item.",
+      "Backward iteration prevents reusing an item more than once.",
+      "O(n * W).",
+    ],
+    tags: ["dynamic programming", "DP", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-139",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Dynamic Programming: LCS / edit distance",
+    prompt: "Answer each of the following:\n\n  a) How do you set up the LCS DP table?\n  b) What does dp[i][j] mean?\n  c) How does the recurrence branch?",
+    hints: [
+      "A 2D table over prefixes of the two strings.",
+      "Length of the LCS of the first i and first j characters.",
+      "If chars match, 1 + diagonal; else max of left/top.",
+    ],
+    tags: ["dynamic programming", "DP", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-140",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Dynamic Programming: Unbounded knapsack",
+    prompt: "Answer each of the following:\n\n  a) How does coin change (fewest coins) differ from 0/1 knapsack?\n  b) What is the recurrence?\n  c) Why forward iteration?",
+    hints: [
+      "Coins are reusable (unlimited supply), unlike one-shot items.",
+      "dp[x] = min over coins c of dp[x-c] + 1.",
+      "Forward iteration lets a coin be reused within the same dp build.",
+    ],
+    tags: ["dynamic programming", "DP", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-141",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Dynamic Programming: LIS",
+    prompt: "Answer each of the following:\n\n  a) How do you compute the longest increasing subsequence?\n  b) What is the O(n^2) DP?\n  c) How does the O(n log n) approach work?",
+    hints: [
+      "dp[i] = LIS ending at i = 1 + max(dp[j]) for j<i with nums[j]<nums[i].",
+      "For each i, scan all earlier j -> O(n^2).",
+      "Maintain tails of increasing subsequences and binary-search the insertion point -> O(n log n).",
+    ],
+    tags: ["dynamic programming", "DP", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-142",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Dynamic Programming: Interval/partition DP",
+    prompt: "Answer each of the following:\n\n  a) What characterizes interval DP?\n  b) Give an example (matrix chain / burst balloons).\n  c) What is the typical state?",
+    hints: [
+      "Subproblems defined over sub-intervals [i, j], combined at a split point k.",
+      "Matrix chain multiplication or burst balloons.",
+      "dp[i][j] = best over all splits k in (i, j).",
+    ],
+    tags: ["dynamic programming", "DP", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-143",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Dynamic Programming: Common pitfalls",
+    prompt: "Answer each of the following:\n\n  a) What are two common DP mistakes?\n  b) How do you verify a recurrence?\n  c) How do you handle base cases?",
+    hints: [
+      "Wrong state definition and incorrect iteration order (using not-yet-computed states).",
+      "Check it on small inputs by hand and confirm dependencies are filled first.",
+      "Initialize base cases explicitly before the main loop.",
+    ],
+    tags: ["dynamic programming", "DP", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-144",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Topological Sort: Definition",
+    prompt: "Answer each of the following:\n\n  a) What is a topological ordering?\n  b) What graph property is required?\n  c) Why?",
+    hints: [
+      "A linear order of vertices where every edge goes from earlier to later.",
+      "The graph must be a DAG (directed acyclic graph).",
+      "A cycle has no valid linear ordering - dependencies would be circular.",
+    ],
+    tags: ["topological sort", "graphs", "DAG", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-145",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Topological Sort: Kahn's algorithm",
+    prompt: "Answer each of the following:\n\n  a) Describe Kahn's BFS-based topological sort.\n  b) What kicks off the queue?\n  c) How do you detect a cycle?",
+    hints: [
+      "Repeatedly remove nodes with in-degree 0, decrementing neighbors' in-degrees.",
+      "All nodes with in-degree 0 start in the queue.",
+      "If you process fewer than V nodes, a cycle exists.",
+    ],
+    tags: ["topological sort", "graphs", "DAG", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-146",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Topological Sort: DFS-based",
+    prompt: "Answer each of the following:\n\n  a) How does DFS produce a topological order?\n  b) When do you record a node?\n  c) Why reverse?",
+    hints: [
+      "DFS each node; push it onto a stack after exploring all its descendants.",
+      "On the post-order/finish step.",
+      "The reverse of finish order is a valid topological order.",
+    ],
+    tags: ["topological sort", "graphs", "DAG", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-147",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Topological Sort: Cycle detection",
+    prompt: "Answer each of the following:\n\n  a) How do you detect a cycle during DFS topo sort?\n  b) What three node states help?\n  c) What indicates a back edge?",
+    hints: [
+      "Track visiting (in-stack) vs visited nodes.",
+      "Unvisited, in-progress (on the recursion stack), done.",
+      "Reaching an in-progress node means a back edge -> cycle.",
+    ],
+    tags: ["topological sort", "graphs", "DAG", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-148",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Topological Sort: Course schedule",
+    prompt: "Answer each of the following:\n\n  a) How does course-schedule map to topo sort?\n  b) What are nodes and edges?\n  c) What does a cycle mean?",
+    hints: [
+      "Prerequisites form a dependency DAG; a valid schedule is a topo order.",
+      "Courses are nodes; prerequisite a->b is an edge.",
+      "A cycle means the prerequisites are impossible to satisfy.",
+    ],
+    tags: ["topological sort", "graphs", "DAG", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-149",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Topological Sort: Multiple orderings",
+    prompt: "Answer each of the following:\n\n  a) Why can a DAG have multiple valid topo orders?\n  b) When is the order unique?\n  c) How do you get a deterministic one?",
+    hints: [
+      "Independent nodes (no ordering constraint between them) can appear in any relative order.",
+      "Unique iff there is a Hamiltonian path - each step has exactly one in-degree-0 choice.",
+      "Break ties deterministically (e.g., smallest id first) using a min-heap in Kahn's.",
+    ],
+    tags: ["topological sort", "graphs", "DAG", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-150",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Topological Sort: Complexity",
+    prompt: "Answer each of the following:\n\n  a) What is the time and space complexity?\n  b) Why linear in V+E?\n  c) What structures do you maintain?",
+    hints: [
+      "O(V + E) time and space.",
+      "Each node and edge is processed a constant number of times.",
+      "In-degree counts (Kahn) or a visited/stack set (DFS), plus the adjacency list.",
+    ],
+    tags: ["topological sort", "graphs", "DAG", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-151",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Topological Sort: Applications",
+    prompt: "Answer each of the following:\n\n  a) List three real applications of topological sort.\n  b) Why do build systems use it?\n  c) Spreadsheets?",
+    hints: [
+      "Build/dependency resolution, task scheduling, course planning.",
+      "To compile/build modules only after their dependencies.",
+      "To recompute cells in dependency order without using stale values.",
+    ],
+    tags: ["topological sort", "graphs", "DAG", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-152",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Topological Sort: Lexicographically smallest",
+    prompt: "Answer each of the following:\n\n  a) How do you produce the lexicographically smallest topo order?\n  b) Which variant of Kahn helps?\n  c) Complexity impact?",
+    hints: [
+      "Use a min-heap (priority queue) instead of a plain queue in Kahn's algorithm.",
+      "Always extend with the smallest available in-degree-0 node.",
+      "It becomes O((V+E) log V).",
+    ],
+    tags: ["topological sort", "graphs", "DAG", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-153",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Topological Sort: Kahn vs DFS",
+    prompt: "Answer each of the following:\n\n  a) Compare Kahn's and DFS topo sort.\n  b) Which more naturally reports cycles?\n  c) Which gives lexicographic control?",
+    hints: [
+      "Kahn is iterative/BFS-style; DFS uses recursion and finish times.",
+      "Both can, but Kahn detects it simply via the processed-count.",
+      "Kahn with a priority queue gives easy lexicographic ordering.",
+    ],
+    tags: ["topological sort", "graphs", "DAG", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-154",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Trie (Prefix Tree): Structure",
+    prompt: "Answer each of the following:\n\n  a) What does each trie node store?\n  b) What does the root represent?\n  c) What marks a complete word?",
+    hints: [
+      "A map of child characters to child nodes, plus an end-of-word flag.",
+      "An empty prefix - it holds no character itself.",
+      "A boolean isEnd set true at the last character of an inserted word.",
+    ],
+    tags: ["trie", "prefix tree", "strings", "data structures"],
+  },
+
+
+  {
+    id: "trivia-155",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Trie (Prefix Tree): Operations",
+    prompt: "Answer each of the following:\n\n  a) How do insert, search, and startsWith work?\n  b) How does search differ from startsWith?\n  c) Complexity of each?",
+    hints: [
+      "Walk character by character, creating nodes on insert.",
+      "Search checks isEnd at the final node; startsWith only checks the path exists.",
+      "O(L) where L is the word/prefix length.",
+    ],
+    tags: ["trie", "prefix tree", "strings", "data structures"],
+  },
+
+
+  {
+    id: "trivia-156",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Trie (Prefix Tree): Why a trie",
+    prompt: "Answer each of the following:\n\n  a) Why use a trie over a hash set for prefix queries?\n  b) What does a hash set struggle with?\n  c) Trade-off?",
+    hints: [
+      "Tries give efficient prefix lookups and ordered traversal of words.",
+      "A hash set cannot answer \"any word with this prefix\" without scanning all keys.",
+      "Tries use more memory per node (one node per character).",
+    ],
+    tags: ["trie", "prefix tree", "strings", "data structures"],
+  },
+
+
+  {
+    id: "trivia-157",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Trie (Prefix Tree): Autocomplete",
+    prompt: "Answer each of the following:\n\n  a) How does a trie power autocomplete?\n  b) How do you get all completions of a prefix?\n  c) How do you rank them?",
+    hints: [
+      "Navigate to the prefix node, then DFS to collect all words below it.",
+      "Traverse the subtree under the prefix node.",
+      "Store frequency/score at end nodes or precompute top-k per node.",
+    ],
+    tags: ["trie", "prefix tree", "strings", "data structures"],
+  },
+
+
+  {
+    id: "trivia-158",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Trie (Prefix Tree): Memory",
+    prompt: "Answer each of the following:\n\n  a) What is the memory concern with tries?\n  b) How do you compress them?\n  c) What is a radix/Patricia trie?",
+    hints: [
+      "One node per character can be wasteful for sparse data.",
+      "Merge chains of single-child nodes.",
+      "A radix trie collapses single-child paths into edges labeled with strings.",
+    ],
+    tags: ["trie", "prefix tree", "strings", "data structures"],
+  },
+
+
+  {
+    id: "trivia-159",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Trie (Prefix Tree): Wildcard search",
+    prompt: "Answer each of the following:\n\n  a) How do you support \".\" wildcard matching in a trie (add-and-search words)?\n  b) What changes in search?\n  c) Complexity impact?",
+    hints: [
+      "On a wildcard, recurse into all children rather than one.",
+      "Search branches over every child when the current pattern char is a wildcard.",
+      "Worst case it explores many branches, raising cost above O(L).",
+    ],
+    tags: ["trie", "prefix tree", "strings", "data structures"],
+  },
+
+
+  {
+    id: "trivia-160",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Trie (Prefix Tree): Word search II",
+    prompt: "Answer each of the following:\n\n  a) How does a trie accelerate finding many words in a grid?\n  b) Why is it better than searching each word?\n  c) What pruning does it allow?",
+    hints: [
+      "Build a trie of the word list and DFS the grid against the trie simultaneously.",
+      "You match all words in one traversal instead of one DFS per word.",
+      "Prune a grid branch the moment no trie path matches.",
+    ],
+    tags: ["trie", "prefix tree", "strings", "data structures"],
+  },
+
+
+  {
+    id: "trivia-161",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Trie (Prefix Tree): Counting",
+    prompt: "Answer each of the following:\n\n  a) How do you count words with a given prefix in a trie?\n  b) What extra field helps?\n  c) When do you update it?",
+    hints: [
+      "Store a prefix-count at each node.",
+      "A counter incremented along the insert path.",
+      "Increment every node on the path during insert.",
+    ],
+    tags: ["trie", "prefix tree", "strings", "data structures"],
+  },
+
+
+  {
+    id: "trivia-162",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Trie (Prefix Tree): Deletion",
+    prompt: "Answer each of the following:\n\n  a) How do you delete a word from a trie?\n  b) When can you prune nodes?\n  c) What must you not remove?",
+    hints: [
+      "Unset the end flag; then prune nodes that have no children and are not word-ends.",
+      "Only prune nodes that are not part of another word.",
+      "Do not remove nodes shared by other words.",
+    ],
+    tags: ["trie", "prefix tree", "strings", "data structures"],
+  },
+
+
+  {
+    id: "trivia-163",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Trie (Prefix Tree): Trie vs BST",
+    prompt: "Answer each of the following:\n\n  a) Compare a trie to a balanced BST for string keys.\n  b) How does lookup cost compare?\n  c) When is each preferable?",
+    hints: [
+      "Trie lookup is O(L) independent of the number of keys; BST is O(L log n) due to comparisons.",
+      "Trie avoids the log n factor but uses more memory.",
+      "Trie for prefix queries/autocomplete; BST when memory is tight or you need ordered range queries.",
+    ],
+    tags: ["trie", "prefix tree", "strings", "data structures"],
+  },
+
+
+  {
+    id: "trivia-164",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Union-Find (Disjoint Set): Purpose",
+    prompt: "Answer each of the following:\n\n  a) What problem does union-find solve?\n  b) What two operations does it support?\n  c) Typical use cases?",
+    hints: [
+      "Tracking a partition of elements into disjoint sets with fast merge and membership queries.",
+      "find(x) (which set) and union(a, b) (merge sets).",
+      "Connectivity, cycle detection in undirected graphs, Kruskal's MST.",
+    ],
+    tags: ["union-find", "disjoint set", "graphs", "data structures"],
+  },
+
+
+  {
+    id: "trivia-165",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Union-Find (Disjoint Set): Find with path compression",
+    prompt: "Answer each of the following:\n\n  a) What does find do?\n  b) How does path compression speed it up?\n  c) Effect on the tree?",
+    hints: [
+      "Follows parent pointers to the set's root/representative.",
+      "It re-points visited nodes directly to the root during the find.",
+      "It flattens the tree so future finds are near O(1).",
+    ],
+    tags: ["union-find", "disjoint set", "graphs", "data structures"],
+  },
+
+
+  {
+    id: "trivia-166",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Union-Find (Disjoint Set): Union by rank/size",
+    prompt: "Answer each of the following:\n\n  a) What is union by rank (or size)?\n  b) Why attach the smaller tree under the larger?\n  c) Effect on height?",
+    hints: [
+      "Always attach the shorter/smaller tree under the taller/larger root.",
+      "It keeps trees shallow, avoiding long chains.",
+      "Height stays logarithmic (near constant with compression).",
+    ],
+    tags: ["union-find", "disjoint set", "graphs", "data structures"],
+  },
+
+
+  {
+    id: "trivia-167",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Union-Find (Disjoint Set): Complexity",
+    prompt: "Answer each of the following:\n\n  a) What is the amortized complexity with both optimizations?\n  b) What is the inverse Ackermann function?\n  c) Practical meaning?",
+    hints: [
+      "Nearly O(1) amortized - O(alpha(n)) per operation.",
+      "alpha(n), the inverse Ackermann, grows astronomically slowly.",
+      "For all practical n, alpha(n) <= 4, so effectively constant.",
+    ],
+    tags: ["union-find", "disjoint set", "graphs", "data structures"],
+  },
+
+
+  {
+    id: "trivia-168",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Union-Find (Disjoint Set): Cycle detection",
+    prompt: "Answer each of the following:\n\n  a) How does union-find detect a cycle in an undirected graph?\n  b) What happens when you union two already-connected nodes?\n  c) Why does this work?",
+    hints: [
+      "For each edge, union its endpoints; if they share a root already, that edge forms a cycle.",
+      "find(a) == find(b) before union means they are already connected.",
+      "Connecting two nodes in the same set closes a loop.",
+    ],
+    tags: ["union-find", "disjoint set", "graphs", "data structures"],
+  },
+
+
+  {
+    id: "trivia-169",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Union-Find (Disjoint Set): Connected components",
+    prompt: "Answer each of the following:\n\n  a) How do you count connected components with union-find?\n  b) What is the initial count?\n  c) How does it change?",
+    hints: [
+      "Start with each node its own set; union edges; count distinct roots.",
+      "Initially n components (one per node).",
+      "Each successful union (different roots) decrements the count by 1.",
+    ],
+    tags: ["union-find", "disjoint set", "graphs", "data structures"],
+  },
+
+
+  {
+    id: "trivia-170",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Union-Find (Disjoint Set): Kruskal's MST",
+    prompt: "Answer each of the following:\n\n  a) How does Kruskal's use union-find?\n  b) What order are edges considered?\n  c) When is an edge added?",
+    hints: [
+      "Sort edges by weight; add an edge if it connects two different sets.",
+      "Ascending by weight.",
+      "Add it iff find(u) != find(v), then union them; skip otherwise (would cycle).",
+    ],
+    tags: ["union-find", "disjoint set", "graphs", "data structures"],
+  },
+
+
+  {
+    id: "trivia-171",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Union-Find (Disjoint Set): Representative",
+    prompt: "Answer each of the following:\n\n  a) What is the \"representative\" / root of a set?\n  b) Why must find be consistent?\n  c) How do two elements test as connected?",
+    hints: [
+      "The canonical root node identifying the set.",
+      "So equality of roots reliably means \"same set\".",
+      "connected(a,b) iff find(a) == find(b).",
+    ],
+    tags: ["union-find", "disjoint set", "graphs", "data structures"],
+  },
+
+
+  {
+    id: "trivia-172",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Union-Find (Disjoint Set): Grid problems",
+    prompt: "Answer each of the following:\n\n  a) How does union-find apply to grid problems like number of islands?\n  b) What do you union?\n  c) Alternative approach?",
+    hints: [
+      "Treat each land cell as a node and union adjacent land cells; count roots.",
+      "Union a cell with its land neighbors.",
+      "BFS/DFS flood fill is the common alternative.",
+    ],
+    tags: ["union-find", "disjoint set", "graphs", "data structures"],
+  },
+
+
+  {
+    id: "trivia-173",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Union-Find (Disjoint Set): Limitations",
+    prompt: "Answer each of the following:\n\n  a) What can union-find NOT do well?\n  b) Can you easily split a set?\n  c) What about directed connectivity?",
+    hints: [
+      "It does not support efficient deletion/splitting of unions.",
+      "No - union-find is union-only; un-merging is not a cheap operation.",
+      "It models undirected connectivity, not directed reachability.",
+    ],
+    tags: ["union-find", "disjoint set", "graphs", "data structures"],
+  },
+
+
+  {
+    id: "trivia-174",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Monotonic Stack: Concept",
+    prompt: "Answer each of the following:\n\n  a) What is a monotonic stack?\n  b) What does it efficiently answer?\n  c) Complexity?",
+    hints: [
+      "A stack whose elements stay in increasing or decreasing order as you push.",
+      "Next/previous greater or smaller element queries.",
+      "O(n) - each element is pushed and popped once.",
+    ],
+    tags: ["monotonic stack", "stack", "arrays", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-175",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Monotonic Stack: Next greater element",
+    prompt: "Answer each of the following:\n\n  a) How do you compute the next greater element for each item?\n  b) Increasing or decreasing stack?\n  c) What do you store?",
+    hints: [
+      "Scan right to left (or left to right), popping until the stack top is greater.",
+      "A decreasing stack (of values or indices).",
+      "Indices are common so you can compute distances.",
+    ],
+    tags: ["monotonic stack", "stack", "arrays", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-176",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Monotonic Stack: Daily temperatures",
+    prompt: "Answer each of the following:\n\n  a) How does a monotonic stack solve daily temperatures?\n  b) What does popping mean?\n  c) What is the answer per popped index?",
+    hints: [
+      "Keep a decreasing stack of indices; a warmer day resolves cooler days on the stack.",
+      "Each pop has found its next warmer day.",
+      "answer[popped] = current index - popped index.",
+    ],
+    tags: ["monotonic stack", "stack", "arrays", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-177",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Monotonic Stack: Largest rectangle in histogram",
+    prompt: "Answer each of the following:\n\n  a) How does a monotonic stack find the largest rectangle?\n  b) What does the stack hold?\n  c) How do you compute width on pop?",
+    hints: [
+      "An increasing stack of bar indices; when a shorter bar appears, pop and compute areas.",
+      "Indices of bars in increasing height.",
+      "Width spans from the new index back to the index below the popped one.",
+    ],
+    tags: ["monotonic stack", "stack", "arrays", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-178",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Monotonic Stack: Prev smaller / greater",
+    prompt: "Answer each of the following:\n\n  a) How do you get the previous smaller element for each item?\n  b) Which stack direction?\n  c) When do you pop?",
+    hints: [
+      "Scan left to right with an increasing stack; the top after popping is the previous smaller.",
+      "Increasing stack.",
+      "Pop while the top is >= the current element.",
+    ],
+    tags: ["monotonic stack", "stack", "arrays", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-179",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Monotonic Stack: Indices vs values",
+    prompt: "Answer each of the following:\n\n  a) Why store indices instead of values on the stack?\n  b) What does this enable?\n  c) Example?",
+    hints: [
+      "Indices let you compute distances and look up values as needed.",
+      "Distance-to-next-greater and width spans.",
+      "Daily temperatures needs the index gap; histogram needs widths.",
+    ],
+    tags: ["monotonic stack", "stack", "arrays", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-180",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Monotonic Stack: Trapping rain water",
+    prompt: "Answer each of the following:\n\n  a) How can a monotonic stack solve trapping rain water?\n  b) What do you do on a taller bar?\n  c) Alternative method?",
+    hints: [
+      "Keep a decreasing stack; when a taller bar arrives, pop and add trapped water bounded by left and right walls.",
+      "Pop the basin floor and add water = (min(left,right) - floor) * width.",
+      "Two-pointer approach also solves it in O(n) O(1).",
+    ],
+    tags: ["monotonic stack", "stack", "arrays", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-181",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Monotonic Stack: Stock span",
+    prompt: "Answer each of the following:\n\n  a) How does the stock-span problem use a monotonic stack?\n  b) What does the span count?\n  c) What do you pop?",
+    hints: [
+      "Maintain a decreasing stack of prices/indices to count consecutive prior days <= today.",
+      "The number of consecutive previous days with price <= today.",
+      "Pop days with price <= today, accumulating their spans.",
+    ],
+    tags: ["monotonic stack", "stack", "arrays", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-182",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Monotonic Stack: Circular arrays",
+    prompt: "Answer each of the following:\n\n  a) How do you handle \"next greater element\" in a circular array?\n  b) What trick simulates wraparound?\n  c) Complexity?",
+    hints: [
+      "Iterate the array twice (indices mod n) with the same monotonic stack.",
+      "Looping 2n times lets later-wrapping elements resolve earlier ones.",
+      "Still O(n).",
+    ],
+    tags: ["monotonic stack", "stack", "arrays", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-183",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Monotonic Stack: When to reach for it",
+    prompt: "Answer each of the following:\n\n  a) What problem phrasing hints at a monotonic stack?\n  b) How is it different from a plain stack?\n  c) What is the key invariant?",
+    hints: [
+      "\"Next/previous greater/smaller\", \"span\", or \"first element to the right that...\" phrasing.",
+      "It enforces an ordering invariant, popping violators eagerly.",
+      "The stack always stays sorted in one direction.",
+    ],
+    tags: ["monotonic stack", "stack", "arrays", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-184",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Matrix / Grid Traversal: Neighbors",
+    prompt: "Answer each of the following:\n\n  a) How do you enumerate 4-directional neighbors cleanly?\n  b) What about 8-directional?\n  c) How do you bounds-check?",
+    hints: [
+      "Use a directions array of (dr, dc) offsets and loop over it.",
+      "Add the four diagonal offsets for 8-directional.",
+      "Check 0 <= r < rows and 0 <= c < cols before visiting.",
+    ],
+    tags: ["matrix", "grid", "BFS", "DFS", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-185",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Matrix / Grid Traversal: Number of islands",
+    prompt: "Answer each of the following:\n\n  a) How do you count islands in a grid?\n  b) BFS or DFS flood fill?\n  c) How do you avoid recounting?",
+    hints: [
+      "Scan cells; on each unvisited land cell, flood-fill the whole island and increment a counter.",
+      "Either works; DFS recursion or a BFS queue.",
+      "Mark visited cells (sink them to water or use a visited set).",
+    ],
+    tags: ["matrix", "grid", "BFS", "DFS", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-186",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Matrix / Grid Traversal: Multi-source BFS",
+    prompt: "Answer each of the following:\n\n  a) What is multi-source BFS and when do you use it?\n  b) Give the rotting-oranges example.\n  c) How do you seed it?",
+    hints: [
+      "BFS starting from many sources simultaneously, expanding in lockstep.",
+      "All rotten oranges spread at once; each BFS level is one minute.",
+      "Enqueue all sources at level 0 before starting.",
+    ],
+    tags: ["matrix", "grid", "BFS", "DFS", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-187",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Matrix / Grid Traversal: Shortest path in grid",
+    prompt: "Answer each of the following:\n\n  a) How do you find the shortest path in an unweighted grid?\n  b) Why BFS not DFS?\n  c) What if cells have weights?",
+    hints: [
+      "BFS from the start; the first time you reach the target is the shortest distance.",
+      "BFS explores by distance, so it finds the minimum number of steps first.",
+      "Use Dijkstra (or 0-1 BFS) when moves have different costs.",
+    ],
+    tags: ["matrix", "grid", "BFS", "DFS", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-188",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Matrix / Grid Traversal: Spiral order",
+    prompt: "Answer each of the following:\n\n  a) How do you traverse a matrix in spiral order?\n  b) What four boundaries do you track?\n  c) How do they shrink?",
+    hints: [
+      "Walk right, down, left, up, peeling layers inward.",
+      "top, bottom, left, right boundaries.",
+      "After traversing an edge, move that boundary inward by one.",
+    ],
+    tags: ["matrix", "grid", "BFS", "DFS", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-189",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Matrix / Grid Traversal: Rotate in place",
+    prompt: "Answer each of the following:\n\n  a) How do you rotate an n x n matrix 90 degrees in place?\n  b) What two operations combine?\n  c) Why does that work?",
+    hints: [
+      "Transpose the matrix, then reverse each row.",
+      "Transpose (swap across the diagonal) + row reversal.",
+      "Transposing swaps rows/cols; reversing rows completes the 90-degree turn.",
+    ],
+    tags: ["matrix", "grid", "BFS", "DFS", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-190",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Matrix / Grid Traversal: Visited tracking",
+    prompt: "Answer each of the following:\n\n  a) How do you track visited cells without extra space?\n  b) What is the in-place marker trick?\n  c) When is it unsafe?",
+    hints: [
+      "Mutate the cell to a sentinel value to mark it visited.",
+      "E.g., set land to 0 or to a special marker.",
+      "Unsafe if the original values must be preserved or the grid is read-only.",
+    ],
+    tags: ["matrix", "grid", "BFS", "DFS", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-191",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Matrix / Grid Traversal: DFS recursion depth",
+    prompt: "Answer each of the following:\n\n  a) What is the risk of recursive DFS on large grids?\n  b) How do you mitigate it?\n  c) Trade-off vs BFS?",
+    hints: [
+      "Deep recursion can overflow the call stack.",
+      "Use an explicit stack (iterative DFS) or BFS with a queue.",
+      "BFS uses queue memory proportional to the frontier width.",
+    ],
+    tags: ["matrix", "grid", "BFS", "DFS", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-192",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Matrix / Grid Traversal: Word search",
+    prompt: "Answer each of the following:\n\n  a) How do you search for a word path in a grid?\n  b) How do you prevent reusing a cell in one path?\n  c) How do you undo?",
+    hints: [
+      "DFS from each cell matching the word character by character.",
+      "Temporarily mark the cell used during the current path.",
+      "Restore it on backtrack so other paths may use it.",
+    ],
+    tags: ["matrix", "grid", "BFS", "DFS", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-193",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Matrix / Grid Traversal: Dynamic programming on grids",
+    prompt: "Answer each of the following:\n\n  a) Give an example of grid DP (min path sum / unique paths).\n  b) What is the recurrence for min path sum?\n  c) Space optimization?",
+    hints: [
+      "Unique paths or minimum path sum from top-left to bottom-right.",
+      "dp[r][c] = grid[r][c] + min(dp[r-1][c], dp[r][c-1]).",
+      "Keep only one row (rolling array) for O(cols) space.",
+    ],
+    tags: ["matrix", "grid", "BFS", "DFS", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-194",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Graphs: BFS & DFS: Representations",
+    prompt: "Answer each of the following:\n\n  a) Compare adjacency list vs adjacency matrix.\n  b) When is each preferable?\n  c) Space costs?",
+    hints: [
+      "List: per-node neighbor lists. Matrix: a V x V boolean/weight grid.",
+      "List for sparse graphs; matrix for dense graphs or O(1) edge lookups.",
+      "List O(V+E); matrix O(V^2).",
+    ],
+    tags: ["graphs", "BFS", "DFS", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-195",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Graphs: BFS & DFS: BFS vs DFS",
+    prompt: "Answer each of the following:\n\n  a) How do BFS and DFS differ in traversal order?\n  b) What structure backs each?\n  c) Typical uses?",
+    hints: [
+      "BFS explores level by level; DFS goes deep before backtracking.",
+      "BFS uses a queue; DFS uses a stack or recursion.",
+      "BFS for shortest unweighted paths; DFS for connectivity, cycles, topo sort.",
+    ],
+    tags: ["graphs", "BFS", "DFS", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-196",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Graphs: BFS & DFS: Shortest path (unweighted)",
+    prompt: "Answer each of the following:\n\n  a) Why does BFS give shortest paths in unweighted graphs?\n  b) How do you reconstruct the path?\n  c) Complexity?",
+    hints: [
+      "BFS visits nodes in nondecreasing distance order.",
+      "Track each node's parent and walk back from the target.",
+      "O(V + E).",
+    ],
+    tags: ["graphs", "BFS", "DFS", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-197",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Graphs: BFS & DFS: Cycle detection",
+    prompt: "Answer each of the following:\n\n  a) How do you detect a cycle in a directed graph?\n  b) In an undirected graph?\n  c) What state do you track?",
+    hints: [
+      "DFS with a recursion-stack (in-progress) set; a back edge means a cycle.",
+      "DFS tracking the parent, or union-find on edges.",
+      "Visited plus in-progress for directed; visited + parent for undirected.",
+    ],
+    tags: ["graphs", "BFS", "DFS", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-198",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Graphs: BFS & DFS: Connected components",
+    prompt: "Answer each of the following:\n\n  a) How do you count connected components?\n  b) Which traversals work?\n  c) What about directed graphs?",
+    hints: [
+      "Run BFS/DFS from each unvisited node; each launch is one component.",
+      "BFS or DFS, or union-find.",
+      "Directed graphs use strongly connected components (Tarjan/Kosaraju).",
+    ],
+    tags: ["graphs", "BFS", "DFS", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-199",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Graphs: BFS & DFS: Bipartite check",
+    prompt: "Answer each of the following:\n\n  a) How do you test if a graph is bipartite?\n  b) What does the coloring use?\n  c) When does it fail?",
+    hints: [
+      "2-color the graph via BFS/DFS, alternating colors across edges.",
+      "Assign opposite colors to adjacent nodes.",
+      "It fails (not bipartite) if an edge connects same-colored nodes - an odd cycle.",
+    ],
+    tags: ["graphs", "BFS", "DFS", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-200",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Graphs: BFS & DFS: Dijkstra",
+    prompt: "Answer each of the following:\n\n  a) When do you use Dijkstra over BFS?\n  b) What does it require of edge weights?\n  c) What structure speeds it up?",
+    hints: [
+      "For shortest paths with non-negative weighted edges.",
+      "Edge weights must be non-negative.",
+      "A min-priority queue (binary heap) gives O((V+E) log V).",
+    ],
+    tags: ["graphs", "BFS", "DFS", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-201",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Graphs: BFS & DFS: Topological order",
+    prompt: "Answer each of the following:\n\n  a) How do BFS and DFS each produce a topological order?\n  b) What precondition?\n  c) Use case?",
+    hints: [
+      "Kahn's BFS removes in-degree-0 nodes; DFS uses reverse finish order.",
+      "The graph must be a DAG.",
+      "Dependency/task scheduling.",
+    ],
+    tags: ["graphs", "BFS", "DFS", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-202",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Graphs: BFS & DFS: Visited management",
+    prompt: "Answer each of the following:\n\n  a) Why is a visited set essential in graph traversal?\n  b) What happens without it?\n  c) Where do you mark visited?",
+    hints: [
+      "To avoid revisiting nodes and infinite loops in cyclic graphs.",
+      "You can loop forever or do redundant exponential work.",
+      "Mark on enqueue (BFS) to avoid duplicates in the queue.",
+    ],
+    tags: ["graphs", "BFS", "DFS", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-203",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Graphs: BFS & DFS: Weighted vs unweighted",
+    prompt: "Answer each of the following:\n\n  a) Which algorithm fits each: unweighted shortest path, non-negative weights, negative weights?\n  b) Name them.\n  c) Why not Dijkstra with negatives?",
+    hints: [
+      "BFS, Dijkstra, Bellman-Ford respectively.",
+      "BFS / Dijkstra / Bellman-Ford.",
+      "Dijkstra's greedy finalization is wrong when a later negative edge could shorten a finalized path.",
+    ],
+    tags: ["graphs", "BFS", "DFS", "algorithms"],
+  },
+
+
+  {
+    id: "trivia-204",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Greedy Algorithms: Greedy choice",
+    prompt: "Answer each of the following:\n\n  a) What is the greedy-choice property?\n  b) How does it differ from DP?\n  c) When does greedy fail?",
+    hints: [
+      "A globally optimal solution can be reached by locally optimal choices.",
+      "DP explores/combines subproblems; greedy commits to one choice and never reconsiders.",
+      "When a locally optimal choice precludes the global optimum (no greedy-choice property).",
+    ],
+    tags: ["greedy", "algorithms", "optimization"],
+  },
+
+
+  {
+    id: "trivia-205",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Greedy Algorithms: Proving correctness",
+    prompt: "Answer each of the following:\n\n  a) How do you prove a greedy algorithm correct?\n  b) What is an exchange argument?\n  c) Why is intuition not enough?",
+    hints: [
+      "Show the greedy-choice property and optimal substructure, often via an exchange argument.",
+      "Show any optimal solution can be transformed into the greedy one without getting worse.",
+      "Greedy is frequently wrong; coin change with arbitrary denominations is the classic counterexample.",
+    ],
+    tags: ["greedy", "algorithms", "optimization"],
+  },
+
+
+  {
+    id: "trivia-206",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Greedy Algorithms: Activity selection",
+    prompt: "Answer each of the following:\n\n  a) How do you select the max number of non-overlapping activities?\n  b) What do you sort by?\n  c) Why end time?",
+    hints: [
+      "Sort by finish time and greedily take each activity that starts after the last chosen finishes.",
+      "Sort by earliest finish time.",
+      "Finishing earliest leaves the most room for subsequent activities.",
+    ],
+    tags: ["greedy", "algorithms", "optimization"],
+  },
+
+
+  {
+    id: "trivia-207",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Greedy Algorithms: Interval scheduling vs DP",
+    prompt: "Answer each of the following:\n\n  a) When does interval scheduling need DP instead of greedy?\n  b) What changes the problem?\n  c) Example?",
+    hints: [
+      "When intervals have weights and you maximize total weight, greedy fails.",
+      "Adding weights breaks the simple earliest-finish heuristic.",
+      "Weighted interval scheduling uses DP with binary search.",
+    ],
+    tags: ["greedy", "algorithms", "optimization"],
+  },
+
+
+  {
+    id: "trivia-208",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Greedy Algorithms: Huffman coding",
+    prompt: "Answer each of the following:\n\n  a) How does Huffman build an optimal prefix code?\n  b) What greedy choice?\n  c) What structure?",
+    hints: [
+      "Repeatedly merge the two lowest-frequency nodes into a subtree.",
+      "Always combine the two least frequent items.",
+      "A min-heap of frequencies.",
+    ],
+    tags: ["greedy", "algorithms", "optimization"],
+  },
+
+
+  {
+    id: "trivia-209",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Greedy Algorithms: Fractional knapsack",
+    prompt: "Answer each of the following:\n\n  a) Why is fractional knapsack greedy but 0/1 is not?\n  b) What do you sort by?\n  c) Why does fractionality matter?",
+    hints: [
+      "You can take fractions, so taking the highest value-per-weight first is optimal.",
+      "Sort by value/weight ratio descending.",
+      "0/1 forbids fractions, so greedy can leave capacity wasted - it needs DP.",
+    ],
+    tags: ["greedy", "algorithms", "optimization"],
+  },
+
+
+  {
+    id: "trivia-210",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Greedy Algorithms: Jump game",
+    prompt: "Answer each of the following:\n\n  a) How does greedy solve the jump game (can you reach the end)?\n  b) What do you track?\n  c) Complexity?",
+    hints: [
+      "Track the farthest reachable index as you scan; if you ever fall behind it, fail.",
+      "The maximum reach so far.",
+      "O(n).",
+    ],
+    tags: ["greedy", "algorithms", "optimization"],
+  },
+
+
+  {
+    id: "trivia-211",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Greedy Algorithms: Gas station",
+    prompt: "Answer each of the following:\n\n  a) How does greedy solve the circular gas-station problem?\n  b) What does running out tell you?\n  c) Why one pass?",
+    hints: [
+      "Track a running tank; if total gas >= total cost, the answer exists; reset start when the tank goes negative.",
+      "You cannot start anywhere between the old start and the failing station.",
+      "A single pass finds the unique valid start.",
+    ],
+    tags: ["greedy", "algorithms", "optimization"],
+  },
+
+
+  {
+    id: "trivia-212",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Greedy Algorithms: Coin change greedy",
+    prompt: "Answer each of the following:\n\n  a) When does greedy coin change work and when does it fail?\n  b) Which coin systems are \"canonical\"?\n  c) What is the fix when it fails?",
+    hints: [
+      "Greedy works for canonical systems (like standard currency) but not arbitrary denominations.",
+      "Systems where greedy always yields the optimum (e.g., 1,5,10,25).",
+      "Use DP for arbitrary denominations.",
+    ],
+    tags: ["greedy", "algorithms", "optimization"],
+  },
+
+
+  {
+    id: "trivia-213",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Greedy Algorithms: Recognizing greedy",
+    prompt: "Answer each of the following:\n\n  a) What signals a greedy approach might work?\n  b) How do you sanity-check it?\n  c) What is the danger?",
+    hints: [
+      "Optimization problems where a simple ordering/local rule seems to lead to the optimum.",
+      "Test on small/adversarial inputs and try to prove the exchange argument.",
+      "Plausible-but-wrong greedy solutions - always verify, do not assume.",
+    ],
+    tags: ["greedy", "algorithms", "optimization"],
+  },
+
+
+  {
+    id: "trivia-214",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Hash Maps: Basics",
+    prompt: "Answer each of the following:\n\n  a) What are the average time complexities of hash map operations?\n  b) What makes them O(1)?\n  c) Worst case?",
+    hints: [
+      "Insert, lookup, delete are O(1) average.",
+      "A good hash function spreads keys uniformly across buckets.",
+      "O(n) worst case when many keys collide into one bucket.",
+    ],
+    tags: ["hash maps", "hashing", "data structures"],
+  },
+
+
+  {
+    id: "trivia-215",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Hash Maps: Collisions",
+    prompt: "Answer each of the following:\n\n  a) What is a hash collision?\n  b) Name two collision-resolution strategies.\n  c) How do they differ?",
+    hints: [
+      "Two keys hashing to the same bucket.",
+      "Chaining (linked lists/buckets) and open addressing (probing).",
+      "Chaining stores collisions in a bucket; open addressing finds another slot in the array.",
+    ],
+    tags: ["hash maps", "hashing", "data structures"],
+  },
+
+
+  {
+    id: "trivia-216",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Hash Maps: Load factor",
+    prompt: "Answer each of the following:\n\n  a) What is the load factor?\n  b) Why does it trigger resizing?\n  c) What does resizing cost?",
+    hints: [
+      "The ratio of entries to buckets (n / capacity).",
+      "High load factor increases collisions, degrading performance.",
+      "Rehashing all entries - amortized O(1) but O(n) on the resize itself.",
+    ],
+    tags: ["hash maps", "hashing", "data structures"],
+  },
+
+
+  {
+    id: "trivia-217",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Hash Maps: Good hash functions",
+    prompt: "Answer each of the following:\n\n  a) What makes a hash function good?\n  b) Why does distribution matter?\n  c) What about determinism?",
+    hints: [
+      "Uniform distribution, fast to compute, and deterministic.",
+      "Poor distribution clusters keys and causes collisions.",
+      "It must return the same hash for the same key every time.",
+    ],
+    tags: ["hash maps", "hashing", "data structures"],
+  },
+
+
+  {
+    id: "trivia-218",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Hash Maps: Two sum",
+    prompt: "Answer each of the following:\n\n  a) How does a hash map solve two-sum in O(n)?\n  b) What do you store?\n  c) Why one pass?",
+    hints: [
+      "Store each value's index and look up the complement (target - num).",
+      "Map of value -> index seen so far.",
+      "You check for the complement before inserting, so one pass suffices.",
+    ],
+    tags: ["hash maps", "hashing", "data structures"],
+  },
+
+
+  {
+    id: "trivia-219",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Hash Maps: Grouping/counting",
+    prompt: "Answer each of the following:\n\n  a) How are hash maps used for counting and grouping?\n  b) Give an example pattern.\n  c) Why are they ideal?",
+    hints: [
+      "Map a key to a count or a list of items.",
+      "Frequency counts, group anagrams (sorted-letters -> list).",
+      "O(1) average access makes accumulation per key cheap.",
+    ],
+    tags: ["hash maps", "hashing", "data structures"],
+  },
+
+
+  {
+    id: "trivia-220",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Hash Maps: Set vs map",
+    prompt: "Answer each of the following:\n\n  a) When do you use a set vs a map?\n  b) What does a set provide?\n  c) Example uses?",
+    hints: [
+      "Set for membership/uniqueness; map when you need an associated value.",
+      "O(1) average contains/add/remove with no values.",
+      "Set: deduplication, seen-tracking. Map: counts, indices, adjacency.",
+    ],
+    tags: ["hash maps", "hashing", "data structures"],
+  },
+
+
+  {
+    id: "trivia-221",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Hash Maps: Ordered maps",
+    prompt: "Answer each of the following:\n\n  a) How does an ordered/sorted map differ from a hash map?\n  b) What does it cost?\n  c) When do you need it?",
+    hints: [
+      "It keeps keys in sorted order (often a balanced BST), unlike unordered hashing.",
+      "O(log n) operations instead of O(1) average.",
+      "When you need ordered iteration or range queries.",
+    ],
+    tags: ["hash maps", "hashing", "data structures"],
+  },
+
+
+  {
+    id: "trivia-222",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Hash Maps: Hashing custom keys",
+    prompt: "Answer each of the following:\n\n  a) How do you use a composite/object key in a hash map?\n  b) What must the key support?\n  c) Pitfall with mutable keys?",
+    hints: [
+      "Combine fields into a tuple/string or define a proper hash + equality.",
+      "Consistent hashCode and equals (or be immutable/hashable).",
+      "Mutating a key after insertion corrupts its bucket placement.",
+    ],
+    tags: ["hash maps", "hashing", "data structures"],
+  },
+
+
+  {
+    id: "trivia-223",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Hash Maps: Memory and trade-offs",
+    prompt: "Answer each of the following:\n\n  a) What are the downsides of hash maps?\n  b) Why no ordering guarantee?\n  c) When prefer an array?",
+    hints: [
+      "Memory overhead and no inherent ordering of keys.",
+      "Bucket placement depends on hashing, not insertion or key order.",
+      "Use an array when keys are a small dense integer range (index directly).",
+    ],
+    tags: ["hash maps", "hashing", "data structures"],
+  },
+
+
+  {
+    id: "trivia-224",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "TypeScript: Structural typing",
+    prompt: "Answer each of the following:\n\n  a) What is structural typing in TypeScript?\n  b) How does it differ from nominal typing?\n  c) Practical consequence?",
+    hints: [
+      "Types are compatible if their shapes match, regardless of declared name.",
+      "Nominal typing requires the same declared type/name to be compatible.",
+      "An object literal satisfies an interface if it has the required members, even without implementing it explicitly.",
+    ],
+    tags: ["TypeScript", "types", "JavaScript", "frontend"],
+  },
+
+
+  {
+    id: "trivia-225",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "TypeScript: interface vs type",
+    prompt: "Answer each of the following:\n\n  a) How do interface and type alias differ?\n  b) What can each do that the other cannot?\n  c) When to use which?",
+    hints: [
+      "Interfaces are open (declaration merging, extends); type aliases handle unions, intersections, primitives, tuples.",
+      "Interfaces merge across declarations; type aliases can express unions and mapped types.",
+      "Interfaces for object/class shapes; type aliases for unions and complex compositions.",
+    ],
+    tags: ["TypeScript", "types", "JavaScript", "frontend"],
+  },
+
+
+  {
+    id: "trivia-226",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "TypeScript: Generics",
+    prompt: "Answer each of the following:\n\n  a) What problem do generics solve?\n  b) Give a generic function signature.\n  c) What are constraints?",
+    hints: [
+      "Reusable, type-safe code parameterized over types.",
+      "function identity<T>(x: T): T.",
+      "extends clauses restrict a type parameter, e.g., <T extends { id: number }>.",
+    ],
+    tags: ["TypeScript", "types", "JavaScript", "frontend"],
+  },
+
+
+  {
+    id: "trivia-227",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "TypeScript: Union and narrowing",
+    prompt: "Answer each of the following:\n\n  a) What is a union type?\n  b) How does type narrowing work?\n  c) Name two narrowing techniques.",
+    hints: [
+      "A value that may be one of several types (A | B).",
+      "The compiler narrows the type within a guarded block.",
+      "typeof checks, instanceof, in operator, and discriminated unions.",
+    ],
+    tags: ["TypeScript", "types", "JavaScript", "frontend"],
+  },
+
+
+  {
+    id: "trivia-228",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "TypeScript: Discriminated unions",
+    prompt: "Answer each of the following:\n\n  a) What is a discriminated (tagged) union?\n  b) What makes the narrowing exhaustive?\n  c) Why are they powerful?",
+    hints: [
+      "A union of types sharing a literal discriminant field (e.g., kind: \"circle\").",
+      "Switching on the discriminant lets the compiler narrow each branch.",
+      "They model variant data safely and enable exhaustiveness checks.",
+    ],
+    tags: ["TypeScript", "types", "JavaScript", "frontend"],
+  },
+
+
+  {
+    id: "trivia-229",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "TypeScript: unknown vs any",
+    prompt: "Answer each of the following:\n\n  a) How does unknown differ from any?\n  b) Why prefer unknown?\n  c) What must you do before using unknown?",
+    hints: [
+      "any disables type checking; unknown is type-safe and forces checks.",
+      "unknown keeps safety - you cannot use it until you narrow it.",
+      "Narrow it via a type guard or assertion before operating on it.",
+    ],
+    tags: ["TypeScript", "types", "JavaScript", "frontend"],
+  },
+
+
+  {
+    id: "trivia-230",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "TypeScript: Utility types",
+    prompt: "Answer each of the following:\n\n  a) Name three built-in utility types and what they do.\n  b) When is Partial useful?\n  c) What does Pick do?",
+    hints: [
+      "Partial<T> (all optional), Required<T>, Readonly<T>, Pick<T,K>, Omit<T,K>, Record<K,V>.",
+      "For update payloads where only some fields are provided.",
+      "Constructs a type with only the selected keys K from T.",
+    ],
+    tags: ["TypeScript", "types", "JavaScript", "frontend"],
+  },
+
+
+  {
+    id: "trivia-231",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "TypeScript: Type guards",
+    prompt: "Answer each of the following:\n\n  a) What is a user-defined type guard?\n  b) What is the return signature?\n  c) Why use it?",
+    hints: [
+      "A function returning a type predicate like x is Cat.",
+      "param is Type as the return type annotation.",
+      "To teach the compiler to narrow a type at call sites.",
+    ],
+    tags: ["TypeScript", "types", "JavaScript", "frontend"],
+  },
+
+
+  {
+    id: "trivia-232",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "TypeScript: Enums and literals",
+    prompt: "Answer each of the following:\n\n  a) Compare enums to union literal types.\n  b) What is a const assertion?\n  c) Why might you avoid numeric enums?",
+    hints: [
+      "Union literals (\"a\" | \"b\") are often lighter and tree-shakeable than enums.",
+      "as const freezes a value to its literal type.",
+      "Numeric enums allow unintended numeric assignments and add runtime code.",
+    ],
+    tags: ["TypeScript", "types", "JavaScript", "frontend"],
+  },
+
+
+  {
+    id: "trivia-233",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "TypeScript: Strict mode",
+    prompt: "Answer each of the following:\n\n  a) What does strict mode enable?\n  b) Why turn on strictNullChecks?\n  c) Benefit overall?",
+    hints: [
+      "A bundle of strict flags including strictNullChecks and noImplicitAny.",
+      "It forces explicit handling of null/undefined, catching a huge class of bugs.",
+      "Far stronger guarantees and fewer runtime surprises.",
+    ],
+    tags: ["TypeScript", "types", "JavaScript", "frontend"],
+  },
+
+
+  {
+    id: "trivia-234",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Palantir Foundry & Data Engineering: Foundry overview",
+    prompt: "Answer each of the following:\n\n  a) What is Palantir Foundry at a high level?\n  b) What is the Ontology?\n  c) Why does it matter?",
+    hints: [
+      "A data integration and operational analytics platform connecting raw data to applications.",
+      "A semantic layer mapping datasets to business objects, properties, and actions.",
+      "It lets analysts/apps work with meaningful objects rather than raw tables.",
+    ],
+    tags: ["Palantir", "Foundry", "data engineering", "pipelines"],
+  },
+
+
+  {
+    id: "trivia-235",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Palantir Foundry & Data Engineering: Datasets and transforms",
+    prompt: "Answer each of the following:\n\n  a) What is a dataset in Foundry?\n  b) What are transforms?\n  c) How are they typically authored?",
+    hints: [
+      "A versioned, immutable table of data with schema and lineage.",
+      "Code (often PySpark/SQL) that produces output datasets from inputs.",
+      "As Python/Spark transforms or SQL, registered in the build graph.",
+    ],
+    tags: ["Palantir", "Foundry", "data engineering", "pipelines"],
+  },
+
+
+  {
+    id: "trivia-236",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Palantir Foundry & Data Engineering: Lineage",
+    prompt: "Answer each of the following:\n\n  a) What is data lineage and why does Foundry track it?\n  b) What does it enable?\n  c) How does it help debugging?",
+    hints: [
+      "The dependency graph of how datasets derive from one another.",
+      "Impact analysis, reproducibility, and governance.",
+      "You can trace a bad value back to its source transform/dataset.",
+    ],
+    tags: ["Palantir", "Foundry", "data engineering", "pipelines"],
+  },
+
+
+  {
+    id: "trivia-237",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Palantir Foundry & Data Engineering: Incremental builds",
+    prompt: "Answer each of the following:\n\n  a) What is an incremental transform?\n  b) Why use it?\n  c) What must you handle?",
+    hints: [
+      "A transform that processes only new/changed input partitions.",
+      "To avoid recomputing entire large datasets each run.",
+      "Append vs snapshot semantics and correct handling of late data.",
+    ],
+    tags: ["Palantir", "Foundry", "data engineering", "pipelines"],
+  },
+
+
+  {
+    id: "trivia-238",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Palantir Foundry & Data Engineering: Batch vs streaming",
+    prompt: "Answer each of the following:\n\n  a) Contrast batch and streaming data processing.\n  b) When do you choose each?\n  c) What is micro-batching?",
+    hints: [
+      "Batch processes bounded data on a schedule; streaming processes events continuously.",
+      "Batch for periodic heavy aggregation; streaming for low-latency reactions.",
+      "Processing small frequent batches to approximate streaming.",
+    ],
+    tags: ["Palantir", "Foundry", "data engineering", "pipelines"],
+  },
+
+
+  {
+    id: "trivia-239",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Palantir Foundry & Data Engineering: Spark fundamentals",
+    prompt: "Answer each of the following:\n\n  a) Why is Spark suited to large data transforms?\n  b) What is a partition?\n  c) What causes a shuffle?",
+    hints: [
+      "It distributes work across a cluster with in-memory processing.",
+      "A chunk of the dataset processed by one task in parallel.",
+      "Operations like joins/groupBy that redistribute data across partitions.",
+    ],
+    tags: ["Palantir", "Foundry", "data engineering", "pipelines"],
+  },
+
+
+  {
+    id: "trivia-240",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Palantir Foundry & Data Engineering: Data quality",
+    prompt: "Answer each of the following:\n\n  a) How do you enforce data quality in a pipeline?\n  b) Name two kinds of checks.\n  c) What is a health check / expectation?",
+    hints: [
+      "Validation checks and schema enforcement at transform boundaries.",
+      "Schema/type checks and value/row-count expectations.",
+      "An assertion (e.g., non-null, range, uniqueness) that fails the build if violated.",
+    ],
+    tags: ["Palantir", "Foundry", "data engineering", "pipelines"],
+  },
+
+
+  {
+    id: "trivia-241",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Palantir Foundry & Data Engineering: Idempotent pipelines",
+    prompt: "Answer each of the following:\n\n  a) Why should pipeline runs be idempotent?\n  b) What does immutability of datasets give you?\n  c) How does reprocessing stay safe?",
+    hints: [
+      "So reruns produce the same result without duplicating or corrupting data.",
+      "Each build version is reproducible and rollback-able.",
+      "Outputs are recomputed deterministically from versioned inputs.",
+    ],
+    tags: ["Palantir", "Foundry", "data engineering", "pipelines"],
+  },
+
+
+  {
+    id: "trivia-242",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Palantir Foundry & Data Engineering: Partitioning strategy",
+    prompt: "Answer each of the following:\n\n  a) Why does partitioning matter for performance?\n  b) What is a good partition key?\n  c) What is data skew?",
+    hints: [
+      "It controls parallelism and how much data each task reads.",
+      "One that distributes data evenly and matches common query/join filters.",
+      "Uneven partition sizes that bottleneck a few tasks.",
+    ],
+    tags: ["Palantir", "Foundry", "data engineering", "pipelines"],
+  },
+
+
+  {
+    id: "trivia-243",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Palantir Foundry & Data Engineering: Governance and access",
+    prompt: "Answer each of the following:\n\n  a) How is access control handled in a data platform like Foundry?\n  b) What is purpose-based access?\n  c) Why is lineage relevant to governance?",
+    hints: [
+      "Granular permissions on datasets/objects, often role- and purpose-based.",
+      "Access granted tied to an approved purpose, not just identity.",
+      "Lineage shows where sensitive data flows so policies propagate downstream.",
+    ],
+    tags: ["Palantir", "Foundry", "data engineering", "pipelines"],
+  },
+
+
+  {
+    id: "trivia-244",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "RAG & Generative AI: RAG basics",
+    prompt: "Answer each of the following:\n\n  a) What does Retrieval-Augmented Generation do?\n  b) Why use it over a bare LLM?\n  c) What are the two phases?",
+    hints: [
+      "It retrieves relevant context and feeds it to the LLM to ground answers.",
+      "It reduces hallucination and supplies up-to-date or private knowledge the model was not trained on.",
+      "Retrieval (find relevant chunks) then generation (LLM answers using them).",
+    ],
+    tags: ["RAG", "GenAI", "LLM", "embeddings"],
+  },
+
+
+  {
+    id: "trivia-245",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "RAG & Generative AI: Chunking",
+    prompt: "Answer each of the following:\n\n  a) Why do you chunk documents for RAG?\n  b) What does chunk size affect?\n  c) Why overlap chunks?",
+    hints: [
+      "To fit retrievable units into context and embeddings.",
+      "Too large dilutes relevance; too small loses context.",
+      "Overlap preserves context that straddles chunk boundaries.",
+    ],
+    tags: ["RAG", "GenAI", "LLM", "embeddings"],
+  },
+
+
+  {
+    id: "trivia-246",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "RAG & Generative AI: Embeddings",
+    prompt: "Answer each of the following:\n\n  a) What is an embedding?\n  b) How is similarity measured?\n  c) Why are they central to retrieval?",
+    hints: [
+      "A dense vector capturing semantic meaning of text.",
+      "Cosine similarity (or dot product) between vectors.",
+      "Semantically similar text lands close in vector space, enabling semantic search.",
+    ],
+    tags: ["RAG", "GenAI", "LLM", "embeddings"],
+  },
+
+
+  {
+    id: "trivia-247",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "RAG & Generative AI: Vector databases",
+    prompt: "Answer each of the following:\n\n  a) What does a vector database do?\n  b) What is ANN search?\n  c) Why not exact nearest neighbor?",
+    hints: [
+      "Stores embeddings and supports fast nearest-neighbor queries.",
+      "Approximate Nearest Neighbor search trades a little accuracy for big speed.",
+      "Exact NN is too slow at scale; ANN (e.g., HNSW) is near-exact and fast.",
+    ],
+    tags: ["RAG", "GenAI", "LLM", "embeddings"],
+  },
+
+
+  {
+    id: "trivia-248",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "RAG & Generative AI: Hybrid retrieval",
+    prompt: "Answer each of the following:\n\n  a) What is hybrid search?\n  b) Why combine dense and sparse retrieval?\n  c) What is reranking?",
+    hints: [
+      "Combining vector (dense) search with keyword (sparse/BM25) search.",
+      "Dense captures meaning; sparse nails exact terms/IDs - together they cover each other's gaps.",
+      "A second-stage model reorders candidates by relevance to the query.",
+    ],
+    tags: ["RAG", "GenAI", "LLM", "embeddings"],
+  },
+
+
+  {
+    id: "trivia-249",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "RAG & Generative AI: Hallucination",
+    prompt: "Answer each of the following:\n\n  a) What is hallucination in LLMs?\n  b) How does RAG reduce it?\n  c) How can you further guard against it?",
+    hints: [
+      "Confident, fluent output that is factually wrong or unsupported.",
+      "Grounding answers in retrieved source text constrains the model.",
+      "Cite sources, instruct \"answer only from context\", and validate/abstain when context is weak.",
+    ],
+    tags: ["RAG", "GenAI", "LLM", "embeddings"],
+  },
+
+
+  {
+    id: "trivia-250",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "RAG & Generative AI: Prompt construction",
+    prompt: "Answer each of the following:\n\n  a) How do you assemble the LLM prompt in RAG?\n  b) What goes in the context window?\n  c) What is the risk of stuffing too much?",
+    hints: [
+      "System instructions + retrieved chunks + the user question.",
+      "The top relevant chunks, formatted with any citations.",
+      "Exceeding the context window or diluting signal with irrelevant text (\"lost in the middle\").",
+    ],
+    tags: ["RAG", "GenAI", "LLM", "embeddings"],
+  },
+
+
+  {
+    id: "trivia-251",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "RAG & Generative AI: Evaluation",
+    prompt: "Answer each of the following:\n\n  a) How do you evaluate a RAG system?\n  b) What two aspects do you measure separately?\n  c) Name a metric or method.",
+    hints: [
+      "Assess retrieval quality and generation quality separately.",
+      "Retrieval (did it fetch the right chunks?) and answer (faithful and relevant?).",
+      "Retrieval recall/precision; answer faithfulness/groundedness, often via an LLM-as-judge.",
+    ],
+    tags: ["RAG", "GenAI", "LLM", "embeddings"],
+  },
+
+
+  {
+    id: "trivia-252",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "RAG & Generative AI: Context window",
+    prompt: "Answer each of the following:\n\n  a) What is the context window?\n  b) Why does it constrain RAG?\n  c) How do you handle overflow?",
+    hints: [
+      "The maximum tokens an LLM can attend to at once.",
+      "It limits how much retrieved context plus history fits in one call.",
+      "Retrieve fewer/better chunks, summarize, or use a larger-context model.",
+    ],
+    tags: ["RAG", "GenAI", "LLM", "embeddings"],
+  },
+
+
+  {
+    id: "trivia-253",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "RAG & Generative AI: Fine-tuning vs RAG",
+    prompt: "Answer each of the following:\n\n  a) When do you fine-tune vs use RAG?\n  b) What does each change?\n  c) Can you combine them?",
+    hints: [
+      "Fine-tune to change behavior/style/format; use RAG to inject knowledge.",
+      "Fine-tuning updates weights; RAG augments the prompt at inference.",
+      "Yes - fine-tune for behavior and use RAG for fresh/private facts.",
+    ],
+    tags: ["RAG", "GenAI", "LLM", "embeddings"],
+  },
+
+
+  {
+    id: "trivia-254",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "AWS: Core compute",
+    prompt: "Answer each of the following:\n\n  a) Contrast EC2, Lambda, and containers (ECS/EKS).\n  b) When do you pick Lambda?\n  c) When EC2?",
+    hints: [
+      "EC2 = VMs you manage; Lambda = serverless functions; ECS/EKS = container orchestration.",
+      "For event-driven, spiky, short tasks with no server management.",
+      "For long-running, stateful, or fine-tuned workloads needing full control.",
+    ],
+    tags: ["AWS", "cloud", "infrastructure"],
+  },
+
+
+  {
+    id: "trivia-255",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "AWS: S3",
+    prompt: "Answer each of the following:\n\n  a) What is S3 and its consistency model?\n  b) What are storage classes for?\n  c) How do you secure a bucket?",
+    hints: [
+      "Object storage with strong read-after-write consistency.",
+      "Cost tiers by access frequency (Standard, IA, Glacier).",
+      "Block public access, use bucket policies/IAM, and encryption (SSE).",
+    ],
+    tags: ["AWS", "cloud", "infrastructure"],
+  },
+
+
+  {
+    id: "trivia-256",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "AWS: Databases",
+    prompt: "Answer each of the following:\n\n  a) Contrast RDS, DynamoDB, and Aurora.\n  b) When do you choose DynamoDB?\n  c) What does Aurora add over RDS?",
+    hints: [
+      "RDS = managed relational; DynamoDB = managed NoSQL key-value/document; Aurora = cloud-native MySQL/Postgres.",
+      "For massive scale, predictable low latency, and a key-value access pattern.",
+      "Higher performance, storage auto-scaling, and faster failover.",
+    ],
+    tags: ["AWS", "cloud", "infrastructure"],
+  },
+
+
+  {
+    id: "trivia-257",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "AWS: IAM",
+    prompt: "Answer each of the following:\n\n  a) What is IAM and the principle it enforces?\n  b) What are roles vs users?\n  c) What is least privilege?",
+    hints: [
+      "Identity and Access Management controlling who can do what.",
+      "Users are long-lived identities; roles are assumable, temporary credentials.",
+      "Granting only the minimum permissions required for a task.",
+    ],
+    tags: ["AWS", "cloud", "infrastructure"],
+  },
+
+
+  {
+    id: "trivia-258",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "AWS: VPC",
+    prompt: "Answer each of the following:\n\n  a) What is a VPC?\n  b) Contrast public vs private subnets.\n  c) What controls traffic?",
+    hints: [
+      "An isolated virtual network for your resources.",
+      "Public subnets route to an internet gateway; private subnets do not.",
+      "Security groups (stateful, per-resource) and network ACLs (stateless, per-subnet).",
+    ],
+    tags: ["AWS", "cloud", "infrastructure"],
+  },
+
+
+  {
+    id: "trivia-259",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "AWS: Scaling and LB",
+    prompt: "Answer each of the following:\n\n  a) What do Auto Scaling Groups do?\n  b) What is an ELB/ALB?\n  c) How do they work together?",
+    hints: [
+      "Automatically add/remove EC2 instances based on demand/metrics.",
+      "Load balancers distribute traffic across healthy targets (ALB is layer 7).",
+      "The ALB spreads traffic; the ASG adjusts capacity behind it.",
+    ],
+    tags: ["AWS", "cloud", "infrastructure"],
+  },
+
+
+  {
+    id: "trivia-260",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "AWS: Messaging",
+    prompt: "Answer each of the following:\n\n  a) Contrast SQS, SNS, and Kinesis.\n  b) When do you use SNS vs SQS?\n  c) What is Kinesis for?",
+    hints: [
+      "SQS = queue (point-to-point), SNS = pub/sub fan-out, Kinesis = streaming data.",
+      "SNS to fan out one message to many subscribers; SQS to buffer work for consumers.",
+      "High-throughput real-time streaming and analytics.",
+    ],
+    tags: ["AWS", "cloud", "infrastructure"],
+  },
+
+
+  {
+    id: "trivia-261",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "AWS: Serverless patterns",
+    prompt: "Answer each of the following:\n\n  a) What is a common serverless API stack on AWS?\n  b) How is it triggered?\n  c) What is the cold-start trade-off?",
+    hints: [
+      "API Gateway -> Lambda -> DynamoDB.",
+      "HTTP requests via API Gateway invoke Lambda functions.",
+      "Cold starts add latency on first/idle invocations; mitigate with provisioned concurrency.",
+    ],
+    tags: ["AWS", "cloud", "infrastructure"],
+  },
+
+
+  {
+    id: "trivia-262",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "AWS: Observability",
+    prompt: "Answer each of the following:\n\n  a) What does CloudWatch provide?\n  b) What is X-Ray?\n  c) How do you alert?",
+    hints: [
+      "Metrics, logs, and dashboards for AWS resources.",
+      "Distributed tracing across AWS services.",
+      "CloudWatch alarms on metric thresholds triggering SNS/actions.",
+    ],
+    tags: ["AWS", "cloud", "infrastructure"],
+  },
+
+
+  {
+    id: "trivia-263",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "AWS: Cost and reliability",
+    prompt: "Answer each of the following:\n\n  a) How do you control AWS cost?\n  b) What are reserved/spot instances?\n  c) What is multi-AZ for?",
+    hints: [
+      "Right-size, use auto-scaling, pick appropriate pricing models, and monitor with budgets.",
+      "Reserved = commit for discount; Spot = cheap spare capacity that can be reclaimed.",
+      "Deploying across Availability Zones for fault tolerance/high availability.",
+    ],
+    tags: ["AWS", "cloud", "infrastructure"],
+  },
+
+
+  {
+    id: "trivia-264",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "System Design Fundamentals: Scaling",
+    prompt: "Answer each of the following:\n\n  a) Contrast vertical and horizontal scaling.\n  b) What are the limits of vertical scaling?\n  c) Why does horizontal scaling need statelessness?",
+    hints: [
+      "Vertical = bigger machine; horizontal = more machines.",
+      "A single machine has a hard ceiling and a single point of failure.",
+      "Stateless servers let any instance handle any request, enabling load distribution.",
+    ],
+    tags: ["system design", "scalability", "distributed systems"],
+  },
+
+
+  {
+    id: "trivia-265",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "System Design Fundamentals: Load balancing",
+    prompt: "Answer each of the following:\n\n  a) What does a load balancer do?\n  b) Name two balancing algorithms.\n  c) What are health checks for?",
+    hints: [
+      "Distributes incoming traffic across multiple servers.",
+      "Round-robin, least-connections, weighted, consistent hashing.",
+      "To remove unhealthy instances from rotation.",
+    ],
+    tags: ["system design", "scalability", "distributed systems"],
+  },
+
+
+  {
+    id: "trivia-266",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "System Design Fundamentals: Caching",
+    prompt: "Answer each of the following:\n\n  a) Why cache, and where can caches live?\n  b) What is cache invalidation and why is it hard?\n  c) Name an eviction policy.",
+    hints: [
+      "To reduce latency and load by reusing computed/fetched results; client, CDN, app, and DB layers.",
+      "Keeping cached data fresh; stale data is a classic source of bugs.",
+      "LRU, LFU, or TTL-based eviction.",
+    ],
+    tags: ["system design", "scalability", "distributed systems"],
+  },
+
+
+  {
+    id: "trivia-267",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "System Design Fundamentals: CAP and consistency",
+    prompt: "Answer each of the following:\n\n  a) State the CAP theorem.\n  b) When does the trade-off actually apply?\n  c) What is eventual consistency?",
+    hints: [
+      "Under a partition you choose between consistency and availability.",
+      "Only during a network partition; otherwise you can have both C and A.",
+      "Replicas converge to the same value over time, not immediately.",
+    ],
+    tags: ["system design", "scalability", "distributed systems"],
+  },
+
+
+  {
+    id: "trivia-268",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "System Design Fundamentals: Databases",
+    prompt: "Answer each of the following:\n\n  a) When do you pick SQL vs NoSQL?\n  b) What does normalization trade off?\n  c) What is denormalization for?",
+    hints: [
+      "SQL for relations/transactions; NoSQL for scale/flexible schema/specific access patterns.",
+      "Normalization reduces redundancy but needs joins; denormalization speeds reads at the cost of duplication.",
+      "Precomputing/duplicating data to avoid expensive joins on the read path.",
+    ],
+    tags: ["system design", "scalability", "distributed systems"],
+  },
+
+
+  {
+    id: "trivia-269",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "System Design Fundamentals: Sharding and replication",
+    prompt: "Answer each of the following:\n\n  a) What is sharding vs replication?\n  b) What problem does each solve?\n  c) What does replication trade off?",
+    hints: [
+      "Sharding splits data across nodes; replication copies data to multiple nodes.",
+      "Sharding scales writes/storage; replication adds read scale and availability.",
+      "Replication adds consistency/lag concerns between copies.",
+    ],
+    tags: ["system design", "scalability", "distributed systems"],
+  },
+
+
+  {
+    id: "trivia-270",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "System Design Fundamentals: Async and queues",
+    prompt: "Answer each of the following:\n\n  a) Why introduce a message queue?\n  b) What does it decouple?\n  c) What delivery guarantee is common?",
+    hints: [
+      "To buffer load, decouple producers from consumers, and smooth spikes.",
+      "Producer availability/throughput from consumer processing.",
+      "At-least-once delivery (handle duplicates with idempotency).",
+    ],
+    tags: ["system design", "scalability", "distributed systems"],
+  },
+
+
+  {
+    id: "trivia-271",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "System Design Fundamentals: Estimation",
+    prompt: "Answer each of the following:\n\n  a) Why do back-of-envelope estimates matter in design?\n  b) What do you estimate?\n  c) Give a useful number to remember.",
+    hints: [
+      "To size the system and justify component choices.",
+      "QPS, storage, bandwidth, and memory needs.",
+      "A day is ~86,400 seconds; 1M/day is ~12 QPS average.",
+    ],
+    tags: ["system design", "scalability", "distributed systems"],
+  },
+
+
+  {
+    id: "trivia-272",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "System Design Fundamentals: Reliability",
+    prompt: "Answer each of the following:\n\n  a) What is a single point of failure and how do you remove it?\n  b) What is graceful degradation?\n  c) What are SLOs?",
+    hints: [
+      "A component whose failure takes down the system; remove it via redundancy/failover.",
+      "Serving reduced functionality instead of failing entirely under stress.",
+      "Target reliability objectives (e.g., 99.9% availability) you design and measure against.",
+    ],
+    tags: ["system design", "scalability", "distributed systems"],
+  },
+
+
+  {
+    id: "trivia-273",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "System Design Fundamentals: Design process",
+    prompt: "Answer each of the following:\n\n  a) Outline a structured approach to a system-design interview.\n  b) Why clarify requirements first?\n  c) What comes after the high-level design?",
+    hints: [
+      "Clarify requirements, estimate scale, define APIs/data model, draw high-level design, then deep-dive and discuss trade-offs.",
+      "To scope the problem and surface functional/non-functional needs before designing.",
+      "Identify bottlenecks and deep-dive components (scaling, caching, consistency).",
+    ],
+    tags: ["system design", "scalability", "distributed systems"],
+  },
+
+
+  {
+    id: "trivia-274",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Microservices & API Design: Mono vs micro",
+    prompt: "Answer each of the following:\n\n  a) What are the main trade-offs of microservices vs a monolith?\n  b) When should you start with a monolith?\n  c) What is a \"distributed monolith\"?",
+    hints: [
+      "Microservices give independent deploy/scale at the cost of operational and consistency complexity.",
+      "Almost always - start modular monolith and split only when you have concrete reasons.",
+      "Services so tightly coupled they must deploy together - all the pain, none of the benefit.",
+    ],
+    tags: ["microservices", "APIs", "distributed systems"],
+  },
+
+
+  {
+    id: "trivia-275",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Microservices & API Design: Conway's law",
+    prompt: "Answer each of the following:\n\n  a) State Conway's law.\n  b) What is the Inverse Conway Maneuver?\n  c) Why does it matter for service boundaries?",
+    hints: [
+      "Systems mirror the communication structure of the organization that builds them.",
+      "Deliberately shaping teams to produce the architecture you want.",
+      "Team ownership tends to define service boundaries, so align them intentionally.",
+    ],
+    tags: ["microservices", "APIs", "distributed systems"],
+  },
+
+
+  {
+    id: "trivia-276",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Microservices & API Design: Decomposition",
+    prompt: "Answer each of the following:\n\n  a) How should you decompose services?\n  b) Why by business capability, not technical tier?\n  c) What is a bounded context?",
+    hints: [
+      "Along bounded contexts / business capabilities (Orders, Payments).",
+      "Tier-based splits create chatty, tightly coupled services.",
+      "A boundary within which a domain model and its language stay consistent.",
+    ],
+    tags: ["microservices", "APIs", "distributed systems"],
+  },
+
+
+  {
+    id: "trivia-277",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Microservices & API Design: Sync vs async",
+    prompt: "Answer each of the following:\n\n  a) When do you use synchronous vs asynchronous communication?\n  b) What does async decouple?\n  c) Give a protocol for each.",
+    hints: [
+      "Sync when the caller needs an immediate result; async for fire-and-forget and load leveling.",
+      "Producer and consumer availability and throughput.",
+      "Sync: REST/gRPC. Async: message queue / event stream (Kafka, SQS).",
+    ],
+    tags: ["microservices", "APIs", "distributed systems"],
+  },
+
+
+  {
+    id: "trivia-278",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Microservices & API Design: API gateway",
+    prompt: "Answer each of the following:\n\n  a) What does an API gateway do?\n  b) What concerns belong in it?\n  c) What must NOT go in it?",
+    hints: [
+      "A single entry point handling cross-cutting concerns and routing to services.",
+      "Auth, rate limiting, TLS termination, routing, aggregation.",
+      "Business/domain logic - that stays in the services.",
+    ],
+    tags: ["microservices", "APIs", "distributed systems"],
+  },
+
+
+  {
+    id: "trivia-279",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Microservices & API Design: Idempotency",
+    prompt: "Answer each of the following:\n\n  a) What is an idempotent operation?\n  b) Why do payments need idempotency keys?\n  c) Which HTTP methods are naturally idempotent?",
+    hints: [
+      "Running it N times has the same effect as running it once.",
+      "So a retried charge does not double-bill - the key returns the stored result.",
+      "GET, PUT, DELETE (POST is not).",
+    ],
+    tags: ["microservices", "APIs", "distributed systems"],
+  },
+
+
+  {
+    id: "trivia-280",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Microservices & API Design: Database per service",
+    prompt: "Answer each of the following:\n\n  a) Why database-per-service?\n  b) What does it cost you?\n  c) How do you query across services?",
+    hints: [
+      "It keeps services loosely coupled and independently deployable/scalable.",
+      "No cross-service joins or distributed ACID transactions.",
+      "API composition or a CQRS read model fed by events.",
+    ],
+    tags: ["microservices", "APIs", "distributed systems"],
+  },
+
+
+  {
+    id: "trivia-281",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Microservices & API Design: Saga",
+    prompt: "Answer each of the following:\n\n  a) What is the saga pattern?\n  b) Choreography vs orchestration?\n  c) What is a compensating transaction?",
+    hints: [
+      "A distributed transaction as a sequence of local transactions with compensations.",
+      "Choreography = services react to events; orchestration = a coordinator drives steps.",
+      "A semantic undo (e.g., refund) for an already-committed step.",
+    ],
+    tags: ["microservices", "APIs", "distributed systems"],
+  },
+
+
+  {
+    id: "trivia-282",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Microservices & API Design: Resilience",
+    prompt: "Answer each of the following:\n\n  a) Name four resilience patterns for remote calls.\n  b) What does a circuit breaker do?\n  c) Why backoff with jitter?",
+    hints: [
+      "Timeout, retry-with-backoff, circuit breaker, bulkhead.",
+      "Stops calling a failing dependency, failing fast, then probes for recovery.",
+      "To prevent a thundering herd of synchronized retries.",
+    ],
+    tags: ["microservices", "APIs", "distributed systems"],
+  },
+
+
+  {
+    id: "trivia-283",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Microservices & API Design: Observability",
+    prompt: "Answer each of the following:\n\n  a) What are the three pillars of observability?\n  b) What does a trace id enable?\n  c) Liveness vs readiness probe?",
+    hints: [
+      "Logs, metrics, and traces.",
+      "Correlating a single request across all services it touches.",
+      "Liveness restarts a dead/hung process; readiness gates traffic until the service can serve.",
+    ],
+    tags: ["microservices", "APIs", "distributed systems"],
+  },
 ];
 
 export function getQuestions(filters = {}) {

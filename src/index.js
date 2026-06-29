@@ -87,15 +87,56 @@ function loadSession() {
   }
 }
 
+// ── Language selection helpers ─────────────────────────────────────────────
+
+const LANG_LABELS = {
+  js: 'JavaScript (.js)',
+  typescript: 'TypeScript (.ts)',
+  python: 'Python (.py)',
+  java: 'Java (.java)  [compile+run, no hidden tests]',
+};
+
+function getAvailableLanguages(question) {
+  if (question.suitableLanguages?.length) return question.suitableLanguages;
+  if (question.starterCode) {
+    const langs = ['js', 'typescript', 'python', 'java'].filter(l => question.starterCode[l]);
+    if (langs.length) return langs;
+  }
+  return ['js', 'typescript', 'python'];
+}
+
+async function pickLanguageForQuestion(question) {
+  const available = getAvailableLanguages(question);
+  if (available.length === 1) {
+    session.language = available[0];
+    saveSession();
+    return available[0];
+  }
+  const defaultLang = available.includes(session.language) ? session.language : available[0];
+  const { lang } = await inquirer.prompt([{
+    type: 'list',
+    name: 'lang',
+    message: 'Language:',
+    choices: available.map(l => ({ name: LANG_LABELS[l] || l, value: l })),
+    default: defaultLang,
+  }]);
+  session.language = lang;
+  saveSession();
+  return lang;
+}
+
 // ── Per-question flow ──────────────────────────────────────────────────────
 
-async function runQuestion(question) {
+async function runQuestion(question, language = null) {
   const isCoding = question.category === 'coding';
   const isStarter = question.teacherMode === true;
 
+  // If no language passed in, pick one now (per-problem language selection)
+  const lang = language || (isCoding ? await pickLanguageForQuestion(question) : session.language || 'js');
+
   displayQuestion(question, session.attempted + session.skipped + 1);
 
-  const filepath = createSolutionFile(question, session.language);
+  const filepath = createSolutionFile(question, lang);
   const fileLabel = isCoding ? 'Solution file' : 'Answer file';
 
   console.log();
@@ -147,7 +188,7 @@ async function runQuestion(question) {
 
     if (action === 'test') {
       console.log(chalk.cyan('\n  Running your solution...\n'));
-      const result = await runSolution(filepath, session.language, question);
+      const result = await runSolution(filepath, lang, question);
 
       if (result.hasTestCases) {
         const lines = result.stdout.split('\n');
@@ -218,7 +259,7 @@ async function runQuestion(question) {
         default: false,
       }]);
       if (confirm) {
-        resetSolutionFile(question, session.language);
+        resetSolutionFile(question, lang);
         session.completedIds.delete(question.id);
         delete session.questionScores[question.id];
         saveSession();
@@ -275,7 +316,7 @@ async function runQuestion(question) {
     // Run tests before submitting so results appear and are included in feedback
     let testResultsText = '';
     if (isCoding) {
-      const testResult = await runSolution(filepath, session.language, question);
+      const testResult = await runSolution(filepath, lang, question);
       if (testResult.hasTestCases) {
         console.log(chalk.cyan('\n  Test results:\n'));
         const lines = testResult.stdout.split('\n');
@@ -345,40 +386,24 @@ function secondsAgo(date) {
 // ── Starter pattern picker ─────────────────────────────────────────────────
 
 async function starterMenu() {
-  // Ensure language is selected before showing pattern picker
-  if (!session.language) {
-    const { lang } = await inquirer.prompt([{
-      type: 'list',
-      name: 'lang',
-      message: 'Coding language for solution files?',
-      choices: [
-        { name: 'TypeScript (.ts)', value: 'typescript' },
-        { name: 'JavaScript (.js)', value: 'js' },
-        { name: 'Python (.py)', value: 'python' },
-      ],
-    }]);
-    session.language = lang;
-    saveSession();
-  }
-
-  const starters = getQuestions({
-    category: 'coding',
-    difficulty: 'starter',
-    language: session.language,
-  });
+  // Show ALL starters — language is picked per-problem after selection
+  const starters = getQuestions({ category: 'coding', difficulty: 'starter' });
 
   if (!starters.length) {
-    console.log(chalk.yellow('\n  No starter questions found for this language.'));
+    console.log(chalk.yellow('\n  No starter questions found.'));
     await pause();
     return;
   }
 
-  const langLabel = { typescript: 'TypeScript', js: 'JavaScript', python: 'Python' }[session.language] || session.language;
+  const LANG_BADGES = { js: 'JS', typescript: 'TS', python: 'PY', java: 'JV' };
+
   const choices = starters.map(q => {
     const done = session.completedIds.has(q.id);
     const badge = done ? chalk.green(' ✓') : '  ';
+    const langs = getAvailableLanguages(q).map(l => LANG_BADGES[l] || l.toUpperCase()).join(' ');
+    const langTag = chalk.gray(`[${langs}]`);
     return {
-      name: `${badge} ${chalk.cyan(q.pattern.padEnd(28))} ${q.title.replace('Starter: ', '')}`,
+      name: `${badge} ${chalk.cyan((q.pattern || '').padEnd(26))} ${q.title.replace('Starter: ', '')} ${langTag}`,
       value: q,
     };
   });
@@ -387,7 +412,7 @@ async function starterMenu() {
   const { question } = await inquirer.prompt([{
     type: 'list',
     name: 'question',
-    message: `Which pattern? (language: ${langLabel})`,
+    message: 'Which pattern? (language is selected after)',
     choices,
   }]);
 
@@ -545,22 +570,7 @@ async function selectCategory() {
   session.category = category;
   saveSession();
 
-  // Ask language once whenever coding is in scope
-  if (category === 'coding' || category === 'all') {
-    const { lang } = await inquirer.prompt([{
-      type: 'list',
-      name: 'lang',
-      message: 'Coding language for solution files?',
-      choices: [
-        { name: 'TypeScript (.ts)', value: 'typescript' },
-        { name: 'JavaScript (.js)', value: 'js' },
-        { name: 'Python (.py)', value: 'python' },
-      ],
-      default: session.language,
-    }]);
-    session.language = lang;
-    saveSession();
-  }
+  // Language is now selected per-problem — no global prompt here
 }
 
 // ── Question picker: incomplete first, then lowest-scored completed ──────────
@@ -604,7 +614,8 @@ async function practiceSession() {
   }]);
   session.difficulty = difficulty;
 
-  const filters = { category: session.category, difficulty, language: session.language };
+  // No language filter — language is chosen per-problem when the question opens
+  const filters = { category: session.category, difficulty };
 
   // Show how many are still incomplete
   const incompleteCount = getQuestions({ ...filters, excludeIds: session.completedIds }).length;
@@ -644,7 +655,7 @@ async function mainMenu() {
 
   // Status line
   const catLabel = CATEGORY_LABELS[session.category] || session.category;
-  const available = getQuestions({ category: session.category, language: session.language, excludeIds: session.seenIds });
+  const available = getQuestions({ category: session.category, excludeIds: session.seenIds });
   console.log(
     chalk.cyan('  Category: ') + chalk.bold.white(catLabel) +
     chalk.gray(`  ·  ${available.length} unseen questions`)
@@ -691,7 +702,7 @@ async function mainMenu() {
       break;
 
     case 'random': {
-      const q = pickQuestion({ category: session.category, language: session.language });
+      const q = pickQuestion({ category: session.category });
       if (!q) {
         console.log(chalk.yellow(`\n  No questions available in [${catLabel}].`));
         await pause();
