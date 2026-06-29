@@ -10,7 +10,7 @@ function anthropic() {
   return _anthropic;
 }
 import { displayBanner, displayQuestion, displayFeedback, displayStats } from './display.js';
-import { createSolutionFile, resetSolutionFile, readSolutionFile, openInEditor, watchSolutionFile, runSolution, clearWorkspace } from './workspace.js';
+import { createSolutionFile, resetSolutionFile, readSolutionFile, openInEditor, watchSolutionFile, runSolution, clearWorkspace, WORKSPACE_DIR } from './workspace.js';
 import { writeFileSync, readFileSync, existsSync } from 'fs';
 import { readdirSync } from 'fs';
 import { join, dirname, extname, resolve } from 'path';

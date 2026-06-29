@@ -469,6 +469,87 @@ print(valid_path(6, [[0,1],[0,2],[3,5],[5,4],[4,3]], 0, 5))  # False
   },
 
   {
+    id: 'starter-cycle-detect',
+    category: 'coding',
+    difficulty: 'starter',
+    pattern: 'BFS / DFS',
+    teacherMode: true,
+    title: 'Starter: Detect a Cycle in a Directed Graph',
+    functionName: 'hasCycle',
+    testCases: [
+      { desc: 'simple cycle A→B→C→A',         args: [3, [[0,1],[1,2],[2,0]]],              expected: true  },
+      { desc: 'no cycle — linear chain',        args: [3, [[0,1],[1,2]]],                    expected: false },
+      { desc: 'no cycle — disconnected',        args: [4, [[0,1],[2,3]]],                    expected: false },
+      { desc: 'self-loop',                      args: [2, [[0,0],[0,1]]],                    expected: true  },
+      { desc: 'cycle in subgraph only',         args: [5, [[0,1],[1,2],[2,3],[3,1],[0,4]]], expected: true  },
+      { desc: 'DAG — no cycle',                 args: [4, [[0,1],[0,2],[1,3],[2,3]]],        expected: false },
+    ],
+    prompt: `Given n nodes (labeled 0 to n-1) and a list of directed edges, return true if the graph contains a cycle, false otherwise.
+
+Example:
+  n=3, edges=[[0,1],[1,2],[2,0]]  →  true   (0→1→2→0)
+  n=3, edges=[[0,1],[1,2]]        →  false  (no way back)
+  n=4, edges=[[0,1],[0,2],[1,3],[2,3]]  →  false  (DAG — a→b and a→c both go to d, but no cycle)
+
+The graph is directed — edge [u,v] means u→v only. A cycle exists when you can follow directed edges and return to a node you've already visited on the CURRENT path (not just any visited node).
+
+Questions to think about:
+  - Why can't you just track "visited" with a simple boolean? What case does that miss?
+  - What extra state do you need to tell the difference between a back edge (cycle) and a cross edge (no cycle)?
+  - Where in the DFS do you "unmark" a node, and why?`,
+    hints: [
+      'You need 3 states per node — unvisited (0), in current path (1), fully done (2). A cycle is detected when you reach a node with state 1.',
+      'DFS: mark node as in-progress (1) when you enter, mark as done (2) when you finish ALL its neighbors. Only state 1 means "back edge = cycle".',
+      'After recursing into all neighbors of a node with no cycle found, set its state to 2 (done). This is the key: un-marking from the current path lets other branches reuse the same nodes safely.',
+    ],
+    tags: ['DFS', 'cycle detection', 'directed graph', 'adjacency list', 'graphs'],
+    starterCode: {
+      js: `function hasCycle(n, edges) {
+    // Build directed adjacency list
+    const adj = Array.from({ length: n }, () => []);
+    for (const [u, v] of edges) {
+        adj[u].push(v);
+    }
+
+    // 0 = unvisited, 1 = in current DFS path, 2 = fully explored
+    const state = new Array(n).fill(0);
+
+    function dfs(node) {
+        state[node] = 1; // mark as in-progress
+        for (const neighbor of adj[node]) {
+            if (state[neighbor] === 1) return true;  // back edge → cycle
+            if (state[neighbor] === 0 && dfs(neighbor)) return true;
+        }
+        state[node] = 2; // mark as done
+        return false;
+    }
+
+    for (let i = 0; i < n; i++) {
+        if (state[i] === 0 && dfs(i)) return true;
+    }
+    return false;
+}
+
+console.log(hasCycle(3, [[0,1],[1,2],[2,0]])); // true
+console.log(hasCycle(3, [[0,1],[1,2]]));        // false
+`,
+      typescript: `function hasCycle(n: number, edges: number[][]): boolean {
+
+}
+
+console.log(hasCycle(3, [[0,1],[1,2],[2,0]])); // true
+console.log(hasCycle(3, [[0,1],[1,2]]));        // false
+`,
+      python: `def has_cycle(n, edges):
+    pass
+
+print(has_cycle(3, [[0,1],[1,2],[2,0]]))  # True
+print(has_cycle(3, [[0,1],[1,2]]))         # False
+`,
+    },
+  },
+
+  {
     id: 'starter-trees',
     category: 'coding',
     difficulty: 'starter',
@@ -937,6 +1018,20 @@ console.log(add(2, 3));  // "computing..." then 5
           { method: 'isEmpty', args: [], returns: true },
         ],
       },
+      {
+        desc: 'min tracks through multiple pops',
+        steps: [
+          { method: 'push', args: [10] },
+          { method: 'push', args: [2] },
+          { method: 'push', args: [8] },
+          { method: 'push', args: [1] },
+          { method: 'getMin', args: [], returns: 1 },
+          { method: 'pop', args: [], returns: 1 },
+          { method: 'getMin', args: [], returns: 2 },
+          { method: 'pop', args: [], returns: 8 },
+          { method: 'getMin', args: [], returns: 2 },
+        ],
+      },
     ],
     followUpQuestions: [
       "What are you using to track the current minimum, and why?",
@@ -1066,6 +1161,16 @@ console.log(s.getMin());  // 3
           { method: 'size', args: [], returns: 0 },
         ],
       },
+      {
+        desc: 'peek does not remove, size unchanged',
+        steps: [
+          { method: 'push', args: [100] },
+          { method: 'push', args: [200] },
+          { method: 'peek', args: [], returns: 200 },
+          { method: 'size', args: [], returns: 2 },
+          { method: 'peek', args: [], returns: 200 },
+        ],
+      },
     ],
     followUpQuestions: [
       "What makes your class generic — what keyword did you use and what does it do?",
@@ -1190,6 +1295,11 @@ console.log(s.size());  // 2
         desc: 'empty list',
         args: [[], 'status'],
         expected: {},
+      },
+      {
+        desc: 'multiple groups with multiple records each',
+        args: [[{"type":"a","v":1},{"type":"b","v":2},{"type":"a","v":3},{"type":"b","v":4}], 'type'],
+        expected: { a: [{"type":"a","v":1},{"type":"a","v":3}], b: [{"type":"b","v":2},{"type":"b","v":4}] },
       },
     ],
     followUpQuestions: [
@@ -1561,6 +1671,18 @@ emitter.emit('data', 'world')  # only listener 1
           { method: 'put',  args: [2, 2] },           // evicts key 1
           { method: 'get',  args: [1],    returns: -1 },
           { method: 'get',  args: [2],    returns: 2 },
+        ],
+      },
+      {
+        desc: 'get promotes key — evicts the true LRU not most recently accessed',
+        steps: [
+          { method: 'put',  args: [1, 10] },
+          { method: 'put',  args: [2, 20] },
+          { method: 'get',  args: [1],    returns: 10 }, // 1 is now most recent; 2 is LRU
+          { method: 'put',  args: [3, 30] },             // evicts 2 (LRU), not 1
+          { method: 'get',  args: [2],    returns: -1 },
+          { method: 'get',  args: [1],    returns: 10 },
+          { method: 'get',  args: [3],    returns: 30 },
         ],
       },
     ],
@@ -2735,9 +2857,10 @@ print(group_anagrams(["eat","tea","tan","ate","nat","bat"]))
     title: 'TypeScript: Type-Safe API Response Handler',
     functionName: 'processResponse',
     testCases: [
-      { desc: 'user response',    args: [{ type: 'user',    id: 1,   name: 'Alice', email: 'alice@example.com' }], expected: 'User: Alice (alice@example.com)' },
-      { desc: 'error response',   args: [{ type: 'error',   code: 404, message: 'Not found' }],                    expected: 'Error 404: Not found' },
-      { desc: 'pending response', args: [{ type: 'pending', jobId: 'abc123', estimatedMs: 3000 }],                  expected: 'Job abc123 pending (~3s)' },
+      { desc: 'user response',          args: [{ type: 'user',    id: 1,   name: 'Alice', email: 'alice@example.com' }], expected: 'User: Alice (alice@example.com)' },
+      { desc: 'error response',         args: [{ type: 'error',   code: 404, message: 'Not found' }],                    expected: 'Error 404: Not found' },
+      { desc: 'pending response',       args: [{ type: 'pending', jobId: 'abc123', estimatedMs: 3000 }],                  expected: 'Job abc123 pending (~3s)' },
+      { desc: 'pending rounds to seconds', args: [{ type: 'pending', jobId: 'xyz999', estimatedMs: 7500 }],               expected: 'Job xyz999 pending (~8s)' },
     ],
     prompt: `You have an API that can return different shapes depending on a "type" discriminator field. Write a TypeScript function that handles the response in a fully type-safe way using discriminated unions and type narrowing.
 
@@ -3887,6 +4010,7 @@ print(largest_rectangle_area([2,1,5,6,2,3]))  # 10`,
       { desc: 'two groups',        args: [[[1,1,0],[1,1,0],[0,0,1]]],          expected: 2 },
       { desc: 'all connected',     args: [[[1,1,1],[1,1,1],[1,1,1]]],          expected: 1 },
       { desc: 'all separate',      args: [[[1,0,0],[0,1,0],[0,0,1]]],          expected: 3 },
+      { desc: 'chain — all connected through intermediates', args: [[[1,1,0,0],[1,1,1,0],[0,1,1,1],[0,0,1,1]]], expected: 1 },
     ],
     followUpQuestions: [
       "What is path compression and what does it buy you?",
@@ -3967,6 +4091,7 @@ print(find_circle_num([[1,0,0],[0,1,0],[0,0,1]]))  # 3`,
       { desc: '3 elements — 8 subsets',   args: [[1,2,3]],    expected: [[],[1],[1,2],[1,2,3],[1,3],[2],[2,3],[3]], sortResult: true },
       { desc: 'single element',           args: [[1]],        expected: [[],[1]], sortResult: true },
       { desc: 'empty input',              args: [[]],         expected: [[]] },
+      { desc: 'two elements — 4 subsets', args: [[5,7]], expected: [[],[5],[7],[5,7]], sortResult: true },
     ],
     followUpQuestions: [
       "How many subsets does a set of n elements produce, and why?",
@@ -4147,6 +4272,17 @@ print(search_rotated([4,5,6,7,0,1,2], 3))  # -1`,
           { method: 'insert', args: ['cat'] },
           { method: 'startsWith', args: ['dog'], returns: false },
           { method: 'search', args: ['cat'], returns: true },
+        ],
+      },
+      {
+        desc: 'search does not match prefix; startsWith true only for valid prefix',
+        steps: [
+          { method: 'insert', args: ['hello'] },
+          { method: 'search', args: ['hell'], returns: false },
+          { method: 'startsWith', args: ['hell'], returns: true },
+          { method: 'startsWith', args: ['world'], returns: false },
+          { method: 'insert', args: ['hell'] },
+          { method: 'search', args: ['hell'], returns: true },
         ],
       },
     ],
@@ -4464,6 +4600,1026 @@ Design:
       'Confidence signal: ask the model to output a confidence field in its structured JSON response. Route low-confidence queries to a fallback or human.',
     ],
     tags: ['GenAI', 'LLM', 'RAG', 'architecture', 'hallucination', 'compliance', 'monitoring'],
+  },
+
+  // ─── Cycle Detection practice ────────────────────────────────────────────────
+
+  {
+    id: 'coding-27',
+    category: 'coding',
+    difficulty: 'medium',
+    pattern: 'BFS / DFS',
+    title: 'Detect Cycle in Undirected Graph',
+    functionName: 'hasCycleUndirected',
+    testCases: [
+      { desc: 'triangle — cycle',              args: [3, [[0,1],[1,2],[2,0]]],          expected: true  },
+      { desc: 'linear chain — no cycle',       args: [4, [[0,1],[1,2],[2,3]]],          expected: false },
+      { desc: 'extra edge closes loop',        args: [4, [[0,1],[1,2],[2,3],[3,1]]],    expected: true  },
+      { desc: 'single node no edges',          args: [1, []],                            expected: false },
+      { desc: 'two components, one cyclic',    args: [5, [[0,1],[1,2],[2,0],[3,4]]],    expected: true  },
+      { desc: 'star graph — no cycle',         args: [5, [[0,1],[0,2],[0,3],[0,4]]],    expected: false },
+    ],
+    prompt: `Given n nodes (labeled 0 to n-1) and a list of UNDIRECTED edges, return true if the graph contains a cycle.
+
+Example:
+  n=3, edges=[[0,1],[1,2],[2,0]]       →  true   (triangle)
+  n=4, edges=[[0,1],[1,2],[2,3]]       →  false  (chain, no way back)
+  n=4, edges=[[0,1],[1,2],[2,3],[3,1]] →  true   (1→2→3→1)
+
+Important distinction from directed cycle detection:
+  In an undirected graph, every edge [u,v] creates a path BOTH ways. So when you DFS from u to v, you must NOT count going back to u as a "cycle" — that's just the same edge. You need to track the parent (where you came from) and skip it.
+
+Two valid approaches:
+  a) DFS with parent tracking — pass the parent node into recursion, skip it when checking neighbors
+  b) Union Find — for each edge [u,v], if find(u) === find(v) they're already connected → adding this edge creates a cycle`,
+    hints: [
+      'DFS approach: for each unvisited node, DFS with a parent parameter. If you reach a visited neighbor that is NOT the parent, it\'s a cycle.',
+      'Build an adjacency list first (undirected: add both directions). Then outer loop runs DFS on each unvisited node to handle disconnected components.',
+      'Union Find approach: process edges one at a time. Before union(u,v), check if find(u) === find(v). If yes — they\'re already in the same component, so this edge creates a cycle.',
+    ],
+    tags: ['DFS', 'cycle detection', 'undirected graph', 'union find', 'graphs'],
+    starterCode: {
+      js: `function hasCycleUndirected(n, edges) {
+
+}
+
+console.log(hasCycleUndirected(3, [[0,1],[1,2],[2,0]])); // true
+console.log(hasCycleUndirected(4, [[0,1],[1,2],[2,3]])); // false
+`,
+      typescript: `function hasCycleUndirected(n: number, edges: number[][]): boolean {
+
+}
+
+console.log(hasCycleUndirected(3, [[0,1],[1,2],[2,0]])); // true
+console.log(hasCycleUndirected(4, [[0,1],[1,2],[2,3]])); // false
+`,
+      python: `def has_cycle_undirected(n, edges):
+    pass
+
+print(has_cycle_undirected(3, [[0,1],[1,2],[2,0]]))  # True
+print(has_cycle_undirected(4, [[0,1],[1,2],[2,3]]))  # False
+`,
+    },
+  },
+
+  // ─── Union Find practice ──────────────────────────────────────────────────────
+
+  {
+    id: 'coding-28',
+    category: 'coding',
+    difficulty: 'medium',
+    pattern: 'Union Find',
+    title: 'Number of Connected Components in Undirected Graph',
+    functionName: 'countComponents',
+    testCases: [
+      { desc: 'all connected',           args: [5, [[0,1],[1,2],[3,4],[2,3]]],    expected: 1 },
+      { desc: 'two components',          args: [5, [[0,1],[1,2],[3,4]]],           expected: 2 },
+      { desc: 'no edges — all isolated', args: [4, []],                            expected: 4 },
+      { desc: 'one edge',                args: [3, [[0,2]]],                       expected: 2 },
+      { desc: 'single node',             args: [1, []],                            expected: 1 },
+    ],
+    prompt: `Given n nodes (labeled 0 to n-1) and a list of undirected edges, return the number of connected components.
+
+Example:
+  n=5, edges=[[0,1],[1,2],[3,4]]     →  2   (component {0,1,2} and component {3,4})
+  n=5, edges=[[0,1],[1,2],[2,3],[3,4]] →  1   (all connected)
+  n=4, edges=[]                       →  4   (all isolated)
+
+Solve this with Union Find (DSU):
+  - Start with n components (each node is its own component)
+  - For each edge [u,v]: union(u,v). If they were in different components, decrement the component count.
+  - Return the final count.
+
+Implement find() with path compression and union() with union by rank.`,
+    hints: [
+      'Initialize: parent[i] = i, rank[i] = 0, components = n.',
+      'find(x): if parent[x] !== x, set parent[x] = find(parent[x]) (path compression) and return that.',
+      'union(x, y): find both roots. If same root, already connected — do nothing. If different, merge smaller rank under larger, and decrement components by 1.',
+    ],
+    tags: ['union find', 'DSU', 'connected components', 'graphs'],
+    starterCode: {
+      js: `function countComponents(n, edges) {
+    const parent = Array.from({ length: n }, (_, i) => i);
+    const rank = new Array(n).fill(0);
+
+    function find(x) {
+        // path compression
+
+    }
+
+    function union(x, y) {
+        // union by rank
+
+    }
+
+    let components = n;
+    for (const [u, v] of edges) {
+        // union u and v; decrement components if they were separate
+
+    }
+    return components;
+}
+
+console.log(countComponents(5, [[0,1],[1,2],[3,4]]));       // 2
+console.log(countComponents(5, [[0,1],[1,2],[2,3],[3,4]])); // 1
+`,
+      typescript: `function countComponents(n: number, edges: number[][]): number {
+
+}
+
+console.log(countComponents(5, [[0,1],[1,2],[3,4]]));       // 2
+console.log(countComponents(5, [[0,1],[1,2],[2,3],[3,4]])); // 1
+`,
+      python: `def count_components(n, edges):
+    pass
+
+print(count_components(5, [[0,1],[1,2],[3,4]]))         # 2
+print(count_components(5, [[0,1],[1,2],[2,3],[3,4]]))   # 1
+`,
+    },
+  },
+
+  {
+    id: 'coding-29',
+    category: 'coding',
+    difficulty: 'medium',
+    pattern: 'Union Find',
+    title: 'Redundant Connection',
+    functionName: 'findRedundantConnection',
+    testCases: [
+      { desc: 'triangle',          args: [[[1,2],[1,3],[2,3]]],    expected: [2,3] },
+      { desc: 'chain with loop',   args: [[[1,2],[2,3],[3,4],[1,4],[1,5]]], expected: [1,4] },
+      { desc: 'simple two-node',   args: [[[1,2],[2,3],[3,1]]],    expected: [3,1] },
+      { desc: 'last edge is redundant among options', args: [[[1,2],[2,3],[3,1],[1,4],[4,5]]], expected: [3,1] },
+    ],
+    prompt: `A tree of n nodes (labeled 1 to n) has exactly n-1 edges. Given a graph that started as a tree but had one extra edge added, find and return that redundant edge.
+
+The input is an array of edges where edges[i] = [u, v]. The "redundant" edge is the one that, when added, first created a cycle. If there are multiple answers, return the last such edge in the input.
+
+Example:
+  [[1,2],[1,3],[2,3]]      →  [2,3]   (1-2-3 is a tree; 2-3 closes a cycle)
+  [[1,2],[2,3],[3,4],[1,4],[1,5]]  →  [1,4]
+
+Process edges one at a time with Union Find:
+  - For each edge [u,v]: if find(u) === find(v), they're already connected — this edge is redundant.
+  - Otherwise, union(u,v) and continue.`,
+    hints: [
+      'Process edges left to right. The first edge where find(u) === find(v) is the redundant one.',
+      'Nodes are labeled 1 to n — initialize parent array of size n+1 (index 0 unused).',
+      'Use standard Union Find with path compression. No special data structure needed — just process edges in order.',
+    ],
+    tags: ['union find', 'cycle detection', 'graphs', 'trees'],
+    starterCode: {
+      js: `function findRedundantConnection(edges) {
+
+}
+
+console.log(findRedundantConnection([[1,2],[1,3],[2,3]]));             // [2,3]
+console.log(findRedundantConnection([[1,2],[2,3],[3,4],[1,4],[1,5]])); // [1,4]
+`,
+      typescript: `function findRedundantConnection(edges: number[][]): number[] {
+
+}
+
+console.log(findRedundantConnection([[1,2],[1,3],[2,3]]));             // [2,3]
+console.log(findRedundantConnection([[1,2],[2,3],[3,4],[1,4],[1,5]])); // [1,4]
+`,
+      python: `def find_redundant_connection(edges):
+    pass
+
+print(find_redundant_connection([[1,2],[1,3],[2,3]]))              # [2,3]
+print(find_redundant_connection([[1,2],[2,3],[3,4],[1,4],[1,5]]))  # [1,4]
+`,
+    },
+  },
+
+  // ─── Trie practice ───────────────────────────────────────────────────────────
+
+  {
+    id: 'coding-30',
+    category: 'coding',
+    difficulty: 'medium',
+    pattern: 'Trie',
+    title: 'Implement Trie (Prefix Tree)',
+    classTest: true,
+    className: 'Trie',
+    testCases: [
+      {
+        desc: 'insert and search exact',
+        steps: [
+          { method: 'insert', args: ['apple'] },
+          { method: 'search', args: ['apple'], returns: true },
+          { method: 'search', args: ['app'], returns: false },
+        ],
+      },
+      {
+        desc: 'startsWith prefix',
+        steps: [
+          { method: 'insert', args: ['apple'] },
+          { method: 'startsWith', args: ['app'], returns: true },
+          { method: 'startsWith', args: ['apl'], returns: false },
+        ],
+      },
+      {
+        desc: 'multiple words sharing prefix',
+        steps: [
+          { method: 'insert', args: ['app'] },
+          { method: 'insert', args: ['apple'] },
+          { method: 'search', args: ['app'], returns: true },
+          { method: 'search', args: ['apple'], returns: true },
+          { method: 'search', args: ['ap'], returns: false },
+          { method: 'startsWith', args: ['ap'], returns: true },
+        ],
+      },
+      {
+        desc: 'empty trie searches',
+        steps: [
+          { method: 'search', args: ['anything'], returns: false },
+          { method: 'startsWith', args: ['a'], returns: false },
+        ],
+      },
+    ],
+    prompt: `Implement a Trie (prefix tree) with three operations:
+
+  insert(word)         — insert a word into the trie
+  search(word)         — return true if the EXACT word exists in the trie
+  startsWith(prefix)   — return true if any word in the trie starts with the given prefix
+
+Example:
+  trie.insert("apple")
+  trie.search("apple")    →  true
+  trie.search("app")      →  false   (only a prefix, not a complete word)
+  trie.startsWith("app")  →  true
+  trie.insert("app")
+  trie.search("app")      →  true    (now it's a complete word too)
+
+Structure: each node stores a map of children (character → child node) and a boolean isEnd (true if a complete word ends here).`,
+    hints: [
+      'Each TrieNode: { children: {}, isEnd: false }. The root is an empty node — it doesn\'t represent any character.',
+      'insert: walk character by character. If a child for that character doesn\'t exist, create it. After the last character, set isEnd = true.',
+      'search: walk the trie. If any character is missing, return false. After the last character, return node.isEnd.',
+      'startsWith: same as search but return true as long as you reach the end without a missing character — don\'t check isEnd.',
+    ],
+    tags: ['trie', 'prefix tree', 'data structures'],
+    starterCode: {
+      js: `class TrieNode {
+    constructor() {
+        this.children = {};
+        this.isEnd = false;
+    }
+}
+
+class Trie {
+    constructor() {
+        this.root = new TrieNode();
+    }
+
+    insert(word) {
+
+    }
+
+    search(word) {
+
+    }
+
+    startsWith(prefix) {
+
+    }
+}
+
+const trie = new Trie();
+trie.insert('apple');
+console.log(trie.search('apple'));    // true
+console.log(trie.search('app'));      // false
+console.log(trie.startsWith('app'));  // true
+`,
+      typescript: `class TrieNode {
+    children: Record<string, TrieNode> = {};
+    isEnd = false;
+}
+
+class Trie {
+    root = new TrieNode();
+
+    insert(word: string): void {
+
+    }
+
+    search(word: string): boolean {
+        return false;
+    }
+
+    startsWith(prefix: string): boolean {
+        return false;
+    }
+}
+
+const trie = new Trie();
+trie.insert('apple');
+console.log(trie.search('apple'));    // true
+console.log(trie.search('app'));      // false
+console.log(trie.startsWith('app'));  // true
+`,
+      python: `class TrieNode:
+    def __init__(self):
+        self.children = {}
+        self.is_end = False
+
+class Trie:
+    def __init__(self):
+        self.root = TrieNode()
+
+    def insert(self, word: str) -> None:
+        pass
+
+    def search(self, word: str) -> bool:
+        pass
+
+    def starts_with(self, prefix: str) -> bool:
+        pass
+
+trie = Trie()
+trie.insert('apple')
+print(trie.search('apple'))     # True
+print(trie.search('app'))       # False
+print(trie.starts_with('app'))  # True
+`,
+    },
+  },
+
+  {
+    id: 'coding-31',
+    category: 'coding',
+    difficulty: 'hard',
+    pattern: 'Trie',
+    title: 'Word Search II (Find Words in a Grid)',
+    functionName: 'findWords',
+    testCases: [
+      {
+        desc: 'two words found',
+        args: [[['o','a','a','n'],['e','t','a','e'],['i','h','k','r'],['i','f','l','v']], ['oath','pea','eat','rain']],
+        expected: ['eat','oath'],
+        sortResult: true,
+      },
+      {
+        desc: 'no words found',
+        args: [[['a','b'],['c','d']], ['abcb']],
+        expected: [],
+      },
+      {
+        desc: 'single cell word',
+        args: [[['a']], ['a']],
+        expected: ['a'],
+      },
+      {
+        desc: 'same letter cannot be reused in a single word',
+        args: [[['a','b'],['c','d']], ['abdc','abcd']],
+        expected: ['abdc'],
+        sortResult: true,
+      },
+    ],
+    prompt: `Given an m×n grid of characters and a list of words, find all words from the list that exist in the grid.
+
+Words can be constructed from letters in sequentially adjacent cells (horizontally or vertically). A cell may not be used more than once in a single word.
+
+Example:
+  board = [["o","a","a","n"],
+            ["e","t","a","e"],
+            ["i","h","k","r"],
+            ["i","f","l","v"]]
+  words = ["oath","pea","eat","rain"]
+  Output: ["eat","oath"]
+
+Naive approach: run word search DFS for each word separately — O(words × m×n × 4^L). Too slow for many words.
+
+Optimized approach: build a Trie from all words, then do a SINGLE DFS pass over the grid. At each cell, follow the trie to prune paths that can't lead to any word.
+
+Key trie optimization: once a word is found, delete it from the trie so it's not found again.`,
+    hints: [
+      'Build a Trie from all words first. Then DFS from every cell, moving through the trie simultaneously.',
+      'At each step: if the current character isn\'t in the trie node\'s children, prune (return early). If the node has isEnd=True, add the word to results and mark isEnd=False to avoid duplicates.',
+      'Mark the cell as visited during DFS (e.g., replace with "#") and restore it after backtracking.',
+    ],
+    tags: ['trie', 'DFS', 'backtracking', 'grid', 'hard'],
+    starterCode: {
+      js: `function findWords(board, words) {
+
+}
+
+console.log(findWords(
+  [['o','a','a','n'],['e','t','a','e'],['i','h','k','r'],['i','f','l','v']],
+  ['oath','pea','eat','rain']
+)); // ['eat','oath'] (any order)
+`,
+      typescript: `function findWords(board: string[][], words: string[]): string[] {
+    return [];
+}
+
+console.log(findWords(
+    [['o','a','a','n'],['e','t','a','e'],['i','h','k','r'],['i','f','l','v']],
+    ['oath','pea','eat','rain']
+)); // ['eat','oath']
+`,
+      python: `def find_words(board, words):
+    pass
+
+print(find_words(
+    [['o','a','a','n'],['e','t','a','e'],['i','h','k','r'],['i','f','l','v']],
+    ['oath','pea','eat','rain']
+))  # ['eat','oath']
+`,
+    },
+  },
+
+  // ─── Backtracking practice ────────────────────────────────────────────────────
+
+  {
+    id: 'coding-32',
+    category: 'coding',
+    difficulty: 'medium',
+    pattern: 'Subsets & Backtracking',
+    title: 'Subsets (Power Set)',
+    functionName: 'subsets',
+    testCases: [
+      { desc: 'three elements',  args: [[1,2,3]], expected: [[],[1],[2],[1,2],[3],[1,3],[2,3],[1,2,3]], sortResult: true },
+      { desc: 'single element',  args: [[0]],     expected: [[],[0]] },
+      { desc: 'two elements',    args: [[1,2]],   expected: [[],[1],[2],[1,2]], sortResult: true },
+      { desc: 'empty input — just empty subset', args: [[]], expected: [[]] },
+    ],
+    prompt: `Given an integer array nums with no duplicates, return all possible subsets (the power set). The solution set must not contain duplicate subsets. Return in any order.
+
+Example:
+  nums = [1,2,3]
+  Output: [[],[1],[2],[1,2],[3],[1,3],[2,3],[1,2,3]]
+
+  nums = [0]
+  Output: [[],[0]]
+
+Two approaches:
+  a) Backtracking: DFS with a running subset. At each index, branch — include nums[i] or not. Base case: index reaches end → add current subset to results.
+  b) Iterative: start with [[]], then for each number, take every existing subset and add the number to it.
+
+Backtracking template:
+  dfs(start, current):
+    results.push([...current])
+    for i from start to end:
+      current.push(nums[i])
+      dfs(i+1, current)
+      current.pop()  ← backtrack`,
+    hints: [
+      'Backtracking: add the current subset to results at the START of each DFS call (before the loop), not just at leaf nodes.',
+      'Use a start index to only consider elements to the right of the last chosen element — this avoids duplicates.',
+      'Don\'t forget to spread/copy the current array when adding to results, not push the reference.',
+    ],
+    tags: ['backtracking', 'subsets', 'recursion', 'DFS'],
+    starterCode: {
+      js: `function subsets(nums) {
+    const results = [];
+    // dfs(start, current) — backtracking
+
+    return results;
+}
+
+console.log(JSON.stringify(subsets([1,2,3]))); // 8 subsets
+console.log(JSON.stringify(subsets([0])));     // [[],[0]]
+`,
+      typescript: `function subsets(nums: number[]): number[][] {
+    return [];
+}
+
+console.log(JSON.stringify(subsets([1,2,3]))); // 8 subsets
+`,
+      python: `def subsets(nums):
+    pass
+
+print(subsets([1,2,3]))  # 8 subsets
+print(subsets([0]))      # [[], [0]]
+`,
+    },
+  },
+
+  {
+    id: 'coding-33',
+    category: 'coding',
+    difficulty: 'medium',
+    pattern: 'Subsets & Backtracking',
+    title: 'Combination Sum',
+    functionName: 'combinationSum',
+    testCases: [
+      { desc: 'target 7',       args: [[2,3,6,7], 7],  expected: [[2,2,3],[7]], sortResult: true },
+      { desc: 'target 8',       args: [[2,3,5], 8],     expected: [[2,2,2,2],[2,3,3],[3,5]], sortResult: true },
+      { desc: 'no solution',    args: [[2], 1],          expected: [] },
+      { desc: 'single candidate repeated', args: [[3], 9], expected: [[3,3,3]] },
+    ],
+    prompt: `Given an array of distinct integers candidates and a target integer, return all unique combinations of candidates where the chosen numbers sum to target. The same number may be chosen unlimited times.
+
+Example:
+  candidates=[2,3,6,7], target=7  →  [[2,2,3],[7]]
+  candidates=[2,3,5], target=8    →  [[2,2,2,2],[2,3,3],[3,5]]
+
+Key differences from Subsets:
+  - You CAN reuse the same element multiple times
+  - You can only add larger or equal elements (pass the SAME index i, not i+1, into the recursive call — and also include i in the next call to allow reuse)
+
+Backtracking template:
+  dfs(start, current, remaining):
+    if remaining === 0: add result
+    if remaining < 0: prune
+    for i from start to end:
+      current.push(candidates[i])
+      dfs(i, current, remaining - candidates[i])  ← same i (allow reuse)
+      current.pop()`,
+    hints: [
+      'Pass i (not i+1) in the recursive call so the same candidate can be reused.',
+      'Prune early: if remaining < 0, return. Sort candidates first so you can break the loop once candidates[i] > remaining.',
+      'Sort the candidates array first — it enables the pruning optimization and produces sorted combinations.',
+    ],
+    tags: ['backtracking', 'combination sum', 'recursion', 'DFS'],
+    starterCode: {
+      js: `function combinationSum(candidates, target) {
+    const results = [];
+    // sort candidates first, then backtrack
+
+    return results;
+}
+
+console.log(JSON.stringify(combinationSum([2,3,6,7], 7))); // [[2,2,3],[7]]
+console.log(JSON.stringify(combinationSum([2,3,5], 8)));   // [[2,2,2,2],[2,3,3],[3,5]]
+`,
+      typescript: `function combinationSum(candidates: number[], target: number): number[][] {
+    return [];
+}
+
+console.log(JSON.stringify(combinationSum([2,3,6,7], 7))); // [[2,2,3],[7]]
+`,
+      python: `def combination_sum(candidates, target):
+    pass
+
+print(combination_sum([2,3,6,7], 7))  # [[2,2,3],[7]]
+print(combination_sum([2,3,5], 8))    # [[2,2,2,2],[2,3,3],[3,5]]
+`,
+    },
+  },
+
+  // ─── Topological Sort practice ────────────────────────────────────────────────
+
+  {
+    id: 'coding-34',
+    category: 'coding',
+    difficulty: 'medium',
+    pattern: 'Topological Sort',
+    title: 'Course Schedule II (Return the Order)',
+    functionName: 'findOrder',
+    testCases: [
+      { desc: 'two courses in order',    args: [2, [[1,0]]],              expected: [0,1] },
+      { desc: 'cycle — impossible',      args: [2, [[1,0],[0,1]]],        expected: [] },
+      { desc: 'no prerequisites',        args: [3, []],                   expected: [0,1,2], sortResult: true },
+      { desc: 'four courses chain',      args: [4, [[1,0],[2,1],[3,2]]],  expected: [0,1,2,3] },
+      { desc: 'multi-root DAG',          args: [4, [[3,0],[3,1],[3,2]]],  expected: [0,1,2,3], sortResult: true },
+    ],
+    prompt: `There are numCourses courses (0 to numCourses-1). prerequisites[i] = [a, b] means course b must be taken before course a.
+
+Return a valid order to finish all courses. If impossible (cycle), return [].
+
+Example:
+  numCourses=2, prerequisites=[[1,0]]      →  [0, 1]
+  numCourses=2, prerequisites=[[1,0],[0,1]] →  []  (cycle)
+  numCourses=4, prerequisites=[[1,0],[2,1],[3,2]] →  [0,1,2,3]
+
+Use Kahn's Algorithm (BFS topological sort):
+  1. Build adjacency list and in-degree count for each node
+  2. Enqueue all nodes with in-degree 0 (no prerequisites)
+  3. Process queue: dequeue a node, add to result, decrement in-degree of its neighbors
+  4. If a neighbor's in-degree hits 0, enqueue it
+  5. If result.length < numCourses at the end → cycle → return []`,
+    hints: [
+      'In-degree = number of prerequisites a course has. Courses with in-degree 0 have no prerequisites — they can be taken first.',
+      'Kahn\'s: when you "take" a course, remove it from the graph (decrement in-degree of its dependents). Any dependent that hits in-degree 0 can now be taken.',
+      'At the end: if you added all numCourses to the result, return it. If fewer — some courses were in a cycle and never reached in-degree 0.',
+    ],
+    tags: ['topological sort', 'BFS', "Kahn's algorithm", 'DAG', 'graphs'],
+    starterCode: {
+      js: `function findOrder(numCourses, prerequisites) {
+    // Build adj list and in-degree array
+    // Kahn's BFS: queue all in-degree-0 nodes, process, return order
+
+}
+
+console.log(findOrder(2, [[1,0]]));         // [0,1]
+console.log(findOrder(2, [[1,0],[0,1]]));   // []
+console.log(findOrder(4, [[1,0],[2,1],[3,2]])); // [0,1,2,3]
+`,
+      typescript: `function findOrder(numCourses: number, prerequisites: number[][]): number[] {
+    return [];
+}
+
+console.log(findOrder(2, [[1,0]]));         // [0,1]
+console.log(findOrder(2, [[1,0],[0,1]]));   // []
+`,
+      python: `from collections import deque
+
+def find_order(num_courses, prerequisites):
+    pass
+
+print(find_order(2, [[1,0]]))          # [0,1]
+print(find_order(2, [[1,0],[0,1]]))    # []
+print(find_order(4, [[1,0],[2,1],[3,2]]))  # [0,1,2,3]
+`,
+    },
+  },
+
+  {
+    id: 'coding-35',
+    category: 'coding',
+    difficulty: 'hard',
+    pattern: 'Topological Sort',
+    title: 'Alien Dictionary (Derive Character Order)',
+    functionName: 'alienOrder',
+    testCases: [
+      { desc: 'simple order',        args: [['wrt','wrf','er','ett','rftt']],  expected: 'wertf' },
+      { desc: 'invalid — cycle',     args: [['z','x','z']],                    expected: '' },
+      { desc: 'no order derivable',  args: [['z','x']],                        expected: 'zx' },
+      { desc: 'prefix longer',       args: [['abc','ab']],                      expected: '' },
+    ],
+    prompt: `You are given a list of words sorted in a foreign alphabet's lexicographic order. Derive the order of characters in that alphabet.
+
+Example:
+  words = ["wrt","wrf","er","ett","rftt"]
+  Comparing adjacent words:
+    "wrt" vs "wrf" → t comes before f
+    "wrf" vs "er"  → w comes before e
+    "er"  vs "ett" → r comes before t
+    "ett" vs "rftt"→ e comes before r
+  Output: "wertf"
+
+  words = ["z","x","z"] → "" (cycle: z before x, x before z)
+
+Steps:
+  1. Collect all unique characters
+  2. Compare each adjacent pair of words character-by-character — the first differing character gives a directed edge (char1 → char2)
+  3. Edge case: if word1 is longer than word2 and word2 is a prefix of word1, the input is invalid → return ""
+  4. Topological sort the resulting directed graph (Kahn's BFS or DFS)
+  5. If cycle detected → return ""`,
+    hints: [
+      'Compare words[i] and words[i+1] character by character — stop at the first difference. That pair gives exactly one ordering constraint.',
+      'If words[i] is longer than words[i+1] and words[i+1] is a prefix of words[i] (no differing character found), return "" — invalid.',
+      'Build a directed graph of character dependencies, then topological sort. If the result has fewer characters than the unique character set, there\'s a cycle.',
+    ],
+    tags: ['topological sort', 'BFS', 'directed graph', 'hard', 'string'],
+    starterCode: {
+      js: `function alienOrder(words) {
+
+}
+
+console.log(alienOrder(['wrt','wrf','er','ett','rftt'])); // 'wertf'
+console.log(alienOrder(['z','x','z']));                   // ''
+`,
+      typescript: `function alienOrder(words: string[]): string {
+    return '';
+}
+
+console.log(alienOrder(['wrt','wrf','er','ett','rftt'])); // 'wertf'
+console.log(alienOrder(['z','x','z']));                   // ''
+`,
+      python: `from collections import deque, defaultdict
+
+def alien_order(words):
+    pass
+
+print(alien_order(['wrt','wrf','er','ett','rftt']))  # 'wertf'
+print(alien_order(['z','x','z']))                    # ''
+`,
+    },
+  },
+
+  // ─── Cyclic Sort practice ─────────────────────────────────────────────────────
+
+  {
+    id: 'coding-36',
+    category: 'coding',
+    difficulty: 'easy',
+    pattern: 'Cyclic Sort',
+    title: 'Missing Number',
+    functionName: 'missingNumber',
+    testCases: [
+      { desc: 'missing 2',      args: [[3,0,1]],       expected: 2 },
+      { desc: 'missing 2 (4)',  args: [[0,1,3]],        expected: 2 },
+      { desc: 'missing 8',      args: [[9,6,4,2,3,5,7,0,1]], expected: 8 },
+      { desc: 'missing 0',      args: [[1]],            expected: 0 },
+      { desc: 'missing n',      args: [[0,1]],          expected: 2 },
+    ],
+    prompt: `Given an array nums containing n distinct numbers in the range [0, n], return the one missing number.
+
+Example:
+  nums = [3,0,1]  →  2   (range is [0,3], 2 is missing)
+  nums = [0,1,3]  →  2
+  nums = [9,6,4,2,3,5,7,0,1]  →  8
+
+Three approaches (know all three):
+  a) Math: expected sum = n*(n+1)/2. Return expectedSum - actualSum. O(n) time, O(1) space.
+  b) XOR: XOR all indices 0..n with all values. Missing number is what's left. O(n) time, O(1) space.
+  c) Cyclic Sort: place each number at its correct index (nums[i] at index nums[i]). After sorting, scan for the index where nums[i] !== i. O(n) time, O(1) space, in-place.
+
+For the cyclic sort approach:
+  while nums[i] < n and nums[i] !== i: swap nums[i] with nums[nums[i]]
+  Then find the first index where nums[i] !== i.`,
+    hints: [
+      'Math approach: sum 0+1+2+...+n = n*(n+1)/2. Subtract the actual array sum. The difference is the missing number.',
+      'Cyclic sort: each number should live at its own index. While nums[i] is in range and not at the right index, swap it into place.',
+      'After cyclic sort: scan left to right. The first index i where nums[i] !== i is the answer. If all match, the missing number is n.',
+    ],
+    tags: ['cyclic sort', 'math', 'XOR', 'arrays'],
+    starterCode: {
+      js: `function missingNumber(nums) {
+
+}
+
+console.log(missingNumber([3,0,1]));              // 2
+console.log(missingNumber([9,6,4,2,3,5,7,0,1])); // 8
+console.log(missingNumber([0,1]));                // 2
+`,
+      typescript: `function missingNumber(nums: number[]): number {
+    return -1;
+}
+
+console.log(missingNumber([3,0,1]));              // 2
+console.log(missingNumber([9,6,4,2,3,5,7,0,1])); // 8
+`,
+      python: `def missing_number(nums):
+    pass
+
+print(missing_number([3,0,1]))              # 2
+print(missing_number([9,6,4,2,3,5,7,0,1])) # 8
+print(missing_number([0,1]))               # 2
+`,
+    },
+  },
+
+  {
+    id: 'coding-37',
+    category: 'coding',
+    difficulty: 'medium',
+    pattern: 'Cyclic Sort',
+    title: 'Find All Duplicates in an Array',
+    functionName: 'findDuplicates',
+    testCases: [
+      { desc: 'two duplicates',    args: [[4,3,2,7,8,2,3,1]], expected: [2,3], sortResult: true },
+      { desc: 'one duplicate',     args: [[1,1,2]],            expected: [1] },
+      { desc: 'no duplicates',     args: [[1,2,3]],            expected: [] },
+      { desc: 'all duplicates',    args: [[2,2,1,1]],          expected: [1,2], sortResult: true },
+    ],
+    prompt: `Given an integer array nums of length n where all integers are in the range [1, n] and each integer appears once or twice, return an array of all the integers that appear twice.
+
+You must use O(1) extra space and O(n) runtime — no hash map allowed.
+
+Example:
+  nums = [4,3,2,7,8,2,3,1]  →  [2,3]
+  nums = [1,1,2]             →  [1]
+
+Cyclic Sort approach:
+  - Integers are in [1, n], so the correct index for value v is index v-1.
+  - Place each number at its correct index by swapping. If nums[i] is already at the right place OR the correct spot has the same value (a duplicate is trying to go there), stop swapping for that position.
+  - After the sort, any index i where nums[i] !== i+1 holds a duplicate.
+
+Alternative O(n) space approach: use a frequency map or set (simpler but uses extra space).`,
+    hints: [
+      'Cyclic sort: while nums[i] !== i+1, check nums[nums[i]-1]. If it already equals nums[i], you\'ve found a duplicate — stop. Otherwise swap.',
+      'After sorting: iterate through the array. Wherever nums[i] !== i+1, that number is a duplicate (it couldn\'t go home because home was taken).',
+      'Don\'t swap if nums[correct] === nums[i] — this would cause an infinite loop on the duplicate.',
+    ],
+    tags: ['cyclic sort', 'arrays', 'duplicates'],
+    starterCode: {
+      js: `function findDuplicates(nums) {
+    const result = [];
+    // cyclic sort: place each number at index nums[i]-1
+
+    // find all positions where nums[i] !== i+1
+
+    return result;
+}
+
+console.log(findDuplicates([4,3,2,7,8,2,3,1])); // [2,3]
+console.log(findDuplicates([1,1,2]));            // [1]
+`,
+      typescript: `function findDuplicates(nums: number[]): number[] {
+    return [];
+}
+
+console.log(findDuplicates([4,3,2,7,8,2,3,1])); // [2,3]
+console.log(findDuplicates([1,1,2]));            // [1]
+`,
+      python: `def find_duplicates(nums):
+    pass
+
+print(find_duplicates([4,3,2,7,8,2,3,1]))  # [2,3]
+print(find_duplicates([1,1,2]))            # [1]
+`,
+    },
+  },
+
+  // ─── Modified Binary Search practice ─────────────────────────────────────────
+
+  {
+    id: 'coding-38',
+    category: 'coding',
+    difficulty: 'medium',
+    pattern: 'Binary Search',
+    title: 'Search in Rotated Sorted Array',
+    functionName: 'searchRotated',
+    testCases: [
+      { desc: 'target found left half',   args: [[4,5,6,7,0,1,2], 0],  expected: 4 },
+      { desc: 'target found right half',  args: [[4,5,6,7,0,1,2], 4],  expected: 0 },
+      { desc: 'target not present',       args: [[4,5,6,7,0,1,2], 3],  expected: -1 },
+      { desc: 'single element match',     args: [[1], 1],               expected: 0 },
+      { desc: 'single element no match',  args: [[1], 0],               expected: -1 },
+      { desc: 'not rotated',              args: [[1,3,5,7], 5],         expected: 2 },
+    ],
+    prompt: `Given an integer array nums sorted in ascending order that has been rotated at an unknown pivot, and a target, return the index of the target or -1 if not found. Must be O(log n).
+
+Example:
+  nums=[4,5,6,7,0,1,2], target=0  →  4
+  nums=[4,5,6,7,0,1,2], target=3  →  -1
+  nums=[1,3,5], target=3          →  1
+
+Key insight: even though the array is rotated, ONE of the two halves (left or right of mid) is always sorted. Use this to decide which half the target is in.
+
+At each step:
+  1. Check if left half [lo..mid] is sorted: nums[lo] <= nums[mid]
+     - If target is in [nums[lo], nums[mid]): search left
+     - Else: search right
+  2. Otherwise right half [mid..hi] is sorted:
+     - If target is in (nums[mid], nums[hi]]: search right
+     - Else: search left`,
+    hints: [
+      'One of the two halves is always sorted after a rotation. Identify which half is sorted first, then check if the target falls in that sorted range.',
+      'Left half is sorted if nums[lo] <= nums[mid]. Then check: nums[lo] <= target < nums[mid] to decide which side to search.',
+      'Don\'t try to find the pivot first — you don\'t need it. Just apply the sorted-half logic at each binary search step.',
+    ],
+    tags: ['binary search', 'rotated array', 'modified binary search'],
+    starterCode: {
+      js: `function searchRotated(nums, target) {
+    let lo = 0, hi = nums.length - 1;
+    while (lo <= hi) {
+        const mid = Math.floor((lo + hi) / 2);
+        if (nums[mid] === target) return mid;
+        // determine which half is sorted, then narrow search
+
+    }
+    return -1;
+}
+
+console.log(searchRotated([4,5,6,7,0,1,2], 0)); // 4
+console.log(searchRotated([4,5,6,7,0,1,2], 3)); // -1
+`,
+      typescript: `function searchRotated(nums: number[], target: number): number {
+    return -1;
+}
+
+console.log(searchRotated([4,5,6,7,0,1,2], 0)); // 4
+console.log(searchRotated([4,5,6,7,0,1,2], 3)); // -1
+`,
+      python: `def search_rotated(nums, target):
+    pass
+
+print(search_rotated([4,5,6,7,0,1,2], 0))  # 4
+print(search_rotated([4,5,6,7,0,1,2], 3))  # -1
+`,
+    },
+  },
+
+  {
+    id: 'coding-39',
+    category: 'coding',
+    difficulty: 'medium',
+    pattern: 'Binary Search',
+    title: 'Find Minimum in Rotated Sorted Array',
+    functionName: 'findMin',
+    testCases: [
+      { desc: 'rotated at 4',     args: [[3,4,5,1,2]],       expected: 1 },
+      { desc: 'rotated at 1',     args: [[4,5,6,7,0,1,2]],   expected: 0 },
+      { desc: 'not rotated',      args: [[1,2,3]],            expected: 1 },
+      { desc: 'single element',   args: [[1]],                expected: 1 },
+      { desc: 'two elements',     args: [[2,1]],              expected: 1 },
+    ],
+    prompt: `Given a sorted array that has been rotated between 1 and n times, find the minimum element. Must be O(log n).
+
+Example:
+  [3,4,5,1,2]     →  1   (rotated 3 times — original: [1,2,3,4,5])
+  [4,5,6,7,0,1,2] →  0
+  [11,13,15,17]   →  11  (rotated 4 times = original order)
+
+Key insight: the minimum is always at the inflection point (where the array "resets" from high to low). Binary search by comparing mid to hi:
+
+  - If nums[mid] > nums[hi]: the minimum must be in the RIGHT half (mid+1..hi) — the left side is the sorted high portion
+  - If nums[mid] <= nums[hi]: the minimum is in the LEFT half (lo..mid) — we might be looking at it already
+  - Keep narrowing until lo === hi — that's the minimum.`,
+    hints: [
+      'Compare nums[mid] to nums[hi] (not nums[lo]). If nums[mid] > nums[hi], the minimum is to the right of mid.',
+      'If nums[mid] <= nums[hi], the minimum is at mid or to the left — set hi = mid (not hi = mid-1, since mid could be the answer).',
+      'Loop until lo === hi. The answer is nums[lo].',
+    ],
+    tags: ['binary search', 'rotated array', 'modified binary search'],
+    starterCode: {
+      js: `function findMin(nums) {
+    let lo = 0, hi = nums.length - 1;
+    while (lo < hi) {
+        const mid = Math.floor((lo + hi) / 2);
+        // compare nums[mid] to nums[hi] to decide which half has the minimum
+
+    }
+    return nums[lo];
+}
+
+console.log(findMin([3,4,5,1,2]));     // 1
+console.log(findMin([4,5,6,7,0,1,2])); // 0
+console.log(findMin([11,13,15,17]));   // 11
+`,
+      typescript: `function findMin(nums: number[]): number {
+    return -1;
+}
+
+console.log(findMin([3,4,5,1,2]));     // 1
+console.log(findMin([4,5,6,7,0,1,2])); // 0
+`,
+      python: `def find_min(nums):
+    pass
+
+print(find_min([3,4,5,1,2]))      # 1
+print(find_min([4,5,6,7,0,1,2]))  # 0
+print(find_min([11,13,15,17]))    # 11
+`,
+    },
+  },
+
+  // ─── Fast & Slow Pointers practice ───────────────────────────────────────────
+
+  {
+    id: 'coding-40',
+    category: 'coding',
+    difficulty: 'medium',
+    pattern: 'Fast & Slow Pointers',
+    title: 'Find the Duplicate Number (Floyd\'s Cycle)',
+    functionName: 'findDuplicate',
+    testCases: [
+      { desc: 'dup is 2',  args: [[1,3,4,2,2]], expected: 2 },
+      { desc: 'dup is 3',  args: [[3,1,3,4,2]], expected: 3 },
+      { desc: 'dup is 1',  args: [[1,1]],        expected: 1 },
+      { desc: 'dup is 1 (longer)', args: [[1,1,2]], expected: 1 },
+    ],
+    prompt: `Given an array nums of n+1 integers where each integer is in the range [1, n], there is exactly one duplicate number. Find it. You must not modify the array and must use only O(1) extra space.
+
+Example:
+  nums = [1,3,4,2,2]  →  2
+  nums = [3,1,3,4,2]  →  3
+
+Treat the array as a linked list where nums[i] is the "next" pointer from index i. Because there's a duplicate value, two indices point to the same index — creating a cycle.
+
+Floyd's cycle detection:
+  Phase 1: fast moves 2 steps, slow moves 1 step. They meet inside the cycle.
+  Phase 2: reset slow to index 0. Move both one step at a time. Where they meet is the cycle entrance = the duplicate number.
+
+Why does this work? The duplicate value is the entry point of the cycle, because two different "nodes" point to the same "next node."`,
+    hints: [
+      'Start both fast and slow at index 0. Move: slow = nums[slow], fast = nums[nums[fast]]. When they meet, end phase 1.',
+      'Phase 2: keep fast where it met slow, reset slow to 0. Move both one step (slow = nums[slow], fast = nums[fast]) until they meet again.',
+      'The meeting point in phase 2 is the duplicate number — it\'s the entry point of the cycle in the implicit linked list.',
+    ],
+    tags: ['fast and slow pointers', 'cycle detection', 'Floyd\'s algorithm', 'arrays'],
+    starterCode: {
+      js: `function findDuplicate(nums) {
+    // Phase 1: find meeting point inside the cycle
+    let slow = nums[0], fast = nums[0];
+    do {
+        slow = nums[slow];
+        fast = nums[nums[fast]];
+    } while (slow !== fast);
+
+    // Phase 2: find cycle entrance
+    slow = nums[0];
+    while (slow !== fast) {
+        slow = nums[slow];
+        fast = nums[fast];
+    }
+    return slow;
+}
+
+console.log(findDuplicate([1,3,4,2,2])); // 2
+console.log(findDuplicate([3,1,3,4,2])); // 3
+`,
+      typescript: `function findDuplicate(nums: number[]): number {
+    return -1;
+}
+
+console.log(findDuplicate([1,3,4,2,2])); // 2
+console.log(findDuplicate([3,1,3,4,2])); // 3
+`,
+      python: `def find_duplicate(nums):
+    pass
+
+print(find_duplicate([1,3,4,2,2]))  # 2
+print(find_duplicate([3,1,3,4,2]))  # 3
+`,
+    },
   },
 
   // ─── DSA Pattern Trivia (one per knowledge doc) ──────────────────────────────
