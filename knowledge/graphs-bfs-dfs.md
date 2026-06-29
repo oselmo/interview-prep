@@ -277,15 +277,147 @@ Process Engineering → done
 
 ---
 
+## Array-Based Graph Traversal (No Node Objects)
+
+Many graph problems give you the graph as raw arrays — no `Node` class. Two common forms:
+
+### Form 1 — Edge list → build adjacency list yourself
+
+Input: `edges: number[][]` where each `[u, v]` is an undirected or directed edge.
+
+```python
+def build_adj(n, edges, directed=False):
+    adj = [[] for _ in range(n)]
+    for u, v in edges:
+        adj[u].append(v)
+        if not directed:
+            adj[v].append(u)
+    return adj
+```
+
+**Full BFS template (edge list input):**
+
+```python
+from collections import deque
+
+def bfs(n, edges, source):
+    adj = build_adj(n, edges)
+    visited = set([source])
+    queue = deque([source])
+
+    while queue:
+        node = queue.popleft()
+        for neighbor in adj[node]:
+            if neighbor not in visited:
+                visited.add(neighbor)
+                queue.append(neighbor)
+```
+
+**Full DFS template (edge list input):**
+
+```python
+def dfs(n, edges, source):
+    adj = build_adj(n, edges)
+    visited = set()
+
+    def _dfs(node):
+        visited.add(node)
+        for neighbor in adj[node]:
+            if neighbor not in visited:
+                _dfs(neighbor)
+
+    _dfs(source)
+```
+
+### Form 2 — Graph already given as adjacency list array
+
+Input: `graph: number[][]` where `graph[i]` is already the list of neighbors of node `i`. No building step needed.
+
+```python
+def all_paths(graph):
+    n = len(graph)
+    results = []
+
+    def dfs(node, path):
+        if node == n - 1:
+            results.append(list(path))
+            return
+        for neighbor in graph[node]:
+            path.append(neighbor)
+            dfs(neighbor, path)
+            path.pop()  # backtrack
+
+    dfs(0, [0])
+    return results
+```
+
+### Cycle Detection in a Directed Graph (3-color DFS)
+
+```python
+def has_cycle(n, edges):
+    adj = build_adj(n, edges, directed=True)
+    # 0 = unvisited, 1 = in-progress, 2 = done
+    state = [0] * n
+
+    def dfs(node):
+        state[node] = 1
+        for neighbor in adj[node]:
+            if state[neighbor] == 1:   # back edge → cycle
+                return True
+            if state[neighbor] == 0 and dfs(neighbor):
+                return True
+        state[node] = 2
+        return False
+
+    return any(dfs(i) for i in range(n) if state[i] == 0)
+```
+
+### Multi-Source BFS
+
+When multiple starting points spread simultaneously (e.g. rotting oranges, walls and gates), seed the queue with all sources at time=0:
+
+```python
+def multi_source_bfs(grid):
+    rows, cols = len(grid), len(grid[0])
+    queue = deque()
+
+    # Seed ALL sources at once
+    for r in range(rows):
+        for c in range(cols):
+            if grid[r][c] == SOURCE:
+                queue.append((r, c, 0))  # (row, col, time)
+
+    dirs = [(0,1),(0,-1),(1,0),(-1,0)]
+    while queue:
+        r, c, t = queue.popleft()
+        for dr, dc in dirs:
+            nr, nc = r + dr, c + dc
+            if 0 <= nr < rows and 0 <= nc < cols and grid[nr][nc] == FRESH:
+                grid[nr][nc] = ROTTEN
+                queue.append((nr, nc, t + 1))
+```
+
+### Choosing the Right Representation
+
+| Input format | First step |
+|---|---|
+| `edges: [u,v][]` (edge list) | Build `adj[][]` from edges |
+| `graph: number[][]` (already adj list) | Traverse directly — `graph[i]` is neighbors |
+| `grid: T[][]` (2D matrix) | Use `(row, col)` + 4-directional delta array |
+| `prerequisites: [a,b][]` (directed) | Build directed adj list: `adj[b].push(a)` |
+
+---
+
 ## Common Problems
 
-| Problem | Approach |
-|---|---|
-| Number of Islands | DFS/BFS flood fill |
-| Clone Graph | BFS with node map |
-| Course Schedule | Topological sort / cycle detection |
-| Word Ladder | BFS (shortest transformation) |
-| Rotting Oranges | Multi-source BFS |
-| Walls and Gates | Multi-source BFS |
-| Pacific Atlantic Water Flow | Multi-source DFS from each coast |
-| Longest Path in DAG | Topological sort + DP |
+| Problem | Approach | Input form |
+|---|---|---|
+| Valid Path in Graph | BFS/DFS | Edge list → build adj |
+| All Paths Source→Target | DFS + backtrack | Already adj list (`graph[i]`) |
+| Course Schedule | Cycle detection / topo sort | Edge list (directed) → build adj |
+| Number of Islands | DFS/BFS flood fill | Grid (`grid[r][c]`) |
+| Rotting Oranges | Multi-source BFS | Grid (`grid[r][c]`) |
+| Clone Graph | BFS with node map | Node objects (different pattern) |
+| Word Ladder | BFS (shortest transformation) | Implicit graph (word → neighbors) |
+| Pacific Atlantic Water Flow | Multi-source DFS from each coast | Grid |
+| Longest Path in DAG | Topological sort + DP | Edge list or adj list |

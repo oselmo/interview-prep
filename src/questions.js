@@ -388,6 +388,87 @@ console.log(floodFill(grid, 1, 1, 2));
   },
 
   {
+    id: 'starter-graph-array',
+    category: 'coding',
+    difficulty: 'starter',
+    pattern: 'BFS / DFS',
+    teacherMode: true,
+    title: 'Starter: Graph Traversal with Adjacency List (Array)',
+    functionName: 'validPath',
+    testCases: [
+      { desc: 'path exists',          args: [3, [[0,1],[1,2],[2,0]], 0, 2],      expected: true },
+      { desc: 'no path (disconnected)', args: [6, [[0,1],[0,2],[3,5],[5,4],[4,3]], 0, 5], expected: false },
+      { desc: 'source equals dest',   args: [1, [], 0, 0],                       expected: true },
+      { desc: 'direct edge',          args: [3, [[0,1],[2,1]], 0, 2],            expected: true },
+      { desc: 'no edges',             args: [4, [], 0, 3],                       expected: false },
+    ],
+    prompt: `Given n nodes (labeled 0 to n-1) and a list of undirected edges, determine if there is a valid path from source to destination.
+
+Example:
+  n=3, edges=[[0,1],[1,2],[2,0]], source=0, destination=2  →  true
+  n=6, edges=[[0,1],[0,2],[3,5],[5,4],[4,3]], source=0, destination=5  →  false
+
+The graph is given as an edge list — your first step is to build an adjacency list from it.
+
+Questions to think about:
+  - How do you convert the edge list into a structure you can traverse?
+  - How do you avoid revisiting nodes (infinite loops on cycles)?
+  - Would you use BFS or DFS here — does it matter?`,
+    hints: [
+      'Build adjacency list first: for each [u,v] in edges, add v to adj[u] and u to adj[v] (undirected).',
+      'BFS: queue starts with source. Pop a node, if it\'s destination return true, else enqueue unvisited neighbors.',
+      'Track visited with a Set — add a node when you enqueue/visit it, not when you process it.',
+    ],
+    tags: ['BFS', 'DFS', 'graphs', 'adjacency list', 'array graph'],
+    starterCode: {
+      js: `function validPath(n, edges, source, destination) {
+  // Step 1: build adjacency list
+  const adj = Array.from({ length: n }, () => []);
+  for (const [u, v] of edges) {
+    adj[u].push(v);
+    adj[v].push(u);
+  }
+
+  // Step 2: BFS / DFS from source
+  const visited = new Set();
+  const queue = [source]; // or use a stack for DFS
+  visited.add(source);
+
+  while (queue.length) {
+    const node = queue.shift();
+    if (node === destination) return true;
+    for (const neighbor of adj[node]) {
+      if (!visited.has(neighbor)) {
+        visited.add(neighbor);
+        queue.push(neighbor);
+      }
+    }
+  }
+  return false;
+}
+
+console.log(validPath(3, [[0,1],[1,2],[2,0]], 0, 2)); // true
+console.log(validPath(6, [[0,1],[0,2],[3,5],[5,4],[4,3]], 0, 5)); // false
+`,
+      typescript: `function validPath(n: number, edges: number[][], source: number, destination: number): boolean {
+
+}
+
+console.log(validPath(3, [[0,1],[1,2],[2,0]], 0, 2)); // true
+console.log(validPath(6, [[0,1],[0,2],[3,5],[5,4],[4,3]], 0, 5)); // false
+`,
+      python: `from collections import deque
+
+def valid_path(n, edges, source, destination):
+    pass
+
+print(valid_path(3, [[0,1],[1,2],[2,0]], 0, 2))  # True
+print(valid_path(6, [[0,1],[0,2],[3,5],[5,4],[4,3]], 0, 5))  # False
+`,
+    },
+  },
+
+  {
     id: 'starter-trees',
     category: 'coding',
     difficulty: 'starter',
@@ -4383,6 +4464,730 @@ Design:
       'Confidence signal: ask the model to output a confidence field in its structured JSON response. Route low-confidence queries to a fallback or human.',
     ],
     tags: ['GenAI', 'LLM', 'RAG', 'architecture', 'hallucination', 'compliance', 'monitoring'],
+  },
+
+  // ─── DSA Pattern Trivia (one per knowledge doc) ──────────────────────────────
+
+  {
+    id: 'trivia-24',
+    category: 'trivia',
+    difficulty: 'medium',
+    title: 'Sliding Window & Two Pointers: When and Why',
+    prompt: `Answer each of the following:
+
+  a) What is the sliding window pattern? What property of a problem tells you to use it?
+  b) When do you use a fixed-size window vs a variable-size (shrinkable) window? Give an example of each.
+  c) What is the two-pointer pattern? How does it differ from a sliding window?
+  d) What is the time complexity of sliding window solutions, and why?
+  e) What's the key loop invariant you maintain in a shrinkable window? (i.e., what does the window always represent?)`,
+    hints: [
+      'Sliding window: contiguous subarray/substring problems. Property: you can extend or shrink the window without revisiting elements — O(n) instead of O(n²) nested loops.',
+      'Fixed-size: window is always exactly k elements (max sum of k elements). Variable-size: expand right, shrink left when a constraint is violated (longest substring without repeat).',
+      'Two pointers: two indices moving through the same array or from both ends. Used when there\'s a sorted array or a symmetry (two-sum in sorted array, valid palindrome).',
+      'O(n) — each element enters and leaves the window at most once, so despite the nested loop appearance it\'s linear.',
+    ],
+    followUps: [
+      'How do you decide which data structure to track window contents (Set vs Map vs counter)?',
+      'What is the difference between "at most K distinct chars" and "exactly K distinct chars" windows?',
+    ],
+    tags: ['sliding window', 'two pointers', 'algorithms', 'patterns'],
+  },
+
+  {
+    id: 'trivia-25',
+    category: 'trivia',
+    difficulty: 'medium',
+    title: 'Trees & BSTs: Traversals, Properties, Complexity',
+    prompt: `Answer each of the following:
+
+  a) Name the four tree traversal orders (three DFS + one BFS). For a BST, which DFS order gives you sorted output?
+  b) What is the difference between a binary tree and a binary search tree (BST)? What property does a BST guarantee?
+  c) What are the average and worst-case time complexities for search, insert, and delete in a BST?
+  d) What is a balanced BST? Why does balance matter? Name one self-balancing BST variant.
+  e) When would you use BFS (level-order) over DFS on a tree? Give a problem where BFS is clearly better.`,
+    hints: [
+      'DFS orders: pre-order (root→left→right), in-order (left→root→right), post-order (left→right→root). In-order on a BST yields sorted output.',
+      'BST property: for every node, all values in the left subtree < node.val < all values in right subtree.',
+      'Average: O(log n) for balanced. Worst case (degenerate/skewed tree): O(n). Same for insert and delete.',
+      'Balanced BST: height stays O(log n). AVL tree, Red-Black tree are examples. Without balance, BST degenerates to a linked list.',
+    ],
+    followUps: [
+      'How do you serialize and deserialize a binary tree?',
+      'What is the lowest common ancestor (LCA) problem and how do you solve it?',
+      'How does BFS level-order traversal work iteratively?',
+    ],
+    tags: ['trees', 'BST', 'DFS', 'BFS', 'traversal', 'algorithms'],
+  },
+
+  {
+    id: 'trivia-26',
+    category: 'trivia',
+    difficulty: 'medium',
+    title: 'Dynamic Programming: When to Use It and How',
+    prompt: `Answer each of the following:
+
+  a) What are the two properties a problem must have for dynamic programming to apply?
+  b) What is the difference between top-down DP (memoization) and bottom-up DP (tabulation)?
+  c) How do you identify the "state" in a DP problem? Walk through how you'd define the state for the longest common subsequence (LCS) problem.
+  d) What is the difference between 0/1 knapsack and unbounded knapsack, and how does the DP table differ?
+  e) When is greedy better than DP, and how do you know which one to reach for?`,
+    hints: [
+      'DP properties: (1) optimal substructure — optimal solution is built from optimal solutions to subproblems; (2) overlapping subproblems — the same subproblems are solved repeatedly.',
+      'Top-down: recursive with a cache (dictionary/array). Bottom-up: build a table iteratively, usually more space-efficient.',
+      'State = the minimum info needed to describe a subproblem uniquely. LCS: dp[i][j] = length of LCS of first i chars of s1 and first j chars of s2.',
+      'Greedy: make the locally optimal choice at each step without backtracking. Works when greedy choice property holds (provable). DP is for when you need to try all choices.',
+    ],
+    followUps: [
+      'How do you reduce 2D DP table to 1D? When is that possible?',
+      'What is the difference between LCS and LIS (longest increasing subsequence)?',
+      'How would you approach a DP problem in an interview if you\'re not sure of the recurrence?',
+    ],
+    tags: ['dynamic programming', 'memoization', 'tabulation', 'algorithms', 'patterns'],
+  },
+
+  {
+    id: 'trivia-27',
+    category: 'trivia',
+    difficulty: 'medium',
+    title: 'Hash Maps: Patterns and Complexity',
+    prompt: `Answer each of the following:
+
+  a) What is the average and worst-case time complexity of get/put in a hash map? What causes the worst case?
+  b) Name four common interview problem patterns that use a hash map. For each, give a one-sentence description of how the map is used.
+  c) What is the difference between a hash map and a hash set? When would you use each?
+  d) You need to find two numbers in an array that sum to a target. How do you solve this in O(n) with a hash map? Trace through an example.
+  e) What is a frequency/count map? Give two problems where counting character or element frequencies is the key insight.`,
+    hints: [
+      'Average O(1) get/put. Worst case O(n) — hash collision causing all keys to land in the same bucket. Rare with good hash functions.',
+      'Four patterns: (1) frequency count (element → count), (2) index map (value → index, for two-sum), (3) prefix sum map (prefix → index, for subarray sum), (4) grouping (key → list, for anagrams).',
+      'Hash set: only stores keys, no values. Use it when you just need "does this exist" — O(1) membership test.',
+      'Two-sum: for each num, check if (target - num) is already in the map. If yes, return the pair. If no, store num → index.',
+    ],
+    followUps: [
+      'How would you find all anagrams of a pattern in a string using a hash map?',
+      'What is a prefix sum and how do you combine it with a hash map to find subarrays with a given sum?',
+    ],
+    tags: ['hash map', 'hash set', 'frequency count', 'algorithms', 'patterns'],
+  },
+
+  {
+    id: 'trivia-28',
+    category: 'trivia',
+    difficulty: 'medium',
+    title: 'Heaps, Stacks, and Queues: When to Use Each',
+    prompt: `Answer each of the following:
+
+  a) What is a min-heap / max-heap? What is the time complexity of insert and extract-min/max?
+  b) When would you use a heap in a coding problem? Name three classic problem types where a heap is the right tool.
+  c) What is the difference between a stack (LIFO) and a queue (FIFO)? Give one classic interview problem for each.
+  d) What is a deque (double-ended queue)? What is the sliding window maximum problem and why does a deque solve it efficiently?
+  e) Python has heapq which is a min-heap. How do you simulate a max-heap using heapq?`,
+    hints: [
+      'Heap: insert O(log n), extract-min/max O(log n), peek O(1). Backed by an array — parent at i, children at 2i+1 and 2i+2.',
+      'Three heap use cases: (1) top-K elements (maintain a heap of size K), (2) merge K sorted lists (min-heap of (val, listIndex)), (3) scheduling/median maintenance (two heaps — min and max).',
+      'Stack classics: valid parentheses, daily temperatures, min stack. Queue classics: BFS traversal, task scheduling.',
+      'Python max-heap trick: negate values. Push -val to heapq. Popping gives the largest original value.',
+    ],
+    followUps: [
+      'What is the time complexity of building a heap from n elements using heapify?',
+      'How do you find the median of a data stream using two heaps?',
+      'What is a monotonic deque and what problem does it solve?',
+    ],
+    tags: ['heap', 'stack', 'queue', 'deque', 'priority queue', 'algorithms', 'patterns'],
+  },
+
+  {
+    id: 'trivia-29',
+    category: 'trivia',
+    difficulty: 'medium',
+    title: 'Monotonic Stack: Pattern and Problems',
+    prompt: `Answer each of the following:
+
+  a) What is a monotonic stack? What does "monotonically increasing" vs "monotonically decreasing" mean in this context?
+  b) What is the "next greater element" problem? How does a monotonic stack solve it in O(n) instead of O(n²)?
+  c) What property of a problem tells you to reach for a monotonic stack?
+  d) Explain how you'd solve "largest rectangle in histogram" using a monotonic stack. What does the stack store and when do you pop?
+  e) What is the difference between the "next greater element" and "previous smaller element" patterns?`,
+    hints: [
+      'Monotonic stack: elements in the stack are always in increasing (or decreasing) order. You pop elements that violate the ordering when pushing a new one.',
+      'Next greater element: iterate left to right. Push index onto stack. When a new element is larger than stack top, pop and that element is the "next greater" for the popped index.',
+      'Signal: "for each element, find the nearest element to the left/right that is larger/smaller." Any problem involving spans, widths, or "how far does this element dominate."',
+      'Histogram: stack stores indices. Pop when current bar is shorter than top. Width = current index - (new top index + 1). Area = popped bar height × width.',
+    ],
+    followUps: [
+      'How would you solve "trapping rain water" using a monotonic stack?',
+      'Is a monotonic stack the same as a monotonic queue/deque? When would you use a deque instead?',
+    ],
+    tags: ['monotonic stack', 'stack', 'algorithms', 'patterns'],
+  },
+
+  {
+    id: 'trivia-30',
+    category: 'trivia',
+    difficulty: 'medium',
+    title: 'Tries: Structure, Operations, and Use Cases',
+    prompt: `Answer each of the following:
+
+  a) What is a trie (prefix tree)? Describe its structure and how words are stored in it.
+  b) What is the time complexity of insert and search in a trie? How does it compare to a hash map for string lookups?
+  c) What problems is a trie specifically better at than a hash map?
+  d) How does the "starts with" / prefix search operation work in a trie?
+  e) What are the space tradeoffs of a trie vs a hash set of strings?`,
+    hints: [
+      'Trie: tree where each node represents a character. Path from root to a node spells out a prefix. Leaf nodes (or nodes with isEnd=True) mark complete words.',
+      'Insert/search: O(m) where m = length of word. Same as hash map for exact lookup, but trie additionally supports prefix queries efficiently.',
+      'Trie beats hash map for: prefix/autocomplete queries, finding all words with a common prefix, word validation in a dictionary, IP routing (binary trie).',
+      'Space: trie can use more memory than a hash set because each character is a separate node. A compressed trie (radix tree) mitigates this.',
+    ],
+    followUps: [
+      'How would you implement autocomplete (return all words with a given prefix)?',
+      'What is a compressed trie / PATRICIA trie and when would you use one?',
+      'How do you implement delete in a trie?',
+    ],
+    tags: ['trie', 'prefix tree', 'algorithms', 'data structures'],
+  },
+
+  {
+    id: 'trivia-31',
+    category: 'trivia',
+    difficulty: 'medium',
+    title: 'Union Find (Disjoint Set Union): Operations and Applications',
+    prompt: `Answer each of the following:
+
+  a) What is the Union Find (DSU) data structure? What two operations does it support?
+  b) What is path compression and why does it matter for performance?
+  c) What is union by rank (or union by size)? How does it work and what does it guarantee?
+  d) With both path compression and union by rank, what is the amortized time complexity of union and find?
+  e) Name two classic coding problems where Union Find is the right tool and explain why.`,
+    hints: [
+      'Union Find: tracks which elements belong to the same component (set). Operations: find(x) returns the root/representative of x\'s set; union(x, y) merges the sets containing x and y.',
+      'Path compression: during find(), make every node on the path point directly to the root. Flattens the tree so future finds are O(1).',
+      'Union by rank: always attach the smaller tree under the root of the taller tree. Prevents degenerate tall trees.',
+      'With both: effectively O(α(n)) — inverse Ackermann function, practically constant for all n.',
+    ],
+    followUps: [
+      'How do you detect a cycle in an undirected graph using Union Find?',
+      'How would you count connected components using Union Find?',
+      'What is the difference between Union Find and BFS/DFS for connectivity queries?',
+    ],
+    tags: ['union find', 'disjoint set', 'connected components', 'algorithms', 'data structures'],
+  },
+
+  {
+    id: 'trivia-32',
+    category: 'trivia',
+    difficulty: 'medium',
+    title: 'Greedy Algorithms: When They Work and Why',
+    prompt: `Answer each of the following:
+
+  a) What is a greedy algorithm? What two conditions must hold for greedy to produce an optimal solution?
+  b) How do you prove a greedy algorithm is correct? What is the "exchange argument"?
+  c) For the interval scheduling problem (maximize number of non-overlapping intervals), what is the greedy choice? Why does it work?
+  d) Distinguish: greedy vs dynamic programming. Give an example where greedy fails but DP succeeds.
+  e) What is the two-pass greedy pattern? Give a problem where you scan left-to-right and then right-to-left to compute a result.`,
+    hints: [
+      'Greedy conditions: (1) greedy choice property — a globally optimal solution can be built by making the locally optimal choice; (2) optimal substructure — the remaining problem after a greedy choice is also optimal.',
+      'Exchange argument: assume an optimal solution doesn\'t make the greedy choice. Show you can "exchange" to use the greedy choice without making the solution worse.',
+      'Interval scheduling: always pick the interval that ends earliest. Leaves the most room for remaining intervals.',
+      'Greedy vs DP: coin change with arbitrary denominations — greedy (always pick largest) fails. DP tries all choices. Greedy works for canonical coin sets (US coins).',
+    ],
+    followUps: [
+      'What is the activity selection problem and how does it relate to interval scheduling?',
+      'How does Huffman coding use a greedy approach?',
+      'How would you solve the "gas station" problem with a greedy approach?',
+    ],
+    tags: ['greedy', 'algorithms', 'interval scheduling', 'exchange argument', 'patterns'],
+  },
+
+  // ─── AWS ────────────────────────────────────────────────────────────────────
+
+  {
+    id: 'trivia-19',
+    category: 'trivia',
+    difficulty: 'medium',
+    title: 'AWS Compute: Lambda vs EC2 vs ECS',
+    prompt: `Explain the tradeoffs between Lambda, EC2, and ECS/Fargate. For each scenario, which would you choose and why?
+
+  a) A REST API handling 0–500k requests/day with unpredictable spikes
+  b) A video transcoding job that takes up to 45 minutes per file
+  c) A microservice that maintains a warm WebSocket connection with thousands of clients
+  d) A nightly batch job that processes 10 GB of data from S3
+
+Cover: cold starts, max runtime, state, scaling model, cost characteristics, and operational overhead.`,
+    hints: [
+      'Lambda: 15-min max runtime, event-driven, auto-scales, charges per invocation+duration. Cold start mitigated with provisioned concurrency.',
+      'EC2: full VM, unlimited runtime, you manage scaling/patching. Good for stateful workloads or specific OS-level config.',
+      'ECS/Fargate: containerized, no server management. Fargate removes the EC2 layer entirely — you only define the container.',
+    ],
+    followUps: [
+      'What is a Lambda cold start and how do you mitigate it?',
+      'What is ECS Fargate and how does it differ from ECS on EC2?',
+      'When would you use EKS instead of ECS?',
+    ],
+    tags: ['AWS', 'Lambda', 'EC2', 'ECS', 'compute', 'serverless'],
+  },
+
+  {
+    id: 'trivia-20',
+    category: 'trivia',
+    difficulty: 'medium',
+    title: 'AWS Messaging: SQS vs SNS vs EventBridge vs Kinesis',
+    prompt: `Compare SQS, SNS, EventBridge, and Kinesis. Explain when to use each.
+
+Then describe how you'd implement each pattern:
+
+  a) An order service where placing an order must trigger both a shipping service and a notification service independently
+  b) A high-throughput clickstream pipeline needing multiple independent consumers with replay capability
+  c) A simple background job queue where uploaded files are processed one at a time
+  d) Cross-service event routing where different event types go to different targets based on content
+
+Cover: delivery model (push vs pull), consumer model, retention, ordering, and replay.`,
+    hints: [
+      'SQS: pull-based queue, one consumer per message, up to 14-day retention. FIFO for ordered/exactly-once.',
+      'SNS: push-based pub/sub, fan-out to multiple subscribers simultaneously. No retention.',
+      'EventBridge: event bus with routing rules. Filter by event content and route to different targets.',
+      'Kinesis: ordered, replayable stream. Multiple consumers read independently. Up to 7-day retention.',
+    ],
+    followUps: [
+      'What is a DLQ (Dead Letter Queue) and when would you use one?',
+      'What is the difference between SQS Standard and SQS FIFO?',
+      'How would you implement fan-out using SNS + SQS?',
+    ],
+    tags: ['AWS', 'SQS', 'SNS', 'EventBridge', 'Kinesis', 'messaging', 'event-driven'],
+  },
+
+  {
+    id: 'trivia-21',
+    category: 'trivia',
+    difficulty: 'medium',
+    title: 'AWS DynamoDB: Partition Keys, GSIs, and Scaling',
+    prompt: `Answer each of the following about DynamoDB:
+
+  a) What is a partition key and why does cardinality matter? What happens if many items share the same partition key?
+  b) What is a GSI? How does it differ from the table's primary key and when do you need one?
+  c) You have a users table with userId as partition key. You need to query all users by email efficiently. How do you model this?
+  d) What is the difference between On-Demand and Provisioned capacity modes?
+  e) What are DynamoDB Streams and what can you use them for?`,
+    hints: [
+      'Hot partition: many requests to the same partition key → that partition hits its 3,000 RCU / 1,000 WCU limit and gets throttled.',
+      'GSI: a separate index with its own partition+sort key, stored separately from the base table. Lets you query on non-primary-key attributes.',
+      'Email lookup: add a GSI with email as partition key → Query on the GSI instead of a full Scan.',
+      'On-demand: auto-scales instantly, pay per request. Provisioned: set RCU/WCU upfront, cheaper at steady load.',
+    ],
+    followUps: [
+      'What is the difference between a Scan and a Query in DynamoDB?',
+      'How does DynamoDB handle transactions?',
+      'What is a sort key and how does it enable range queries?',
+    ],
+    tags: ['AWS', 'DynamoDB', 'NoSQL', 'GSI', 'partition key', 'database'],
+  },
+
+  {
+    id: 'arch-9',
+    category: 'architecture',
+    difficulty: 'medium',
+    title: 'Design a Serverless REST API on AWS',
+    prompt: `Design a production-ready serverless REST API on AWS for a task management app. Requirements:
+
+  - Only authenticated users can access their own data
+  - Scales automatically with zero idle cost
+  - Handles 10,000 requests/minute at peak with < 200ms p99 latency
+  - Structured logging and alerting on errors
+
+Address:
+  1. The AWS services for each layer (API, auth, compute, database, observability)
+  2. How authentication/authorization works end to end (tokens, validation, IAM)
+  3. How you'd handle Lambda cold starts on latency-sensitive paths
+  4. DynamoDB data model (partition key strategy for multi-tenant data)
+  5. What you'd monitor and what alerts you'd set up
+  6. One significant tradeoff and why you made it`,
+    hints: [
+      'Core stack: API Gateway → Lambda → DynamoDB. Auth: Cognito User Pool with a JWT authorizer on API Gateway — validation happens before Lambda is invoked.',
+      'Cold start: provisioned concurrency on hot Lambdas, or use HTTP API (lower overhead than REST API). Keep Lambda package small.',
+      'DynamoDB: partition key = userId (all of a user\'s tasks on one partition). Sort key = taskId for range queries. Single-table design fits this well.',
+      'Monitoring: CloudWatch structured logs, alarm on Lambda error rate > 1%, alarm on p99 duration > 1000ms, alarm on throttles > 0.',
+    ],
+    followUps: [
+      'When would you choose RDS over DynamoDB for this API?',
+      'How would you handle database migrations in a serverless setup?',
+      'How would you implement per-user rate limiting?',
+    ],
+    tags: ['AWS', 'serverless', 'Lambda', 'API Gateway', 'DynamoDB', 'system design'],
+  },
+
+  {
+    id: 'arch-10',
+    category: 'architecture',
+    difficulty: 'medium',
+    title: 'Design a Real-Time Notification System',
+    prompt: `Design a notification system that:
+
+  - Sends across multiple channels: email, SMS, push (mobile), and in-app
+  - Handles 1 million notification events/day with spikes up to 10,000/minute
+  - Respects user preferences (e.g. user opted out of SMS, push only)
+  - Guarantees at-least-once delivery with retry logic for transient failures
+  - Provides a delivery status audit trail (sent, failed, bounced)
+
+Address:
+  1. Overall architecture — how does an event become a notification across channels?
+  2. How you fan out to multiple channels without coupling the producer to each provider
+  3. How you handle failures (provider down, invalid number, unsubscribed user)
+  4. How you enforce user preferences without blocking the hot path
+  5. How you store and query delivery status at scale
+  6. One tradeoff to hit the throughput target`,
+    hints: [
+      'Fan-out: event → SNS topic → per-channel SQS queues → channel Lambda workers (email, SMS, push each have their own queue+Lambda).',
+      'User preferences: cache in Redis keyed by userId. Check before sending — cache miss falls back to DynamoDB. Never block on a DB read in the hot path.',
+      'Failures: DLQ on each SQS queue after N retries. SES bounce webhook → mark address invalid in DynamoDB.',
+      'Delivery status: write to DynamoDB (notificationId PK, timestamp SK). GSI on userId for per-user history.',
+    ],
+    followUps: [
+      'How would you prevent a single event from flooding a user with duplicate notifications?',
+      'How would you implement digest/batching (daily summary email)?',
+      'How would you handle notification deduplication?',
+    ],
+    tags: ['AWS', 'SNS', 'SQS', 'system design', 'notifications', 'fan-out', 'event-driven'],
+  },
+
+  {
+    id: 'arch-11',
+    category: 'architecture',
+    difficulty: 'hard',
+    title: 'Design a URL Shortener at Scale',
+    prompt: `Design a URL shortening service (like bit.ly):
+
+  - Generates short codes for long URLs (e.g. short.ly/abc123 → a long URL)
+  - 1,000 writes/second (new URLs), 100,000 reads/second (redirects)
+  - Globally unique short codes
+  - Custom aliases (user picks their own short code)
+  - Analytics: total clicks, clicks per day, referrer breakdown
+  - URLs never expire but can be soft-deleted by the owner
+
+Address:
+  1. Short code generation — uniqueness at high write throughput
+  2. Data model — what you store and where
+  3. Read path optimization — redirects must be < 10ms p99 globally
+  4. Analytics write path — record clicks without slowing the redirect
+  5. Custom alias conflict handling
+  6. How you'd scale from 1 server to global scale`,
+    hints: [
+      'Short code generation: random base62 + uniqueness check in DB works at low scale. At high scale: pre-generate a pool of unused codes, or use auto-increment ID → base62 encode.',
+      'Read path: cache hot short codes in Redis (no TTL — URLs are immutable). CDN edge caching for the most popular links.',
+      'Analytics: redirect → return 302 immediately → publish click event to SQS/Kinesis → async consumer aggregates into a time-series store. Never block the redirect on analytics.',
+      'Custom aliases: alias IS the short code in the same table. Check for conflict before write. Rate-limit alias creation per user.',
+    ],
+    followUps: [
+      'How would you prevent abuse (shortening malicious URLs)?',
+      'How would you implement link expiration at scale?',
+      'What consistency model does your analytics system use — is that acceptable?',
+    ],
+    tags: ['system design', 'URL shortener', 'caching', 'Redis', 'scalability', 'analytics'],
+  },
+
+  {
+    id: 'arch-12',
+    category: 'architecture',
+    difficulty: 'hard',
+    title: 'Design a Distributed Rate Limiter',
+    prompt: `Design a rate limiter that can be used across a fleet of API servers:
+
+  - Limits each user to 1,000 requests/minute
+  - Works correctly even when 50+ API server instances are running
+  - P99 latency overhead of the rate limit check must be < 5ms
+  - Must handle Redis failures gracefully (don't take down the API)
+  - Supports both per-user and per-IP limiting
+
+Address:
+  1. Which rate limiting algorithm you'd use and why (token bucket, sliding window, fixed window, leaky bucket)
+  2. How you implement it with Redis (exact data structures and commands)
+  3. How you keep the latency overhead under 5ms
+  4. What happens when Redis is down — fail open or fail closed, and why?
+  5. How you handle Redis cluster failover and data consistency across shards
+  6. How you'd expose rate limit state to clients (response headers)`,
+    hints: [
+      'Sliding window counter: Redis sorted set, score = timestamp. ZADD to add request, ZREMRANGEBYSCORE to drop old entries, ZCARD to count. Atomic with a Lua script.',
+      'Token bucket in Redis: store (tokens, lastRefillTime) per user. On each request, compute tokens earned since last refill, cap at max, then check and deduct.',
+      'Latency: use a Lua script to make the check-and-decrement atomic in a single round-trip. Use Redis pipelining to batch commands.',
+      'Redis down: fail open (allow requests) is standard for rate limiting — the alternative is taking down your whole API for a cache failure.',
+    ],
+    followUps: [
+      'How would you handle rate limiting for anonymous (unauthenticated) users?',
+      'How would you implement per-endpoint rate limits (stricter limits on /login than /search)?',
+      'How would you test a rate limiter for correctness under concurrent load?',
+    ],
+    tags: ['system design', 'rate limiting', 'Redis', 'distributed systems', 'algorithms'],
+  },
+
+  {
+    id: 'arch-13',
+    category: 'architecture',
+    difficulty: 'hard',
+    title: 'Design a Social Media Feed (News Feed System)',
+    prompt: `Design the news feed for a social media platform:
+
+  - Users follow other users. The feed shows the most recent N posts from followed users.
+  - 500 million users, average user follows 200 people, posts 2 times/day
+  - Feed load must be < 200ms p99
+  - Newly posted content should appear in followers' feeds within 5 seconds
+  - Some users are "celebrities" with 10+ million followers
+
+Address:
+  1. Push vs pull model (fan-out on write vs fan-out on read) — tradeoffs of each
+  2. How you handle the "celebrity problem" (10M follower fan-out takes too long)
+  3. Data model for posts, follows, and feed storage
+  4. How you serve the feed fast (what's cached and where)
+  5. How you handle feed ranking (chronological vs ML-ranked)
+  6. How pagination works efficiently at scale`,
+    hints: [
+      'Fan-out on write: when a user posts, push to all followers\' feed lists (Redis sorted sets). Fast reads, slow writes — bad for celebrities.',
+      'Fan-out on read: on feed request, fetch posts from all followed users\' post lists and merge. Slow reads, fast writes — bad for users following many people.',
+      'Hybrid: fan-out on write for normal users. For celebrities, fan-out on read and merge at request time. Cache celebrity posts separately.',
+      'Feed storage: Redis sorted set per user, score = timestamp. Trim to 800 entries. On cache miss, reconstruct from DB.',
+    ],
+    followUps: [
+      'How would you handle a user seeing a post they already saw when paginating?',
+      'How would you add a "liked by people you follow" signal to the feed?',
+      'How would you A/B test a new feed ranking algorithm?',
+    ],
+    tags: ['system design', 'social media', 'news feed', 'caching', 'fan-out', 'scalability'],
+  },
+
+  {
+    id: 'trivia-22',
+    category: 'trivia',
+    difficulty: 'medium',
+    title: 'CAP Theorem and Consistency Models',
+    prompt: `Answer the following about distributed systems consistency:
+
+  a) State the CAP theorem. What are the three properties and why can you only guarantee two?
+  b) What does "eventual consistency" mean in practice? Give a concrete example.
+  c) Compare strong, eventual, and causal consistency — when would you choose each?
+  d) What is the difference between availability and partition tolerance in CAP? What does it mean to "sacrifice" partition tolerance?
+  e) DynamoDB offers both eventually consistent and strongly consistent reads. What is the difference, and what is the cost of strongly consistent reads?`,
+    hints: [
+      'CAP: Consistency (every read returns latest write), Availability (every request gets a response), Partition Tolerance (works when network splits). Can\'t guarantee all 3 simultaneously.',
+      'Real choice is CP (sacrifice availability — e.g. HBase, ZooKeeper) vs AP (sacrifice strict consistency — e.g. DynamoDB, Cassandra). P is not optional in distributed systems.',
+      'Eventual consistency: all nodes converge to the same value eventually. DNS record updates are a classic example.',
+      'DynamoDB strongly consistent reads: double the RCU cost, reads only from the primary node. Eventually consistent reads may return slightly stale data.',
+    ],
+    followUps: [
+      'What is the PACELC theorem and how does it extend CAP?',
+      'What is read-your-writes consistency?',
+      'How does optimistic locking (versioning) help with consistency?',
+    ],
+    tags: ['distributed systems', 'CAP theorem', 'consistency', 'system design'],
+  },
+
+  {
+    id: 'trivia-23',
+    category: 'trivia',
+    difficulty: 'medium',
+    title: 'Rate Limiting Algorithms',
+    prompt: `Explain how rate limiting works in production systems:
+
+  a) Compare: token bucket, leaky bucket, fixed window counter, sliding window log. Tradeoffs?
+  b) Fixed window allows 100 req/min. A user sends 100 req at 0:59 and 100 req at 1:01. How many get through? Why is this a problem?
+  c) How would you implement distributed rate limiting (across multiple API servers) using Redis?
+  d) Where in the request path should rate limiting happen — client, API gateway, or application layer?
+  e) Per-user vs per-IP rate limiting — when would you use each?`,
+    hints: [
+      'Token bucket: tokens refill at a steady rate, requests consume tokens. Allows short bursts up to bucket size. Most common in practice.',
+      'Fixed window burst: 200 requests in 2 seconds straddle two 1-minute windows — both windows see 100 and allow them. Sliding window solves this.',
+      'Redis sliding window: sorted set per user/IP, score = timestamp. ZADD on each request, ZREMRANGEBYSCORE to drop old entries, ZCARD to count. Lua script for atomicity.',
+      'API Gateway is ideal — centralized, before business logic. Application-layer limiting is a defense-in-depth fallback.',
+    ],
+    followUps: [
+      'How do you communicate rate limit state to clients (response headers)?',
+      'What is circuit breaking and how does it relate to rate limiting?',
+      'How do you test a rate limiter for correctness under concurrent load?',
+    ],
+    tags: ['rate limiting', 'system design', 'Redis', 'distributed systems', 'algorithms'],
+  },
+
+  // ─── Graph traversal with array-based adjacency lists ───────────────────────
+
+  {
+    id: 'coding-24',
+    category: 'coding',
+    difficulty: 'medium',
+    pattern: 'BFS / DFS',
+    title: 'All Paths From Source to Target',
+    functionName: 'allPathsSourceTarget',
+    testCases: [
+      { desc: 'two paths',   args: [[[1,2],[3],[3],[]]],           expected: [[0,1,3],[0,2,3]] },
+      { desc: 'one path',    args: [[[1],[2],[]]],                  expected: [[0,1,2]] },
+      { desc: 'four paths',  args: [[[1,2],[3],[3],[4,5],[6],[6],[]]],
+        expected: [[0,1,3,4,6],[0,1,3,5,6],[0,2,3,4,6],[0,2,3,5,6]], sortResult: true },
+      { desc: 'direct edge', args: [[[1],[]]],                      expected: [[0,1]] },
+    ],
+    prompt: `Given a directed acyclic graph (DAG) of n nodes, find all possible paths from node 0 to node n-1. Return them in any order.
+
+The graph is given as an adjacency list: graph[i] is a list of nodes you can go to from node i.
+
+Example:
+  graph = [[1,2],[3],[3],[]]
+  Paths: 0→1→3, 0→2→3
+  Output: [[0,1,3],[0,2,3]]
+
+  graph = [[4,3,1],[3,2,4],[3],[4],[]]
+  Output: [[0,4],[0,3,4],[0,1,3,4],[0,1,2,3,4],[0,1,4]]
+
+Use DFS with backtracking. State why memoization doesn't help here.`,
+    hints: [
+      'DFS with a running path array. At each node, push it to the path, recurse to each neighbor, then pop (backtrack).',
+      'Base case: when current node === n-1, push a copy of the current path to results.',
+      'Since it\'s a DAG (no cycles), you don\'t need a visited set — you won\'t loop forever.',
+    ],
+    tags: ['DFS', 'backtracking', 'graphs', 'adjacency list', 'DAG'],
+    starterCode: {
+      js: `function allPathsSourceTarget(graph) {
+  const results = [];
+  // DFS from node 0 to node graph.length - 1
+}
+
+console.log(JSON.stringify(allPathsSourceTarget([[1,2],[3],[3],[]]))); // [[0,1,3],[0,2,3]]
+console.log(JSON.stringify(allPathsSourceTarget([[1],[2],[]]))); // [[0,1,2]]
+`,
+      typescript: `function allPathsSourceTarget(graph: number[][]): number[][] {
+
+}
+
+console.log(JSON.stringify(allPathsSourceTarget([[1,2],[3],[3],[]]))); // [[0,1,3],[0,2,3]]
+console.log(JSON.stringify(allPathsSourceTarget([[1],[2],[]]))); // [[0,1,2]]
+`,
+      python: `def all_paths_source_target(graph):
+    pass
+
+print(all_paths_source_target([[1,2],[3],[3],[]]))  # [[0,1,3],[0,2,3]]
+print(all_paths_source_target([[1],[2],[]]))         # [[0,1,2]]
+`,
+    },
+  },
+
+  {
+    id: 'coding-25',
+    category: 'coding',
+    difficulty: 'medium',
+    pattern: 'BFS / DFS',
+    title: 'Course Schedule (Cycle Detection in Directed Graph)',
+    functionName: 'canFinish',
+    testCases: [
+      { desc: 'possible — no cycle',     args: [2, [[1,0]]],              expected: true },
+      { desc: 'impossible — cycle',      args: [2, [[1,0],[0,1]]],        expected: false },
+      { desc: 'no prerequisites',        args: [3, []],                   expected: true },
+      { desc: 'linear chain',            args: [4, [[1,0],[2,1],[3,2]]],  expected: true },
+      { desc: 'cycle in longer chain',   args: [3, [[1,0],[2,1],[0,2]]],  expected: false },
+    ],
+    prompt: `There are numCourses courses (0 to numCourses-1). prerequisites[i] = [a, b] means you must take course b before course a.
+
+Return true if you can finish all courses, false if there is a cycle making it impossible.
+
+Example:
+  numCourses=2, prerequisites=[[1,0]]  →  true  (take 0 then 1)
+  numCourses=2, prerequisites=[[1,0],[0,1]]  →  false  (0 needs 1, 1 needs 0 — cycle)
+
+This is: can you topologically sort a directed graph? Equivalently: does the graph have a cycle?
+
+Implement using either:
+  a) DFS with 3-color marking (white/gray/black — unvisited/in-progress/done)
+  b) Kahn's algorithm (BFS with in-degree counting)`,
+    hints: [
+      'Build a directed adjacency list: for [a,b], add edge b → a (b is a prerequisite of a).',
+      'DFS approach: track 3 states per node — 0=unvisited, 1=visiting (in current path), 2=done. If you reach a node with state 1, there\'s a cycle.',
+      'Kahn\'s BFS: start with all nodes with in-degree 0. Reduce neighbors\' in-degrees as you process. If not all nodes are processed, there\'s a cycle.',
+    ],
+    tags: ['BFS', 'DFS', 'topological sort', 'cycle detection', 'graphs', 'adjacency list'],
+    starterCode: {
+      js: `function canFinish(numCourses, prerequisites) {
+  // Build adjacency list, then detect cycle via DFS or Kahn's BFS
+}
+
+console.log(canFinish(2, [[1,0]]));       // true
+console.log(canFinish(2, [[1,0],[0,1]])); // false
+console.log(canFinish(3, []));            // true
+`,
+      typescript: `function canFinish(numCourses: number, prerequisites: number[][]): boolean {
+
+}
+
+console.log(canFinish(2, [[1,0]]));       // true
+console.log(canFinish(2, [[1,0],[0,1]])); // false
+`,
+      python: `def can_finish(num_courses, prerequisites):
+    pass
+
+print(can_finish(2, [[1,0]]))        # True
+print(can_finish(2, [[1,0],[0,1]]))  # False
+print(can_finish(3, []))             # True
+`,
+    },
+  },
+
+  {
+    id: 'coding-26',
+    category: 'coding',
+    difficulty: 'medium',
+    pattern: 'BFS / DFS',
+    title: 'Rotting Oranges (Multi-Source BFS on Grid)',
+    functionName: 'orangesRotting',
+    testCases: [
+      { desc: 'all rot in 4 minutes',  args: [[[2,1,1],[1,1,0],[0,1,1]]], expected: 4 },
+      { desc: 'fresh unreachable',     args: [[[2,1,1],[0,1,1],[1,0,1]]], expected: -1 },
+      { desc: 'no fresh oranges',      args: [[[0,2]]],                   expected: 0 },
+      { desc: 'single fresh, instant', args: [[[2,1]]],                   expected: 1 },
+      { desc: 'empty grid',            args: [[[0]]],                     expected: 0 },
+      { desc: 'isolated fresh',        args: [[[1]]],                     expected: -1 },
+    ],
+    prompt: `You are given an m×n grid where:
+  0 = empty cell
+  1 = fresh orange
+  2 = rotten orange
+
+Every minute, a fresh orange adjacent (4-directionally) to a rotten orange becomes rotten. Return the minimum number of minutes until no fresh oranges remain, or -1 if it is impossible.
+
+Example:
+  [[2,1,1],
+   [1,1,0],   →  4 minutes
+   [0,1,1]]
+
+  [[2,1,1],
+   [0,1,1],   →  -1 (bottom-left fresh orange is unreachable)
+   [1,0,1]]
+
+This is a multi-source BFS — all rotten oranges spread simultaneously, so enqueue all of them at time=0.`,
+    hints: [
+      'Multi-source BFS: seed the queue with ALL rotten oranges at once (not one at a time). Each level of BFS = 1 minute.',
+      'Track fresh count. Each time a fresh orange rots, decrement it. If fresh > 0 after BFS, return -1.',
+      'Time elapsed = number of BFS levels processed. Be careful: if the initial queue is empty and there are fresh oranges, return -1 immediately.',
+    ],
+    tags: ['BFS', 'multi-source BFS', 'graphs', 'grid', 'matrix'],
+    starterCode: {
+      js: `function orangesRotting(grid) {
+  // Multi-source BFS — seed queue with all rotten oranges at once
+}
+
+console.log(orangesRotting([[2,1,1],[1,1,0],[0,1,1]])); // 4
+console.log(orangesRotting([[2,1,1],[0,1,1],[1,0,1]])); // -1
+console.log(orangesRotting([[0,2]]));                   // 0
+`,
+      typescript: `function orangesRotting(grid: number[][]): number {
+
+}
+
+console.log(orangesRotting([[2,1,1],[1,1,0],[0,1,1]])); // 4
+console.log(orangesRotting([[2,1,1],[0,1,1],[1,0,1]])); // -1
+console.log(orangesRotting([[0,2]]));                   // 0
+`,
+      python: `from collections import deque
+
+def oranges_rotting(grid):
+    pass
+
+print(oranges_rotting([[2,1,1],[1,1,0],[0,1,1]]))  # 4
+print(oranges_rotting([[2,1,1],[0,1,1],[1,0,1]]))  # -1
+print(oranges_rotting([[0,2]]))                     # 0
+`,
+    },
   },
 ];
 

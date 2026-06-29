@@ -1,8 +1,8 @@
 node_modules/
 .env
+
+# Local session state — never commit
 .session.json
-workspace/solution_*.js
-workspace/solution_*.ts
-workspace/solution_*.py
-workspace/solution_*.java
-workspace/solution_*.md
+
+# All workspace solution files and uploaded resumes — local only
+workspace/

@@ -44,6 +44,20 @@ export function createSolutionFile(question, language = 'js') {
   return filepath;
 }
 
+export function resetSolutionFile(question, language = 'js') {
+  ensureWorkspace();
+  const extMap = { python: 'py', typescript: 'ts', js: 'js' };
+  const isCoding = question.category === 'coding';
+  const ext = isCoding ? (extMap[language] || 'js') : 'md';
+  const filename = `solution_${question.id}.${ext}`;
+  const filepath = join(WORKSPACE_DIR, filename);
+  const content = isCoding
+    ? buildCodingTemplate(question, language)
+    : buildMarkdownTemplate(question);
+  writeFileSync(filepath, content, 'utf8');
+  return filepath;
+}
+
 export function readSolutionFile(filepath) {
   try {
     return readFileSync(filepath, 'utf8');
@@ -1066,6 +1080,15 @@ export async function openInEditor(filepath) {
 
 // ── Template builders ──────────────────────────────────────────────────────
 
+function toFourSpaces(code) {
+  return code.split('\n').map(line => {
+    const spaces = line.match(/^( *)/)[1].length;
+    const levels = Math.floor(spaces / 2);
+    const remainder = spaces % 2;
+    return ' '.repeat(levels * 4 + remainder) + line.trimStart();
+  }).join('\n');
+}
+
 function buildCodingTemplate(question, language) {
   let starter = question.starterCode?.[language] || '';
   let tsNote = '';
@@ -1076,6 +1099,12 @@ function buildCodingTemplate(question, language) {
     tsNote = '// TypeScript mode — add `: Type` annotations to parameters and return values as you go\n\n';
   } else if (!starter) {
     starter = question.starterCode?.js || '';
+  }
+
+  // Convert to 4-space indentation for JS/TS (Python convention is already 4)
+  if (language !== 'python') {
+    starter = toFourSpaces(starter);
+    if (tsNote) tsNote = toFourSpaces(tsNote);
   }
 
   if (language === 'python') {

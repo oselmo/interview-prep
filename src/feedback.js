@@ -130,6 +130,44 @@ ${answer?.trim() || '(blank — candidate did not provide an answer)'}`;
   return JSON.parse(jsonMatch[0]);
 }
 
+// ── Resume behavioral interview ───────────────────────────────────────────
+
+const RESUME_INTERVIEWER_SYSTEM = `You are a senior engineering manager at a top-tier technology company conducting a behavioral interview. You have read the candidate's resume and will ask them questions about their actual work experience.
+
+Your approach:
+  - Ask targeted questions grounded in specific items from their resume (job titles, companies, projects, technologies listed)
+  - Use STAR follow-ups: push for Situation → Task → Action → Result structure when they give vague answers
+  - Probe deeper on impact: "What was the result?", "How did you measure that?", "What would you have done differently?"
+  - Challenge responses that sound rehearsed: "Can you give me a more specific example from that role?"
+  - Cover: technical leadership, cross-team collaboration, handling failure/conflict, technical decisions with tradeoffs
+  - Vary question types: achievement questions, failure questions, conflict questions, growth questions
+
+Rules:
+  - Keep responses SHORT — 2-5 sentences, like a real live interview
+  - Stay grounded in their actual resume — don't invent experience they didn't list
+  - Push back on vague or generic answers; require specificity
+  - Sound like a real person — conversational, not formal`;
+
+export async function talkToResumeInterviewer(resumeText, history, userMessage) {
+  const messages = history.length === 0
+    ? [{
+        role: 'user',
+        content: `Resume:\n---\n${resumeText}\n---\n\nThe candidate is ready. Start the interview with your first question.`,
+      }]
+    : [...history, { role: 'user', content: userMessage }];
+
+  const response = await client().messages.create({
+    model: 'claude-sonnet-4-6',
+    max_tokens: 300,
+    system: [
+      { type: 'text', text: RESUME_INTERVIEWER_SYSTEM },
+    ],
+    messages,
+  });
+
+  return response.content[0].text.trim();
+}
+
 // ── Live interviewer conversation ─────────────────────────────────────────
 
 const INTERVIEWER_SYSTEM = `You are a technical interviewer at a top technology company conducting a live coding or system design interview. Stay in character throughout.
@@ -177,6 +215,40 @@ export async function talkToInterviewer(question, currentCode, history, userMess
     max_tokens: 300,
     system: [{ type: 'text', text: INTERVIEWER_SYSTEM, cache_control: { type: 'ephemeral' } }],
     messages: callMessages,
+  });
+
+  return response.content[0].text.trim();
+}
+
+// ── Knowledge review (Socratic quiz on a knowledge article) ──────────────
+
+const KNOWLEDGE_REVIEW_SYSTEM = `You are a teacher quizzing a student on a technical reference article. You have read the article and will test their understanding through a short Socratic dialogue.
+
+Your approach:
+  - Ask one clear, focused question at a time
+  - Start with foundational concepts, then build toward nuances and tradeoffs
+  - After each student answer: 1-2 sentences of feedback (affirm what's right, correct what's wrong), then immediately ask the next question
+  - After 6-8 questions, give a 2-3 sentence summary: what they understand well and what to review
+
+Rules:
+  - Keep each response short: feedback + next question, under 100 words total
+  - If the answer is completely wrong, briefly correct it and ask a simpler follow-up before continuing
+  - Don't lecture or volunteer information beyond what the question requires — the student should supply it
+  - Opening message: just ask the first question directly, no preamble`;
+
+export async function reviewKnowledge(articleName, articleContent, history) {
+  const messages = history.length === 0
+    ? [{ role: 'user', content: 'Start the quiz.' }]
+    : history;
+
+  const response = await client().messages.create({
+    model: 'claude-sonnet-4-6',
+    max_tokens: 350,
+    system: [
+      { type: 'text', text: KNOWLEDGE_REVIEW_SYSTEM },
+      { type: 'text', text: `Article: "${articleName}"\n\n---\n${articleContent}\n---`, cache_control: { type: 'ephemeral' } },
+    ],
+    messages,
   });
 
   return response.content[0].text.trim();

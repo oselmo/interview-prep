@@ -21,7 +21,7 @@ export ANTHROPIC_API_KEY=sk-ant-...
 
 ## Features
 
-- **79 questions** across coding, architecture, trivia, and behavioral categories
+- **102 questions** across coding, architecture, trivia, and behavioral categories
 - **Hidden test cases** — edge-case inputs injected at run time, never visible in your solution file (same as a real interview)
 - **Teacher mode** — walks you through starter problems one step at a time; explains concepts without giving the answer away
 - **Tutor mode** — Socratic guidance for harder problems; names the pattern and explains why it applies, but never writes your code
@@ -35,14 +35,14 @@ export ANTHROPIC_API_KEY=sk-ant-...
 
 | Category | Count |
 |---|---|
-| Starter (guided, teacher mode) | 22 |
-| Easy coding | 3 |
-| Medium coding | 19 |
-| Hard coding | 4 |
-| Architecture / System Design | 8 |
-| Trivia / Concepts | 18 |
+| Starter (guided, teacher mode) | 23 |
+| Easy coding | 10 |
+| Medium coding | 50 |
+| Hard coding | 10 |
+| Architecture / System Design | 13 |
+| Trivia / Concepts | 32 |
 | Behavioral | 5 |
-| **Total** | **79** |
+| **Total** | **102** |
 
 ## Supported Languages
 
@@ -74,6 +74,7 @@ JavaScript · TypeScript · Python — switch any time from the main menu. Solut
 | TypeScript Patterns | `typescript.md` |
 | Python Data Engineering | `palantir-foundry-data-engineering.md` |
 | RAG & GenAI | `rag-genai.md` |
+| AWS (Lambda, DynamoDB, SQS/SNS, IAM, VPC) | `aws.md` |
 | System Design | `system-design.md` |
 | Behavioral (STAR) | `behavioral-star.md` |
 
@@ -104,6 +105,8 @@ Supported test runner types:
 | **Teacher** | Starter problems | Step-by-step walkthrough; explains concepts using different examples, guides you to the answer |
 | **Tutor** | Medium / hard coding | Names the pattern, explains why it fits, never writes your code |
 | **Interviewer** | Any problem | Live back-and-forth; asks follow-ups, pushes back on reasoning errors |
+| **Knowledge Review** | Knowledge Review menu | Socratic quiz on the selected article; asks questions, gives brief feedback, tracks completion |
+| **Resume Interviewer** | Resume Interview menu | Behavioral mock grounded in your actual resume; STAR follow-ups, pushes for specifics |
 | **Feedback** | After submit | Scores 1–10, verdict, strengths, improvements, key concepts missed |
 | **Hint** | On request | Single Socratic nudge, 2–4 sentences |
 
@@ -112,10 +115,10 @@ Supported test runner types:
 ```
 src/
   index.js       — CLI loop, session management, submit/feedback flow
-  questions.js   — All 79 questions with test cases and follow-up questions
+  questions.js   — All 102 questions with test cases and follow-up questions
   workspace.js   — File creation, hidden test runner, editor integration
   feedback.js    — Claude API calls (tutor, teacher, interviewer, feedback)
   display.js     — Chalk-based UI helpers
-knowledge/       — 24 pattern guides with templates, ASCII visuals, complexity tables
+knowledge/       — 25 pattern guides with templates, ASCII visuals, complexity tables
 workspace/       — Your solution files (git-ignored)
 ```

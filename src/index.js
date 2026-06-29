@@ -2,7 +2,7 @@ import chalk from 'chalk';
 import inquirer from 'inquirer';
 import { getRandomQuestion, getQuestions } from './questions.js';
 import Anthropic from '@anthropic-ai/sdk';
-import { getFeedback, talkToInterviewer, TUTOR_SYSTEM, TEACHER_SYSTEM, INTERVIEWER_SYSTEM } from './feedback.js';
+import { getFeedback, talkToInterviewer, TUTOR_SYSTEM, TEACHER_SYSTEM, INTERVIEWER_SYSTEM, reviewKnowledge, talkToResumeInterviewer } from './feedback.js';
 
 let _anthropic = null;
 function anthropic() {
@@ -10,10 +10,10 @@ function anthropic() {
   return _anthropic;
 }
 import { displayBanner, displayQuestion, displayFeedback, displayStats } from './display.js';
-import { createSolutionFile, readSolutionFile, openInEditor, watchSolutionFile, runSolution, clearWorkspace } from './workspace.js';
-import { writeFileSync, readFileSync } from 'fs';
+import { createSolutionFile, resetSolutionFile, readSolutionFile, openInEditor, watchSolutionFile, runSolution, clearWorkspace } from './workspace.js';
+import { writeFileSync, readFileSync, existsSync } from 'fs';
 import { readdirSync } from 'fs';
-import { join, dirname } from 'path';
+import { join, dirname, extname, resolve } from 'path';
 import { fileURLToPath } from 'url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -27,12 +27,13 @@ const session = {
   skipped: 0,
   scores: [],
   seenIds: new Set(),
-  completedIds: new Set(), // submitted and received feedback (regardless of score)
-  questionScores: {},       // questionId → last score received
+  completedIds: new Set(),   // submitted and received feedback (regardless of score)
+  questionScores: {},         // questionId → last score received
   byCategory: {},
   language: 'js',
   category: null,
   difficulty: 'all',
+  knowledgeCompleted: new Set(), // knowledge article filenames that have been reviewed
 };
 
 function recordResult(question, score) {
@@ -62,6 +63,7 @@ function saveSession() {
       language: session.language,
       category: session.category,
       difficulty: session.difficulty,
+      knowledgeCompleted: [...session.knowledgeCompleted],
     }), 'utf8');
   } catch {}
 }
@@ -76,9 +78,10 @@ function loadSession() {
     session.attempted     = data.attempted     || 0;
     session.skipped       = data.skipped       || 0;
     session.byCategory    = data.byCategory    || {};
-    session.language      = data.language      || 'typescript';
-    session.category      = data.category      || null;
-    session.difficulty    = data.difficulty    || 'all';
+    session.language           = data.language           || 'typescript';
+    session.category           = data.category           || null;
+    session.difficulty         = data.difficulty         || 'all';
+    session.knowledgeCompleted = new Set(data.knowledgeCompleted || []);
   } catch {
     // No saved session — fresh start
   }
@@ -130,6 +133,7 @@ async function runQuestion(question) {
       { name: 'Talk to interviewer  (explain your thinking out loud)', value: 'talk' },
       { name: hintLabel, value: 'hint' },
       { name: 'Reopen file in editor', value: 'reopen' },
+      { name: 'Restart this problem  (clear workspace, start fresh)', value: 'restart' },
       { name: 'Skip this question', value: 'skip' },
       { name: 'Back to menu', value: 'menu' },
     ];
@@ -203,6 +207,24 @@ async function runQuestion(question) {
 
     if (action === 'reopen') {
       await openInEditor(filepath);
+      continue;
+    }
+
+    if (action === 'restart') {
+      const { confirm } = await inquirer.prompt([{
+        type: 'confirm',
+        name: 'confirm',
+        message: 'Clear your current solution and restart from the starter template?',
+        default: false,
+      }]);
+      if (confirm) {
+        resetSolutionFile(question, session.language);
+        session.completedIds.delete(question.id);
+        delete session.questionScores[question.id];
+        saveSession();
+        console.log(chalk.yellow('\n  Problem restarted — file reset to starter template.\n'));
+        await openInEditor(filepath);
+      }
       continue;
     }
 
@@ -644,7 +666,9 @@ async function mainMenu() {
       { name: `Practice Session  [${catLabel}]`, value: 'practice' },
       { name: `Random Question   [${catLabel}]`, value: 'random' },
       { name: 'Change Category', value: 'category' },
-      { name: 'Study Guides  (open a concept review)', value: 'study' },
+      { name: `Knowledge Review  (${session.knowledgeCompleted.size}/${(() => { try { return readdirSync(KNOWLEDGE_DIR).filter(f => f.endsWith('.md')).length; } catch { return '?'; } })()} articles reviewed)`, value: 'knowledge' },
+      { name: 'Resume Interview  (behavioral mock based on your resume)', value: 'resume' },
+      { name: 'Study Guides  (open an article in editor)', value: 'study' },
       { name: 'View Session Stats', value: 'stats' },
       { name: 'Reset Session (clear history)', value: 'reset' },
       { name: 'Exit', value: 'exit' },
@@ -695,9 +719,12 @@ async function mainMenu() {
       }]);
       if (confirm) {
         session.seenIds.clear();
+        session.completedIds.clear();
+        session.knowledgeCompleted.clear();
         session.attempted = 0;
         session.skipped = 0;
         session.scores.length = 0;
+        session.questionScores = {};
         Object.keys(session.byCategory).forEach(k => delete session.byCategory[k]);
         const deleted = clearWorkspace();
         saveSession();
@@ -705,6 +732,14 @@ async function mainMenu() {
       }
       break;
     }
+
+    case 'knowledge':
+      await knowledgeMenu();
+      break;
+
+    case 'resume':
+      await resumeInterviewMenu();
+      break;
 
     case 'study':
       await studyMenu();
@@ -721,17 +756,143 @@ async function mainMenu() {
 // ── Study guides ───────────────────────────────────────────────────────────
 
 const GUIDE_LABELS = {
-  'greedy-algorithms.md':                   'Greedy Algorithms',
-  'sliding-window-two-pointers.md':         'Sliding Window & Two Pointers',
-  'trees-bst.md':                           'Trees & BSTs',
-  'graphs-bfs-dfs.md':                      'Graphs: BFS & DFS',
-  'linked-lists-and-heaps.md':              'Linked Lists & Heaps',
-  'typescript.md':                          'TypeScript Deep Dive',
-  'rag-genai.md':                           'GenAI: RAG, Embeddings & LLMs',
-  'palantir-foundry-data-engineering.md':   'Data Engineering & Foundry',
-  'system-design.md':                       'System Design Fundamentals',
+  'aws.md':                                 'AWS (Lambda, DynamoDB, SQS/SNS, IAM, VPC)',
   'behavioral-star.md':                     'Behavioral Interviews & STAR',
+  'bitwise-xor.md':                         'Bitwise XOR',
+  'cyclic-sort.md':                         'Cyclic Sort',
+  'dynamic-programming.md':                 'Dynamic Programming',
+  'fast-slow-pointers.md':                  'Fast & Slow Pointers',
+  'graphs-bfs-dfs.md':                      'Graphs: BFS & DFS (array-based)',
+  'greedy-algorithms.md':                   'Greedy Algorithms',
+  'hash-maps.md':                           'Hash Maps & Frequency Patterns',
+  'k-way-merge.md':                         'K-Way Merge',
+  'linked-lists-and-heaps.md':              'Linked Lists, Heaps & Stacks',
+  'matrix-traversal.md':                    'Matrix Traversal',
+  'merge-intervals.md':                     'Merge Intervals',
+  'modified-binary-search.md':              'Modified Binary Search',
+  'monotonic-stack.md':                     'Monotonic Stack',
+  'palantir-foundry-data-engineering.md':   'Data Engineering & Foundry',
+  'rag-genai.md':                           'GenAI: RAG, Embeddings & LLMs',
+  'sliding-window-two-pointers.md':         'Sliding Window & Two Pointers',
+  'subsets-backtracking.md':                'Subsets & Backtracking',
+  'system-design.md':                       'System Design Fundamentals',
+  'topological-sort.md':                    'Topological Sort',
+  'trees-bst.md':                           'Trees & BSTs',
+  'trie.md':                                'Tries',
+  'typescript.md':                          'TypeScript Deep Dive',
+  'union-find.md':                          'Union Find (Disjoint Set)',
 };
+
+// ── Knowledge review (Socratic quiz on an article) ────────────────────────
+
+async function knowledgeReviewLoop(articleName, articleContent) {
+  const div = '─'.repeat(58);
+  const history = [];
+
+  console.log(chalk.cyan(`\n  ${div}`));
+  console.log(chalk.cyan(`  Knowledge Review: ${articleName}`));
+  console.log(chalk.gray('  Answer each question the teacher asks. Type "done" to exit.\n'));
+
+  // Get the first question
+  process.stdout.write(chalk.cyan('  Teacher: ') + chalk.gray('thinking...\r'));
+  try {
+    const firstQ = await reviewKnowledge(articleName, articleContent, []);
+    process.stdout.write('\x1b[1A\x1b[2K');
+    console.log(chalk.cyan('  Teacher: ') + chalk.white(firstQ));
+    console.log();
+    history.push({ role: 'assistant', content: firstQ });
+  } catch (err) {
+    process.stdout.write('\x1b[1A\x1b[2K');
+    console.log(chalk.red(`  Error: ${err.message}`));
+    await pause();
+    return;
+  }
+
+  while (true) {
+    const { message } = await inquirer.prompt([{
+      type: 'input',
+      name: 'message',
+      message: chalk.yellow('  You:'),
+      validate: v => v.trim().length > 0 || 'Type something',
+    }]);
+
+    if (message.trim().toLowerCase() === 'done') {
+      console.log(chalk.gray(`\n  ${div}\n`));
+      return;
+    }
+
+    history.push({ role: 'user', content: message.trim() });
+
+    process.stdout.write(chalk.cyan('\n  Teacher: ') + chalk.gray('thinking...\r'));
+    try {
+      const reply = await reviewKnowledge(articleName, articleContent, history);
+      process.stdout.write('\x1b[1A\x1b[2K');
+      console.log(chalk.cyan('  Teacher: ') + chalk.white(reply));
+      console.log();
+      history.push({ role: 'assistant', content: reply });
+      if (history.length > 20) history.splice(0, 2);
+    } catch (err) {
+      process.stdout.write('\x1b[1A\x1b[2K');
+      console.log(chalk.red(`  Error: ${err.message}\n`));
+    }
+  }
+}
+
+// ── Knowledge review menu ──────────────────────────────────────────────────
+
+async function knowledgeMenu() {
+  let files;
+  try {
+    files = readdirSync(KNOWLEDGE_DIR).filter(f => f.endsWith('.md'));
+  } catch {
+    console.log(chalk.yellow('\n  Knowledge directory not found.'));
+    await pause();
+    return;
+  }
+
+  files.sort((a, b) => (GUIDE_LABELS[a] || a).localeCompare(GUIDE_LABELS[b] || b));
+
+  const doneCount = files.filter(f => session.knowledgeCompleted.has(f)).length;
+  console.log(chalk.gray(`\n  ${doneCount}/${files.length} articles reviewed.\n`));
+
+  const choices = files.map(f => {
+    const done = session.knowledgeCompleted.has(f);
+    const badge = done ? chalk.green('✓') : chalk.gray('○');
+    const label = GUIDE_LABELS[f] || f.replace('.md', '').replace(/-/g, ' ');
+    return { name: `  ${badge}  ${label}`, value: f };
+  });
+  choices.push({ name: chalk.gray('  ← Back'), value: null });
+
+  const { filename } = await inquirer.prompt([{
+    type: 'list',
+    name: 'filename',
+    message: 'Which article? (teacher will quiz you on it)',
+    choices,
+  }]);
+
+  if (!filename) return;
+
+  const articleName = GUIDE_LABELS[filename] || filename.replace('.md', '').replace(/-/g, ' ');
+  let articleContent;
+  try {
+    articleContent = readFileSync(join(KNOWLEDGE_DIR, filename), 'utf8');
+  } catch {
+    console.log(chalk.red('\n  Could not read article.'));
+    await pause();
+    return;
+  }
+
+  await knowledgeReviewLoop(articleName, articleContent);
+
+  // Mark as complete after any review session
+  const wasAlreadyDone = session.knowledgeCompleted.has(filename);
+  session.knowledgeCompleted.add(filename);
+  saveSession();
+  if (!wasAlreadyDone) {
+    console.log(chalk.green(`  ✓ ${articleName} marked as reviewed!\n`));
+  }
+  await pause();
+}
 
 async function studyMenu() {
   let files;
@@ -770,6 +931,188 @@ async function studyMenu() {
     console.log(chalk.yellow(`  Could not open automatically.\n  File: ${filepath}`));
   }
   await pause();
+}
+
+// ── Resume behavioral interview ────────────────────────────────────────────
+
+const RESUME_PATH_TEXT = join(WORKSPACE_DIR, 'resume.txt');
+
+function getStoredResume() {
+  try {
+    const content = readFileSync(RESUME_PATH_TEXT, 'utf8');
+    if (content.trim()) return content;
+  } catch {}
+  return null;
+}
+
+async function extractResumeText(filePath) {
+  const ext = extname(filePath).toLowerCase();
+  const raw = readFileSync(filePath);
+
+  if (ext === '.pdf') {
+    // pdf-parse is CJS — use createRequire to load it from ESM
+    const { createRequire } = await import('module');
+    const require = createRequire(import.meta.url);
+    const pdfParse = require('pdf-parse');
+    const data = await pdfParse(raw);
+    return data.text;
+  }
+
+  if (ext === '.docx') {
+    const { default: mammoth } = await import('mammoth');
+    const result = await mammoth.extractRawText({ buffer: raw });
+    return result.value;
+  }
+
+  // Plain text / markdown
+  return raw.toString('utf8');
+}
+
+async function resumeInterviewMenu() {
+  const { ensureWorkspace } = await import('./workspace.js');
+  ensureWorkspace();
+
+  let resumeText = null;
+
+  // Check if a resume already exists
+  const stored = getStoredResume();
+  if (stored) {
+    const preview = stored.trim().split('\n').slice(0, 2).join(' ').slice(0, 80);
+    console.log(chalk.gray(`\n  Saved resume found: "${preview}..."`));
+    const { useStored } = await inquirer.prompt([{
+      type: 'list',
+      name: 'useStored',
+      message: 'Resume options:',
+      choices: [
+        { name: 'Use saved resume', value: 'use' },
+        { name: 'Upload a new file  (.pdf or .docx)', value: 'file' },
+        { name: 'Paste text instead', value: 'paste' },
+        { name: chalk.gray('← Back'), value: 'back' },
+      ],
+    }]);
+    if (useStored === 'use') resumeText = stored;
+    else if (useStored === 'back') return;
+    else if (useStored === 'file') resumeText = null; // fall through to file input
+    else if (useStored === 'paste') resumeText = '__paste__';
+  } else {
+    const { method } = await inquirer.prompt([{
+      type: 'list',
+      name: 'method',
+      message: 'How would you like to provide your resume?',
+      choices: [
+        { name: 'Upload a file  (.pdf or .docx)', value: 'file' },
+        { name: 'Paste text', value: 'paste' },
+        { name: chalk.gray('← Back'), value: 'back' },
+      ],
+    }]);
+    if (method === 'back') return;
+    if (method === 'paste') resumeText = '__paste__';
+  }
+
+  if (resumeText === '__paste__') {
+    console.log(chalk.cyan('\n  Paste or type your resume below.'));
+    console.log(chalk.gray('  When finished, type "END" on its own line and press Enter.\n'));
+    const lines = [];
+    while (true) {
+      const { line } = await inquirer.prompt([{ type: 'input', name: 'line', message: '', prefix: '' }]);
+      if (line.trim() === 'END') break;
+      lines.push(line);
+    }
+    resumeText = lines.join('\n').trim();
+    if (!resumeText) {
+      console.log(chalk.yellow('\n  No content entered.\n'));
+      await pause();
+      return;
+    }
+    writeFileSync(RESUME_PATH_TEXT, resumeText, 'utf8');
+    console.log(chalk.green('  Resume saved.\n'));
+  }
+
+  if (!resumeText) {
+    // File upload flow
+    console.log(chalk.cyan('\n  Enter the full path to your resume file (.pdf or .docx).'));
+    console.log(chalk.gray('  Example: C:\\Users\\You\\Documents\\resume.pdf\n'));
+
+    const { filePath } = await inquirer.prompt([{
+      type: 'input',
+      name: 'filePath',
+      message: 'File path:',
+      validate: v => {
+        const p = resolve(v.trim().replace(/^["']|["']$/g, ''));
+        if (!existsSync(p)) return `File not found: ${p}`;
+        const ext = extname(p).toLowerCase();
+        if (!['.pdf', '.docx', '.txt', '.md'].includes(ext)) return 'Unsupported format. Use .pdf, .docx, .txt, or .md';
+        return true;
+      },
+    }]);
+
+    const cleanPath = resolve(filePath.trim().replace(/^["']|["']$/g, ''));
+    console.log(chalk.gray('\n  Reading file...'));
+    try {
+      resumeText = await extractResumeText(cleanPath);
+      resumeText = resumeText.trim();
+      if (!resumeText) throw new Error('No text could be extracted from the file.');
+      writeFileSync(RESUME_PATH_TEXT, resumeText, 'utf8');
+      console.log(chalk.green(`  Extracted and saved. (${resumeText.length} characters)\n`));
+    } catch (err) {
+      console.log(chalk.red(`  Failed to read file: ${err.message}\n`));
+      await pause();
+      return;
+    }
+  }
+
+  // Run the interview
+  const div = '─'.repeat(58);
+  const history = [];
+
+  console.log(chalk.cyan(`\n  ${div}`));
+  console.log(chalk.cyan('  Resume Behavioral Interview'));
+  console.log(chalk.gray('  The interviewer will ask questions based on your resume.'));
+  console.log(chalk.gray('  Type "done" at any time to exit.\n'));
+
+  // Get the opening question
+  process.stdout.write(chalk.cyan('  Interviewer: ') + chalk.gray('thinking...\r'));
+  try {
+    const firstQ = await talkToResumeInterviewer(resumeText, [], null);
+    process.stdout.write('\x1b[1A\x1b[2K');
+    console.log(chalk.cyan('  Interviewer: ') + chalk.white(firstQ));
+    console.log();
+    history.push({ role: 'assistant', content: firstQ });
+  } catch (err) {
+    process.stdout.write('\x1b[1A\x1b[2K');
+    console.log(chalk.red(`  Error: ${err.message}`));
+    await pause();
+    return;
+  }
+
+  while (true) {
+    const { message } = await inquirer.prompt([{
+      type: 'input',
+      name: 'message',
+      message: chalk.yellow('  You:'),
+      validate: v => v.trim().length > 0 || 'Type something',
+    }]);
+
+    if (message.trim().toLowerCase() === 'done') {
+      console.log(chalk.gray(`\n  ${div}\n`));
+      return;
+    }
+
+    history.push({ role: 'user', content: message.trim() });
+
+    process.stdout.write(chalk.cyan('\n  Interviewer: ') + chalk.gray('thinking...\r'));
+    try {
+      const reply = await talkToResumeInterviewer(resumeText, history, message.trim());
+      process.stdout.write('\x1b[1A\x1b[2K');
+      console.log(chalk.cyan('  Interviewer: ') + chalk.white(reply));
+      console.log();
+      history.push({ role: 'assistant', content: reply });
+      if (history.length > 20) history.splice(0, 2);
+    } catch (err) {
+      process.stdout.write('\x1b[1A\x1b[2K');
+      console.log(chalk.red(`  Error: ${err.message}\n`));
+    }
+  }
 }
 
 // ── Helpers ────────────────────────────────────────────────────────────────
