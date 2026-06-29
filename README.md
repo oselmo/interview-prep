@@ -21,7 +21,7 @@ export ANTHROPIC_API_KEY=sk-ant-...
 
 ## Features
 
-- **102 questions** across coding, architecture, trivia, and behavioral categories
+- **117 questions** across coding, architecture, trivia, and behavioral categories
 - **Hidden test cases** — edge-case inputs injected at run time, never visible in your solution file (same as a real interview)
 - **Teacher mode** — walks you through starter problems one step at a time; explains concepts without giving the answer away
 - **Tutor mode** — Socratic guidance for harder problems; names the pattern and explains why it applies, but never writes your code
@@ -35,14 +35,14 @@ export ANTHROPIC_API_KEY=sk-ant-...
 
 | Category | Count |
 |---|---|
-| Starter (guided, teacher mode) | 23 |
-| Easy coding | 10 |
-| Medium coding | 50 |
-| Hard coding | 10 |
+| Starter (guided, teacher mode) | 24 |
+| Easy coding | 4 |
+| Medium coding | 33 |
+| Hard coding | 6 |
 | Architecture / System Design | 13 |
 | Trivia / Concepts | 32 |
 | Behavioral | 5 |
-| **Total** | **102** |
+| **Total** | **117** |
 
 ## Supported Languages
 

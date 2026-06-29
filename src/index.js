@@ -791,22 +791,24 @@ async function knowledgeReviewLoop(articleName, articleContent) {
 
   console.log(chalk.cyan(`\n  ${div}`));
   console.log(chalk.cyan(`  Knowledge Review: ${articleName}`));
-  console.log(chalk.gray('  Answer each question the teacher asks. Type "done" to exit.\n'));
+  console.log(chalk.gray('  The teacher will walk you through concepts and quiz you.\n  Type "exit" at any time to stop early.\n'));
 
-  // Get the first question
+  // Kick off — teacher starts by teaching the first concept
   process.stdout.write(chalk.cyan('  Teacher: ') + chalk.gray('thinking...\r'));
   try {
-    const firstQ = await reviewKnowledge(articleName, articleContent, []);
+    const firstMsg = await reviewKnowledge(articleName, articleContent, []);
     process.stdout.write('\x1b[1A\x1b[2K');
-    console.log(chalk.cyan('  Teacher: ') + chalk.white(firstQ));
+    console.log(chalk.cyan('  Teacher: ') + chalk.white(firstMsg));
     console.log();
-    history.push({ role: 'assistant', content: firstQ });
+    history.push({ role: 'assistant', content: firstMsg });
   } catch (err) {
     process.stdout.write('\x1b[1A\x1b[2K');
     console.log(chalk.red(`  Error: ${err.message}`));
     await pause();
-    return;
+    return false;
   }
+
+  let reviewComplete = false;
 
   while (true) {
     const { message } = await inquirer.prompt([{
@@ -816,9 +818,9 @@ async function knowledgeReviewLoop(articleName, articleContent) {
       validate: v => v.trim().length > 0 || 'Type something',
     }]);
 
-    if (message.trim().toLowerCase() === 'done') {
+    if (message.trim().toLowerCase() === 'exit') {
       console.log(chalk.gray(`\n  ${div}\n`));
-      return;
+      break;
     }
 
     history.push({ role: 'user', content: message.trim() });
@@ -830,12 +832,29 @@ async function knowledgeReviewLoop(articleName, articleContent) {
       console.log(chalk.cyan('  Teacher: ') + chalk.white(reply));
       console.log();
       history.push({ role: 'assistant', content: reply });
-      if (history.length > 20) history.splice(0, 2);
+      if (history.length > 24) history.splice(0, 2);
+
+      // Detect when the teacher has given the summary (end of review)
+      if (reply.toLowerCase().includes('summary:')) {
+        reviewComplete = true;
+        console.log(chalk.gray(`  ${div}\n`));
+        break;
+      }
     } catch (err) {
       process.stdout.write('\x1b[1A\x1b[2K');
       console.log(chalk.red(`  Error: ${err.message}\n`));
     }
   }
+
+  // Ask for confidence check before marking complete
+  const { confident } = await inquirer.prompt([{
+    type: 'confirm',
+    name: 'confident',
+    message: chalk.yellow(`  Do you feel confident with "${articleName}"? (mark as reviewed)`),
+    default: reviewComplete,
+  }]);
+
+  return confident;
 }
 
 // ── Knowledge review menu ──────────────────────────────────────────────────
@@ -882,14 +901,17 @@ async function knowledgeMenu() {
     return;
   }
 
-  await knowledgeReviewLoop(articleName, articleContent);
+  const confident = await knowledgeReviewLoop(articleName, articleContent);
 
-  // Mark as complete after any review session
-  const wasAlreadyDone = session.knowledgeCompleted.has(filename);
-  session.knowledgeCompleted.add(filename);
-  saveSession();
-  if (!wasAlreadyDone) {
-    console.log(chalk.green(`  ✓ ${articleName} marked as reviewed!\n`));
+  if (confident) {
+    const wasAlreadyDone = session.knowledgeCompleted.has(filename);
+    session.knowledgeCompleted.add(filename);
+    saveSession();
+    if (!wasAlreadyDone) {
+      console.log(chalk.green(`\n  ✓ ${articleName} marked as reviewed!\n`));
+    }
+  } else {
+    console.log(chalk.gray(`\n  No worries — come back to it anytime.\n`));
   }
   await pause();
 }
