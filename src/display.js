@@ -139,29 +139,97 @@ function wrapText(text, width) {
   return lines;
 }
 
-export function displayStats(session) {
+function verdict(avg) {
+  if (avg >= 9) return { label: 'Strong Pass', color: chalk.green };
+  if (avg >= 7) return { label: 'Pass',        color: chalk.green };
+  if (avg >= 5) return { label: 'Borderline',  color: chalk.yellow };
+  if (avg >= 3) return { label: 'Fail',        color: chalk.red };
+  return              { label: 'Strong Fail',  color: chalk.red };
+}
+
+function scoreBar(count, max) {
+  const filled = max > 0 ? Math.round((count / max) * 10) : 0;
+  return chalk.cyan('█'.repeat(filled)) + chalk.gray('░'.repeat(10 - filled));
+}
+
+export function displayStats(session, totalArticles) {
+  const div  = '─'.repeat(48);
+  const div2 = '─'.repeat(32);
+  const scores = session.scores || [];
+  const attempted = session.attempted || 0;
+  const skipped   = session.skipped   || 0;
+  const completed = session.completedIds?.size ?? 0;
+  const kDone     = session.knowledgeCompleted?.size ?? 0;
+
   console.log('\n' + chalk.cyan.bold('  SESSION STATS'));
-  console.log(chalk.gray('  ' + '─'.repeat(40)));
-  console.log(`  Questions attempted : ${chalk.bold(session.attempted)}`);
-  console.log(`  Questions skipped   : ${chalk.bold(session.skipped)}`);
+  console.log(chalk.gray(`  ${div}`));
 
-  if (session.scores.length > 0) {
-    const avg = (session.scores.reduce((a, b) => a + b, 0) / session.scores.length).toFixed(1);
-    console.log(`  Average score       : ${chalk.bold(`${avg}/10`)}`);
-    const best = Math.max(...session.scores);
-    const worst = Math.min(...session.scores);
-    console.log(`  Best / Worst        : ${chalk.green(best)} / ${chalk.red(worst)}`);
-  }
+  // ── Overview ────────────────────────────────────────────
+  console.log(`  Attempted            : ${chalk.bold(attempted)}`);
+  console.log(`  Completed (unique)   : ${chalk.bold(completed)}`);
+  console.log(`  Skipped              : ${chalk.bold(skipped)}`);
+  const kTotal = totalArticles ?? '?';
+  console.log(`  Knowledge reviewed   : ${chalk.bold(`${kDone}/${kTotal} articles`)}`);
 
-  if (Object.keys(session.byCategory).length > 0) {
-    console.log(chalk.gray('\n  By Category:'));
-    for (const [cat, stats] of Object.entries(session.byCategory)) {
-      const label = CATEGORY_LABELS[cat] || cat;
-      const avg = stats.scores.length > 0
-        ? (stats.scores.reduce((a, b) => a + b, 0) / stats.scores.length).toFixed(1)
-        : '—';
-      console.log(`    ${chalk.white(label.padEnd(16))} ${stats.attempted} attempted, avg ${avg}/10`);
+  // ── Score summary ────────────────────────────────────────
+  if (scores.length > 0) {
+    const avg   = scores.reduce((a, b) => a + b, 0) / scores.length;
+    const best  = Math.max(...scores);
+    const worst = Math.min(...scores);
+    const passCount = scores.filter(s => s >= 7).length;
+    const passRate  = Math.round((passCount / scores.length) * 100);
+    const v = verdict(avg);
+
+    console.log(chalk.gray(`\n  ${div2}`));
+    console.log(chalk.gray('  Scores'));
+    console.log(chalk.gray(`  ${div2}`));
+    console.log(`  Average   : ${v.color(chalk.bold(`${avg.toFixed(1)}/10`))}  ${v.color(`(${v.label})`)}`);
+    console.log(`  Best      : ${chalk.green(best + '/10')}   Worst : ${chalk.red(worst + '/10')}`);
+    console.log(`  Pass rate : ${chalk.bold(`${passRate}%`)}  ${chalk.gray(`(${passCount}/${scores.length} scored ≥7)`)}`);
+
+    // Distribution
+    const bands = [
+      { label: 'Strong Pass', range: '9-10', min: 9,  max: 10 },
+      { label: 'Pass       ', range: '7-8 ', min: 7,  max: 8  },
+      { label: 'Borderline ', range: '5-6 ', min: 5,  max: 6  },
+      { label: 'Fail       ', range: '3-4 ', min: 3,  max: 4  },
+      { label: 'Strong Fail', range: '1-2 ', min: 1,  max: 2  },
+    ];
+    const maxCount = Math.max(...bands.map(b => scores.filter(s => s >= b.min && s <= b.max).length), 1);
+    console.log(chalk.gray('\n  Distribution:'));
+    for (const b of bands) {
+      const count = scores.filter(s => s >= b.min && s <= b.max).length;
+      console.log(`    ${chalk.gray(b.range)}  ${scoreBar(count, maxCount)}  ${count > 0 ? chalk.white(count) : chalk.gray(0)}`);
     }
   }
+
+  // ── By Category ──────────────────────────────────────────
+  const catEntries = Object.entries(session.byCategory || {});
+  if (catEntries.length > 0) {
+    console.log(chalk.gray(`\n  ${div2}`));
+    console.log(chalk.gray('  By Category'));
+    console.log(chalk.gray(`  ${div2}`));
+    const allCats = ['coding', 'architecture', 'trivia', 'behavioral'];
+    const ordered = [
+      ...allCats.filter(c => session.byCategory[c]),
+      ...catEntries.map(([c]) => c).filter(c => !allCats.includes(c)),
+    ];
+    for (const cat of ordered) {
+      const stats = session.byCategory[cat];
+      if (!stats) continue;
+      const label = (CATEGORY_LABELS[cat] || cat).padEnd(14);
+      const color = CATEGORY_COLORS[cat] || chalk.white;
+      if (stats.scores.length > 0) {
+        const avg = stats.scores.reduce((a, b) => a + b, 0) / stats.scores.length;
+        const v   = verdict(avg);
+        const best  = Math.max(...stats.scores);
+        const worst = Math.min(...stats.scores);
+        console.log(`  ${color(label)}  ${stats.attempted} attempted  avg ${v.color(avg.toFixed(1))}  ${chalk.gray(`(${v.label})`)}  best ${chalk.green(best)} worst ${chalk.red(worst)}`);
+      } else {
+        console.log(`  ${color(label)}  ${stats.attempted} attempted  ${chalk.gray('(no scores)')}`);
+      }
+    }
+  }
+
   console.log();
 }

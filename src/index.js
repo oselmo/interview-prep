@@ -670,7 +670,7 @@ async function mainMenu() {
       break;
 
     case 'stats':
-      displayStats(session);
+      displayStats(session, articlesTotal);
       await pause();
       break;
 
