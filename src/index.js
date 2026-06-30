@@ -891,7 +891,7 @@ async function knowledgeMenu() {
       const label = GUIDE_LABELS[f] || f.replace('.md', '').replace(/-/g, ' ');
       return { name: `  ${badge}  ${label}`, value: f };
     });
-    choices.push(new inquirer.Separator(), { name: chalk.gray('  ← Back to main menu'), value: null });
+    choices.push(new inquirer.Separator(), { name: chalk.gray('  ← Back to main menu'), value: null }, new inquirer.Separator());
 
     const { filename } = await inquirer.prompt([{
       type: 'list',
