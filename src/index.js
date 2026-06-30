@@ -745,27 +745,64 @@ const GUIDE_LABELS = {
 
 // ── Knowledge review (Socratic quiz on an article) ────────────────────────
 
-async function knowledgeReviewLoop(articleName, articleContent) {
+async function knowledgeReviewLoop(articleFilename, articleName, articleContent) {
   const div = '─'.repeat(58);
-  const history = [];
+
+  // Check for saved progress
+  const saved = loadKnowledgeHistory(articleFilename);
+  let history = [];
+  let continuing = false;
+
+  if (saved.length > 0) {
+    const lastTeacher = saved.filter(m => m.role === 'assistant').at(-1)?.content ?? '';
+    const preview = lastTeacher.slice(0, 80).replace(/\n/g, ' ');
+    console.log(chalk.cyan(`\n  ${div}`));
+    console.log(chalk.gray(`  Saved progress found for "${articleName}".`));
+    console.log(chalk.gray(`  Last: "${preview}..."`));
+    const { choice } = await inquirer.prompt([{
+      type: 'list',
+      name: 'choice',
+      message: 'Pick up where you left off?',
+      choices: [
+        { name: 'Continue from saved progress', value: 'continue' },
+        { name: 'Start over', value: 'restart' },
+      ],
+    }]);
+    if (choice === 'continue') {
+      history = saved;
+      continuing = true;
+    } else {
+      clearKnowledgeHistory(articleFilename);
+    }
+  }
 
   console.log(chalk.cyan(`\n  ${div}`));
   console.log(chalk.cyan(`  Knowledge Review: ${articleName}`));
-  console.log(chalk.gray('  The teacher will walk you through concepts and quiz you.\n  Type "exit" at any time to stop early.\n'));
+  console.log(chalk.gray('  The teacher will walk you through concepts and quiz you.'));
+  console.log(chalk.gray('  Type "save progress" or "pause" to save and exit. Type "exit" to quit without saving.\n'));
 
-  // Kick off — teacher starts by teaching the first concept
-  process.stdout.write(chalk.cyan('  Teacher: ') + chalk.gray('thinking...\r'));
-  try {
-    const firstMsg = await reviewKnowledge(articleName, articleContent, []);
-    process.stdout.write('\x1b[1A\x1b[2K');
-    console.log(chalk.cyan('  Teacher: ') + chalk.white(firstMsg));
-    console.log();
-    history.push({ role: 'assistant', content: firstMsg });
-  } catch (err) {
-    process.stdout.write('\x1b[1A\x1b[2K');
-    console.log(chalk.red(`  Error: ${err.message}`));
-    await pause();
-    return false;
+  if (continuing) {
+    const lastTeacher = history.filter(m => m.role === 'assistant').at(-1)?.content;
+    if (lastTeacher) {
+      console.log(chalk.cyan('  Teacher: ') + chalk.white(lastTeacher));
+      console.log();
+    }
+  } else {
+    // Kick off — teacher starts by teaching the first concept
+    process.stdout.write(chalk.cyan('  Teacher: ') + chalk.gray('thinking...\r'));
+    try {
+      const firstMsg = await reviewKnowledge(articleName, articleContent, []);
+      process.stdout.write('\x1b[1A\x1b[2K');
+      console.log(chalk.cyan('  Teacher: ') + chalk.white(firstMsg));
+      console.log();
+      history.push({ role: 'assistant', content: firstMsg });
+      saveKnowledgeHistory(articleFilename, history);
+    } catch (err) {
+      process.stdout.write('\x1b[1A\x1b[2K');
+      console.log(chalk.red(`  Error: ${err.message}`));
+      await pause();
+      return false;
+    }
   }
 
   let reviewComplete = false;
@@ -778,8 +815,16 @@ async function knowledgeReviewLoop(articleName, articleContent) {
       validate: v => v.trim().length > 0 || 'Type something',
     }]);
 
-    if (message.trim().toLowerCase() === 'exit') {
-      console.log(chalk.gray(`\n  ${div}\n`));
+    const lower = message.trim().toLowerCase();
+
+    if (lower === 'save progress' || lower === 'pause') {
+      saveKnowledgeHistory(articleFilename, history);
+      console.log(chalk.green('\n  Progress saved. You can pick up here next time.\n'));
+      return false;
+    }
+
+    if (lower === 'exit') {
+      console.log(chalk.gray('\n  Exited without saving.\n'));
       break;
     }
 
@@ -793,10 +838,12 @@ async function knowledgeReviewLoop(articleName, articleContent) {
       console.log();
       history.push({ role: 'assistant', content: reply });
       if (history.length > 24) history.splice(0, 2);
+      saveKnowledgeHistory(articleFilename, history);
 
       // Detect when the teacher has given the summary (end of review)
       if (reply.toLowerCase().includes('summary:')) {
         reviewComplete = true;
+        clearKnowledgeHistory(articleFilename);
         console.log(chalk.gray(`  ${div}\n`));
         break;
       }
@@ -814,6 +861,7 @@ async function knowledgeReviewLoop(articleName, articleContent) {
     default: reviewComplete,
   }]);
 
+  if (confident) clearKnowledgeHistory(articleFilename);
   return confident;
 }
 
@@ -861,7 +909,7 @@ async function knowledgeMenu() {
     return;
   }
 
-  const confident = await knowledgeReviewLoop(articleName, articleContent);
+  const confident = await knowledgeReviewLoop(filename, articleName, articleContent);
 
   if (confident) {
     const wasAlreadyDone = session.knowledgeCompleted.has(filename);
@@ -917,8 +965,35 @@ async function studyMenu() {
 
 // ── Resume behavioral interview ────────────────────────────────────────────
 
-const RESUME_PATH_TEXT    = join(WORKSPACE_DIR, 'resume.txt');
-const RESUME_HISTORY_PATH = join(WORKSPACE_DIR, 'resume_history.json');
+const RESUME_PATH_TEXT         = join(WORKSPACE_DIR, 'resume.txt');
+const RESUME_HISTORY_PATH      = join(WORKSPACE_DIR, 'resume_history.json');
+const KNOWLEDGE_HISTORY_PATH   = join(WORKSPACE_DIR, 'knowledge_history.json');
+
+function loadKnowledgeHistory(filename) {
+  try {
+    const raw = readFileSync(KNOWLEDGE_HISTORY_PATH, 'utf8');
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed[filename]) ? parsed[filename] : [];
+  } catch { return []; }
+}
+
+function saveKnowledgeHistory(filename, history) {
+  try {
+    let all = {};
+    try { all = JSON.parse(readFileSync(KNOWLEDGE_HISTORY_PATH, 'utf8')); } catch {}
+    all[filename] = history;
+    writeFileSync(KNOWLEDGE_HISTORY_PATH, JSON.stringify(all), 'utf8');
+  } catch {}
+}
+
+function clearKnowledgeHistory(filename) {
+  try {
+    let all = {};
+    try { all = JSON.parse(readFileSync(KNOWLEDGE_HISTORY_PATH, 'utf8')); } catch {}
+    delete all[filename];
+    writeFileSync(KNOWLEDGE_HISTORY_PATH, JSON.stringify(all), 'utf8');
+  } catch {}
+}
 
 function loadResumeHistory() {
   try {
