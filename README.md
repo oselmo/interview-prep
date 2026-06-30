@@ -31,6 +31,8 @@ export ANTHROPIC_API_KEY=sk-ant-...
 - **Follow-up questions** — after submitting, the AI asks complexity and pattern questions in interviewer style
 - **AI feedback** — scored 1–10 with verdict (Strong Pass → Strong Fail), strengths, improvements, and key concepts missed
 - **Knowledge review** — teacher walks you through each article concept by concept, quizzes you, then asks for confidence confirmation before marking complete
+- **Direct category menu** — main menu has per-category options (Coding Practice, Architecture Practice, Trivia, Behavioral) with no separate category selection step
+- **Resume interview persistence** — conversation history saved between sessions; resume where you left off or start over; steer mid-interview ("ask more architecture questions", "focus on my X project")
 - **Session persistence** — progress and scores saved across sessions; completed questions show a ✓ badge
 - **Score-based question selection** — practice sessions prioritize unseen questions, then fall back to lowest-scored completed ones
 
@@ -121,7 +123,7 @@ Supported test runner types:
 | **Tutor** | Medium / hard coding | Names the pattern, explains why it fits, never writes your code |
 | **Interviewer** | Any problem | Live back-and-forth; asks follow-ups, pushes back on reasoning errors |
 | **Knowledge Review** | Knowledge Review menu | Teaches concept → quizzes → feedback → next concept; asks for confidence before marking complete |
-| **Resume Interviewer** | Resume Interview menu | Behavioral mock grounded in your actual resume; STAR follow-ups, pushes for specifics |
+| **Resume Interviewer** | Resume Interview menu | Behavioral mock grounded in your actual resume; STAR follow-ups, pushes for specifics; conversation persists across sessions; supports mid-interview steering |
 | **Feedback** | After submit | Scores 1–10, verdict, strengths, improvements, key concepts missed |
 | **Hint** | On request | Single Socratic nudge, 2–4 sentences |
 
