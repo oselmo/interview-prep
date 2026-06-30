@@ -881,49 +881,51 @@ async function knowledgeMenu() {
 
   files.sort((a, b) => (GUIDE_LABELS[a] || a).localeCompare(GUIDE_LABELS[b] || b));
 
-  const doneCount = files.filter(f => session.knowledgeCompleted.has(f)).length;
-  console.log(chalk.gray(`\n  ${doneCount}/${files.length} articles reviewed.\n`));
+  while (true) {
+    const doneCount = files.filter(f => session.knowledgeCompleted.has(f)).length;
+    console.log(chalk.gray(`\n  ${doneCount}/${files.length} articles reviewed.\n`));
 
-  const choices = files.map(f => {
-    const done = session.knowledgeCompleted.has(f);
-    const badge = done ? chalk.green('✓') : chalk.gray('○');
-    const label = GUIDE_LABELS[f] || f.replace('.md', '').replace(/-/g, ' ');
-    return { name: `  ${badge}  ${label}`, value: f };
-  });
-  choices.push({ name: chalk.gray('  ← Back'), value: null });
+    const choices = files.map(f => {
+      const done = session.knowledgeCompleted.has(f);
+      const badge = done ? chalk.green('✓') : chalk.gray('○');
+      const label = GUIDE_LABELS[f] || f.replace('.md', '').replace(/-/g, ' ');
+      return { name: `  ${badge}  ${label}`, value: f };
+    });
+    choices.push(new inquirer.Separator(), { name: chalk.gray('  ← Back to main menu'), value: null });
 
-  const { filename } = await inquirer.prompt([{
-    type: 'list',
-    name: 'filename',
-    message: 'Which article? (teacher will quiz you on it)',
-    choices,
-  }]);
+    const { filename } = await inquirer.prompt([{
+      type: 'list',
+      name: 'filename',
+      message: 'Which article? (teacher will quiz you on it)',
+      choices,
+    }]);
 
-  if (!filename) return;
+    if (!filename) return;
 
-  const articleName = GUIDE_LABELS[filename] || filename.replace('.md', '').replace(/-/g, ' ');
-  let articleContent;
-  try {
-    articleContent = readFileSync(join(KNOWLEDGE_DIR, filename), 'utf8');
-  } catch {
-    console.log(chalk.red('\n  Could not read article.'));
-    await pause();
-    return;
-  }
-
-  const confident = await knowledgeReviewLoop(filename, articleName, articleContent);
-
-  if (confident) {
-    const wasAlreadyDone = session.knowledgeCompleted.has(filename);
-    session.knowledgeCompleted.add(filename);
-    saveSession();
-    if (!wasAlreadyDone) {
-      console.log(chalk.green(`\n  ✓ ${articleName} marked as reviewed!\n`));
+    const articleName = GUIDE_LABELS[filename] || filename.replace('.md', '').replace(/-/g, ' ');
+    let articleContent;
+    try {
+      articleContent = readFileSync(join(KNOWLEDGE_DIR, filename), 'utf8');
+    } catch {
+      console.log(chalk.red('\n  Could not read article.'));
+      await pause();
+      continue;
     }
-  } else {
-    console.log(chalk.gray(`\n  No worries — come back to it anytime.\n`));
+
+    const confident = await knowledgeReviewLoop(filename, articleName, articleContent);
+
+    if (confident) {
+      const wasAlreadyDone = session.knowledgeCompleted.has(filename);
+      session.knowledgeCompleted.add(filename);
+      saveSession();
+      if (!wasAlreadyDone) {
+        console.log(chalk.green(`\n  ✓ ${articleName} marked as reviewed!\n`));
+      }
+    } else {
+      console.log(chalk.gray(`\n  No worries — come back to it anytime.\n`));
+    }
+    await pause();
   }
-  await pause();
 }
 
 async function studyMenu() {
