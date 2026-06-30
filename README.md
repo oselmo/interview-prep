@@ -83,7 +83,8 @@ Java notes:
 | Greedy Algorithms | `greedy-algorithms.md` |
 | Hash Maps | `hash-maps.md` |
 | OOP Design | (embedded in coding questions) |
-| Scalable Microservices & APIs | `microservices-and-apis.md` |
+| Microservices Architecture | `microservices.md` |
+| API Design (REST, Auth, Gateway) | `api-design.md` |
 | TypeScript Patterns | `typescript.md` |
 | Python Data Engineering | `palantir-foundry-data-engineering.md` |
 | RAG & GenAI | `rag-genai.md` |

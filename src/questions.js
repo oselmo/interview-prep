@@ -11605,6 +11605,281 @@ class Solution {
     ],
     tags: ["microservices", "APIs", "distributed systems"],
   },
+
+  // ─── Microservices ────────────────────────────────────────────────────────────
+
+  {
+    id: "trivia-284",
+    category: 'trivia',
+    difficulty: "easy",
+    title: "Microservices: Monolith vs Microservices Trade-offs",
+    prompt: "Answer each of the following:\n\n  a) Name two advantages of a monolith over microservices.\n  b) Name two advantages of microservices over a monolith.\n  c) What is a 'distributed monolith' and why is it worse than either?",
+    hints: [
+      "Monolith wins on simplicity: one deploy, one process, ACID transactions, fast local calls.",
+      "Microservices win on independent scaling, team autonomy, and failure isolation.",
+      "A distributed monolith splits the code but keeps tight runtime coupling — you get network latency and deployment complexity with none of the independence.",
+    ],
+    followUps: [
+      "When would you recommend starting with a monolith even for a greenfield project?",
+      "What is a modular monolith and how does it differ from a distributed monolith?",
+    ],
+    tags: ["microservices", "architecture", "distributed systems"],
+  },
+
+  {
+    id: "trivia-285",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Microservices: Conway's Law",
+    prompt: "Answer each of the following:\n\n  a) State Conway's Law in your own words.\n  b) What is the Inverse Conway Maneuver?\n  c) How does Conway's Law affect service boundary decisions?",
+    hints: [
+      "Conway's Law: your system architecture will mirror your org's communication structure.",
+      "Inverse Conway Maneuver: deliberately shape the team structure to match the architecture you want.",
+      "If a service spans two teams, expect misaligned interfaces and coupling. One team, one bounded context.",
+    ],
+    followUps: [
+      "Give a concrete example of Conway's Law playing out in a real org structure.",
+      "How would you use Conway's Law to argue for reorganizing a team?",
+    ],
+    tags: ["microservices", "architecture", "team structure"],
+  },
+
+  {
+    id: "trivia-286",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Microservices: Strangler Fig Pattern",
+    prompt: "Answer each of the following:\n\n  a) What problem does the Strangler Fig pattern solve?\n  b) What is the role of the façade/router in this pattern?\n  c) What is the end state — what happens to the monolith?",
+    hints: [
+      "It solves the big-bang rewrite risk by migrating incrementally, one capability at a time.",
+      "The façade sits in front of everything and routes specific paths to new services while routing the rest to the legacy monolith.",
+      "Over time the monolith is 'strangled' as more routes point to new services until it can be decommissioned.",
+    ],
+    followUps: [
+      "How would you decide which capability to migrate first?",
+      "What risks remain even with the Strangler Fig approach?",
+    ],
+    tags: ["microservices", "architecture", "migration"],
+  },
+
+  {
+    id: "trivia-287",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Microservices: Saga Pattern",
+    prompt: "Answer each of the following:\n\n  a) Why can't you use a standard ACID transaction across microservices?\n  b) What is a compensating transaction?\n  c) Choreography vs orchestration sagas — key difference and when you'd choose each?",
+    hints: [
+      "Each service has its own database; there's no shared transaction coordinator across service boundaries.",
+      "A compensating transaction undoes the effect of a previous step — e.g., cancel a reservation if a later step fails.",
+      "Choreography: services react to events, no coordinator — decoupled but hard to trace. Orchestration: a central saga manager directs steps — easier to monitor but adds a central point of complexity.",
+    ],
+    followUps: [
+      "How do you ensure idempotency in saga steps?",
+      "What happens if the saga orchestrator itself crashes mid-saga?",
+    ],
+    tags: ["microservices", "distributed transactions", "saga", "data management"],
+  },
+
+  {
+    id: "trivia-288",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Microservices: CQRS and Event Sourcing",
+    prompt: "Answer each of the following:\n\n  a) What does CQRS stand for and what does it split?\n  b) What does event sourcing store instead of current state?\n  c) Why do CQRS and event sourcing pair naturally together?",
+    hints: [
+      "Command Query Responsibility Segregation — splits the write model (commands) from the read model (queries).",
+      "Event sourcing stores the append-only log of domain events. Current state is derived by replaying the log.",
+      "Events from the write side feed directly into the read projections (the query side), making the pairing natural.",
+    ],
+    followUps: [
+      "What consistency guarantee do you get between the write and read sides in CQRS?",
+      "When would you NOT use event sourcing despite its audit-log benefits?",
+    ],
+    tags: ["microservices", "CQRS", "event sourcing", "data management"],
+  },
+
+  {
+    id: "trivia-289",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "Microservices: Circuit Breaker Pattern",
+    prompt: "Answer each of the following:\n\n  a) What are the three states of a circuit breaker and what happens in each?\n  b) What problem does 'fail fast' solve compared to waiting for a timeout?\n  c) When does the breaker transition from OPEN to HALF-OPEN?",
+    hints: [
+      "CLOSED: requests pass, failures are counted. OPEN: requests fail immediately (fail fast). HALF-OPEN: one trial request is let through to test recovery.",
+      "Fail fast avoids thread exhaustion — a hung call with no timeout ties up a thread, and many of those sink the service. Fast rejection preserves capacity.",
+      "After a cooldown timeout period, the breaker moves to HALF-OPEN to test whether the downstream has recovered.",
+    ],
+    followUps: [
+      "What metrics would you use to decide the trip threshold?",
+      "How does the circuit breaker pattern complement retry-with-backoff?",
+    ],
+    tags: ["microservices", "resilience", "circuit breaker", "fault tolerance"],
+  },
+
+  {
+    id: "trivia-290",
+    category: 'trivia',
+    difficulty: "easy",
+    title: "Microservices: Resilience Pattern Vocabulary",
+    prompt: "Match each pattern to its purpose:\n\n  a) Bulkhead\n  b) Timeout\n  c) Retry with exponential backoff + jitter\n  d) Rate limiting",
+    hints: [
+      "Bulkhead: isolate resource pools (separate thread/connection pool per dependency) so one failure can't sink the whole service.",
+      "Timeout: bound the wait time on a remote call to prevent hung threads and resource exhaustion.",
+      "Retry with backoff+jitter: retransmit on transient failure, but spread retries to avoid thundering herd.",
+      "Rate limiting: cap requests per unit time to protect a service from overload and enforce quotas.",
+    ],
+    followUps: [
+      "Why must you only retry idempotent operations?",
+      "What is a thundering herd and why does jitter help?",
+    ],
+    tags: ["microservices", "resilience", "fault tolerance", "distributed systems"],
+  },
+
+  {
+    id: "trivia-291",
+    category: 'trivia',
+    difficulty: "easy",
+    title: "Microservices: SLO, SLI, SLA",
+    prompt: "Answer each of the following:\n\n  a) Define SLI, SLO, and SLA.\n  b) Why should your SLA always be looser than your SLO?\n  c) What is an error budget and how is it used?",
+    hints: [
+      "SLI (Indicator): a measured metric. SLO (Objective): your internal target. SLA (Agreement): contractual promise with penalties.",
+      "Your SLA is what you promise customers; you need headroom to detect and fix issues before you breach the contract.",
+      "Error budget = 1 − SLO. It's the allowed failure budget — when it's exhausted, freeze risky changes until it refills.",
+    ],
+    followUps: [
+      "Give an example SLI → SLO → SLA chain for an API service.",
+      "How does the error budget concept change how you decide when to ship?",
+    ],
+    tags: ["microservices", "observability", "SLO", "reliability"],
+  },
+
+  // ─── API Design ───────────────────────────────────────────────────────────────
+
+  {
+    id: "trivia-292",
+    category: 'trivia',
+    difficulty: "easy",
+    title: "API Design: REST Verbs and Status Codes",
+    prompt: "Answer each of the following:\n\n  a) Which HTTP verbs are idempotent? Which are safe?\n  b) When do you return 201 vs 200 vs 204?\n  c) When do you return 401 vs 403?",
+    hints: [
+      "Idempotent: GET, PUT, DELETE. Safe (no side effects): GET only. POST is neither.",
+      "201 Created: POST that creates a resource. 200 OK: general success with body. 204 No Content: success with no response body (common for DELETE).",
+      "401 Unauthorized: not authenticated — the client needs to log in. 403 Forbidden: authenticated but not authorized — you know who they are, they just can't do this.",
+    ],
+    followUps: [
+      "What status code should you return for a validation error (e.g., missing required field)?",
+      "When would you use 409 Conflict?",
+    ],
+    tags: ["API design", "REST", "HTTP"],
+  },
+
+  {
+    id: "trivia-293",
+    category: 'trivia',
+    difficulty: "easy",
+    title: "API Design: Versioning Strategies",
+    prompt: "Answer each of the following:\n\n  a) Name three strategies for versioning a REST API.\n  b) Which is most commonly used in practice and why?\n  c) What kind of change requires a new version vs what can be done without one?",
+    hints: [
+      "URI versioning (/v1/orders), header versioning (Accept: application/vnd.v2+json), query param (?version=2).",
+      "URI versioning is most common — it's visible, easy to route, and simple to test.",
+      "Breaking changes need a version bump: removing fields, renaming, changing types, altering semantics. Adding optional fields is additive and doesn't need a new version.",
+    ],
+    followUps: [
+      "How long would you maintain a deprecated API version?",
+      "What's the downside of too many active API versions?",
+    ],
+    tags: ["API design", "REST", "versioning"],
+  },
+
+  {
+    id: "trivia-294",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "API Design: Idempotency Keys",
+    prompt: "Answer each of the following:\n\n  a) What does it mean for an operation to be idempotent?\n  b) Why is POST for payments dangerous without an idempotency key?\n  c) How does an idempotency key work server-side?",
+    hints: [
+      "Idempotent: running the operation N times has the same effect as once.",
+      "A client network timeout causes a retry — without a key, the payment is charged twice.",
+      "The server stores (key → result) with a TTL. If the same key appears again, it returns the stored result instead of re-executing.",
+    ],
+    followUps: [
+      "Who generates the idempotency key — client or server?",
+      "What happens if two different users send the same idempotency key?",
+    ],
+    tags: ["API design", "idempotency", "REST", "payments"],
+  },
+
+  {
+    id: "trivia-295",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "API Design: Pagination — Offset vs Cursor",
+    prompt: "Answer each of the following:\n\n  a) How does offset/limit pagination work and what are its failure modes?\n  b) How does cursor/keyset pagination work and what does it trade off?\n  c) When would you choose cursor over offset?",
+    hints: [
+      "Offset/limit: skip N rows, take M. Fails at scale (full table scan to skip) and can miss/duplicate rows if data changes mid-scroll.",
+      "Cursor: encode position as an opaque token (e.g., last seen ID + timestamp). Stable under inserts/deletes, efficient index seek. Can't jump to arbitrary page.",
+      "Use cursor for large or infinite feeds (social timelines, logs, notifications). Use offset only for small bounded lists where jumping to a page matters.",
+    ],
+    followUps: [
+      "What would you encode in a cursor for a feed sorted by timestamp DESC with ties possible?",
+      "How would you expose cursor pagination in your API response shape?",
+    ],
+    tags: ["API design", "pagination", "REST", "databases"],
+  },
+
+  {
+    id: "trivia-296",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "API Design: JWT Structure and Security",
+    prompt: "Answer each of the following:\n\n  a) What are the three parts of a JWT and what does each contain?\n  b) Why can you verify a JWT without hitting a database?\n  c) Name two security caveats of JWTs in production.",
+    hints: [
+      "Header (algorithm), payload (claims: sub, exp, scopes), signature (HMAC or RSA over header+payload). Each base64url-encoded, joined by dots.",
+      "The signature is cryptographically tied to the payload — verify the signature with the secret/public key and you know the token wasn't tampered with.",
+      "Can't easily revoke before expiry (use short TTLs + refresh tokens or a denylist). Payload is encoded not encrypted — never put secrets in it. Also: validate alg field to prevent none-alg attacks.",
+    ],
+    followUps: [
+      "What is the difference between a JWT access token and a refresh token?",
+      "When would you prefer opaque tokens over JWTs?",
+    ],
+    tags: ["API design", "security", "JWT", "authentication"],
+  },
+
+  {
+    id: "trivia-297",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "API Design: OAuth2 and OIDC",
+    prompt: "Answer each of the following:\n\n  a) What problem does OAuth2 solve (in one sentence)?\n  b) Name the four roles in OAuth2.\n  c) What does PKCE add and why is it needed for mobile/SPA clients?",
+    hints: [
+      "OAuth2 lets an app act on a user's behalf without the user sharing their password.",
+      "Resource Owner (user), Client (app), Authorization Server (issues tokens), Resource Server (the API).",
+      "PKCE (Proof Key for Code Exchange) prevents authorization code interception. Public clients can't safely store a client secret, so PKCE uses a cryptographic challenge instead.",
+    ],
+    followUps: [
+      "What is the difference between OAuth2 (authorization) and OIDC (authentication)?",
+      "When would you use the Client Credentials flow instead of Authorization Code?",
+    ],
+    tags: ["API design", "security", "OAuth2", "OIDC", "authentication"],
+  },
+
+  {
+    id: "trivia-298",
+    category: 'trivia',
+    difficulty: "medium",
+    title: "API Design: mTLS and Zero-Trust",
+    prompt: "Answer each of the following:\n\n  a) How does mTLS differ from standard TLS?\n  b) What problem does it solve for service-to-service communication?\n  c) State the core principle of zero-trust networking in one sentence.",
+    hints: [
+      "Standard TLS: only the server presents a cert. mTLS (mutual TLS): both sides present certs, so each end verifies the other's identity.",
+      "It solves the 'assumed-trusted internal network' problem — even inside the data center, a compromised service can't impersonate another without a valid cert.",
+      "Zero-trust: never trust, always verify — every request is authenticated, authorized, and encrypted regardless of where it originates.",
+    ],
+    followUps: [
+      "How does a service mesh like Istio or Linkerd implement mTLS without code changes?",
+      "What is the least-privilege principle and how does it apply in a zero-trust model?",
+    ],
+    tags: ["API design", "security", "mTLS", "zero-trust", "service mesh"],
+  },
 ];
 
 export function getQuestions(filters = {}) {

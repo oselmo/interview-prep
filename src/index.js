@@ -2,7 +2,7 @@ import chalk from 'chalk';
 import inquirer from 'inquirer';
 import { getRandomQuestion, getQuestions } from './questions.js';
 import Anthropic from '@anthropic-ai/sdk';
-import { getFeedback, talkToInterviewer, TUTOR_SYSTEM, TEACHER_SYSTEM, INTERVIEWER_SYSTEM, reviewKnowledge, talkToResumeInterviewer } from './feedback.js';
+import { getFeedback, talkToInterviewer, TUTOR_SYSTEM, TEACHER_SYSTEM, INTERVIEWER_SYSTEM, reviewKnowledge, talkToResumeInterviewer, getResumeFeedback } from './feedback.js';
 
 let _anthropic = null;
 function anthropic() {
@@ -729,6 +729,8 @@ const GUIDE_LABELS = {
   'merge-intervals.md':                     'Merge Intervals',
   'modified-binary-search.md':              'Modified Binary Search',
   'monotonic-stack.md':                     'Monotonic Stack',
+  'api-design.md':                          'API Design (REST, Auth, Gateway)',
+  'microservices.md':                       'Microservices Architecture',
   'palantir-foundry-data-engineering.md':   'Data Engineering & Foundry',
   'rag-genai.md':                           'GenAI: RAG, Embeddings & LLMs',
   'sliding-window-two-pointers.md':         'Sliding Window & Two Pointers',
@@ -1131,6 +1133,28 @@ async function resumeInterviewMenu() {
     const lower = trimmed.toLowerCase();
 
     if (lower === 'done') {
+      if (history.length >= 2) {
+        const { wantFeedback } = await inquirer.prompt([{
+          type: 'confirm',
+          name: 'wantFeedback',
+          message: 'Want feedback on your interview performance?',
+          default: true,
+        }]);
+        if (wantFeedback) {
+          console.log(chalk.gray('\n  Analyzing your interview...\n'));
+          try {
+            const fb = await getResumeFeedback(resumeText, history);
+            console.log(chalk.cyan(`\n  ${div}`));
+            console.log(chalk.cyan('  Interview Feedback'));
+            console.log(chalk.cyan(`  ${div}\n`));
+            console.log(chalk.white(fb));
+            console.log(chalk.gray(`\n  ${div}\n`));
+          } catch (err) {
+            console.log(chalk.red(`  Could not generate feedback: ${err.message}\n`));
+          }
+          await pause();
+        }
+      }
       console.log(chalk.gray(`\n  ${div}\n`));
       return;
     }

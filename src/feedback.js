@@ -150,6 +150,40 @@ Rules:
   - Push back on vague or generic answers; require specificity
   - Sound like a real person — conversational, not formal`;
 
+const RESUME_FEEDBACK_SYSTEM = `You are a senior engineering manager who just finished a mock behavioral interview with a candidate. Review the full conversation transcript and give honest, calibrated post-interview feedback.
+
+Structure your response as follows (use these exact headers):
+
+**Overall Impression** — 2-3 sentences on the general quality of their answers.
+
+**Strengths** — 2-4 bullet points on what they did well (specific to what they said, not generic).
+
+**Areas to Improve** — 2-4 bullet points on specific gaps, vague answers, or missed STAR components.
+
+**Key Moments** — Call out 1-2 specific exchanges (quote or paraphrase them) that exemplify either a strength or weakness.
+
+**Prep Focus** — 2-3 concrete things to work on before the real interview.
+
+Be direct and honest. Do not sugarcoat. Calibrate to a senior engineering role. Keep it under 400 words.`;
+
+export async function getResumeFeedback(resumeText, history) {
+  const transcript = history
+    .map(m => `${m.role === 'user' ? 'Candidate' : 'Interviewer'}: ${m.content}`)
+    .join('\n\n');
+
+  const response = await client().messages.create({
+    model: 'claude-sonnet-4-6',
+    max_tokens: 600,
+    system: [{ type: 'text', text: RESUME_FEEDBACK_SYSTEM, cache_control: { type: 'ephemeral' } }],
+    messages: [{
+      role: 'user',
+      content: `Resume:\n---\n${resumeText}\n---\n\nInterview transcript:\n---\n${transcript}\n---\n\nPlease give your feedback.`,
+    }],
+  });
+
+  return response.content[0].text.trim();
+}
+
 export async function talkToResumeInterviewer(resumeText, history, userMessage) {
   const messages = history.length === 0
     ? [{

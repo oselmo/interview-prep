@@ -1,8 +1,8 @@
-# Microservices & API Design
+# Microservices Architecture
 
-A practical reference for designing distributed systems built from independently
-deployable services, and for designing the APIs that connect them. Focused on the
-trade-offs and patterns that come up in senior full-stack / platform interviews.
+A practical reference for designing and operating distributed systems built from
+independently deployable services. Focused on the trade-offs and patterns that
+come up in senior full-stack and platform interviews.
 
 ---
 
@@ -107,10 +107,10 @@ down, the caller fails (unless it degrades gracefully).
 The caller publishes a message and moves on; the consumer processes it later. Decouples
 availability and smooths load spikes (the queue absorbs bursts).
 
-- **Message queue** (point-to-point, e.g., SQS, RabbitMQ work queue): one consumer
-  processes each message. Good for task distribution.
+- **Message queue** (point-to-point, e.g., SQS, RabbitMQ): one consumer processes each
+  message. Good for task distribution.
 - **Pub/sub / event streaming** (e.g., Kafka, SNS): one event, many independent
-  consumers. Good for event-driven architectures and fan-out.
+  consumers. Good for fan-out and event-driven architectures.
 
 **Event-driven architecture**: services emit domain events ("OrderPlaced") that other
 services react to, without the publisher knowing who is listening. Maximizes decoupling
@@ -127,95 +127,7 @@ but makes the overall flow harder to trace.
 
 ---
 
-## 4. API Design
-
-### REST best practices
-
-- **Resources are nouns, not verbs**: `GET /orders/123`, not `GET /getOrder?id=123`.
-- **Use HTTP verbs correctly**: GET (read, safe), POST (create), PUT (replace),
-  PATCH (partial update), DELETE (remove).
-- **Use correct status codes**: 200 OK, 201 Created, 204 No Content, 400 Bad Request,
-  401 Unauthorized, 403 Forbidden, 404 Not Found, 409 Conflict, 422 Unprocessable,
-  429 Too Many Requests, 500 Internal Error, 503 Unavailable.
-- **Nest sub-resources sensibly**: `GET /users/42/orders`. Don't nest more than ~2 levels.
-- **Filtering/sorting/searching via query params**: `GET /orders?status=open&sort=-createdAt`.
-- **HATEOAS** (optional, the "maturity" peak of Richardson's model): responses include
-  links to related actions; rarely fully adopted in practice.
-
-### Versioning strategies
-
-- **URI versioning**: `/v1/orders` — simplest, most visible, easy to route. Most common.
-- **Header versioning**: `Accept: application/vnd.acme.v2+json` — clean URLs, less visible.
-- **Query param**: `/orders?version=2` — easy but pollutes params.
-
-Prefer additive, backward-compatible changes (add fields, never remove/rename) so you
-rarely need a new major version. Version only on **breaking** changes.
-
-### Idempotency
-
-An operation is **idempotent** if running it N times has the same effect as running it
-once. GET/PUT/DELETE are naturally idempotent; POST is not. For unsafe operations that
-clients may retry (payments!), require an **idempotency key**:
-
-```
-POST /payments            Idempotency-Key: 7f3c-...    { amount: 100 }
-  → server stores (key → result). A retry with the same key returns the
-    stored result instead of charging twice.
-```
-
-### Pagination
-
-- **Offset/limit**: `?offset=40&limit=20` — simple, allows jumping to a page; but slow
-  on large offsets and can skip/duplicate rows if data changes mid-scroll.
-- **Cursor/keyset**: `?after=<opaque_cursor>&limit=20` — stable under inserts/deletes,
-  efficient at scale; can't jump to an arbitrary page. Preferred for large/infinite feeds.
-
----
-
-## 5. Service Discovery, Load Balancing, API Gateway
-
-### Service discovery
-
-Services come and go (autoscaling, restarts), so callers can't hardcode addresses.
-
-- **Client-side discovery**: client queries a registry (Consul, Eureka) and picks an
-  instance itself.
-- **Server-side discovery**: client hits a stable endpoint (load balancer / DNS) which
-  resolves to a healthy instance. Kubernetes Services work this way.
-
-### Load balancing
-
-Distribute requests across healthy instances. Algorithms: round-robin, least-connections,
-weighted, consistent hashing (sticky by key — useful for cache affinity). Health checks
-remove unhealthy instances from rotation.
-
-### API Gateway pattern
-
-A single entry point in front of all services. Handles cross-cutting concerns so each
-service doesn't reimplement them: authentication, rate limiting, request routing,
-TLS termination, request/response transformation, aggregation, caching, logging.
-
-```
-                         ┌─────────────────────────┐
-                         │      API GATEWAY         │
-                         │  authn · rate-limit ·    │
-  clients ──────────────▶│  routing · TLS · cache   │
-  (web / mobile / 3rd)   └───────┬─────┬──────┬─────┘
-                                 │     │      │
-                       ┌─────────┘     │      └─────────┐
-                       ▼               ▼                ▼
-                ┌────────────┐  ┌────────────┐   ┌────────────┐
-                │  Orders    │  │  Payments  │   │  Inventory │
-                │  Service   │  │  Service   │   │  Service   │
-                └────────────┘  └────────────┘   └────────────┘
-```
-
-**BFF (Backend-for-Frontend)**: a gateway variant — one gateway tailored per client
-type (web BFF, mobile BFF) so each frontend gets exactly the aggregation/shape it needs.
-
----
-
-## 6. Data Management in Microservices
+## 4. Data Management in Microservices
 
 ### Database-per-service
 
@@ -291,7 +203,7 @@ with CQRS (events feed the read projections).
 
 ---
 
-## 7. Observability
+## 5. Observability
 
 You can't debug a distributed system from one log file. Observability rests on three
 pillars: **logs, metrics, traces.**
@@ -313,12 +225,12 @@ pillars: **logs, metrics, traces.**
 - **SLO** (Objective): the internal target, e.g., "99.9% availability over 30 days."
 - **SLA** (Agreement): the contractual promise to customers, with penalties; always set
   looser than your SLO (SLA 99.5% < SLO 99.9%).
-- **Error budget** = 1 − SLO. If SLO is 99.9%, you have a 0.1% budget for failure; spend
-  it on risk/velocity, and freeze risky changes when it's exhausted.
+- **Error budget** = 1 − SLO. If SLO is 99.9%, you have 0.1% of the period to spend on
+  risk/velocity; freeze risky changes when it's exhausted.
 
 ---
 
-## 8. Resilience Patterns
+## 6. Resilience Patterns
 
 Distributed calls fail. Design every remote call to fail gracefully.
 
@@ -380,7 +292,7 @@ Return **429 Too Many Requests** with a `Retry-After` header when throttling.
 
 ---
 
-## 9. Containerization & Orchestration
+## 7. Containerization & Orchestration
 
 ### Docker
 
@@ -408,62 +320,14 @@ Declarative orchestration: you describe desired state; K8s reconciles reality to
 
 ---
 
-## 10. Security
-
-### JWT (JSON Web Token)
-
-A signed, self-contained token: `header.payload.signature`, base64url-encoded. The
-payload holds **claims** (sub, exp, scopes/roles). Because it's signed (HMAC or RSA/ECDSA),
-the server can verify it **without a database lookup** — stateless auth. Caveats: you
-can't easily revoke a JWT before it expires (use short TTLs + refresh tokens, or a
-denylist); never put secrets in the payload (it's only encoded, not encrypted).
-
-### OAuth2
-
-A **delegated authorization** framework — lets an app act on a user's behalf without
-their password. Key roles: Resource Owner (user), Client (app), Authorization Server
-(issues tokens), Resource Server (the API). The common flow is **Authorization Code +
-PKCE** for web/mobile:
-
-```
-  user ──▶ Client ──▶ Auth Server  (user logs in, consents)
-                          │
-            authorization code (redirect back to client)
-                          │
-       Client ──code+PKCE verifier──▶ Auth Server ──▶ access token (+ refresh token)
-                          │
-       Client ──Bearer access token──▶ Resource Server (API) ──▶ protected resource
-```
-
-(**OIDC** adds an identity layer — the `id_token` — on top of OAuth2 for authentication.)
-
-### mTLS (mutual TLS)
-
-In normal TLS only the server presents a certificate; in **mutual TLS** both sides do, so
-each end cryptographically proves its identity. Used for **service-to-service** auth inside
-a mesh — every service verifies the caller's cert. A service mesh (Istio/Linkerd) can
-automate cert issuance/rotation and enforce mTLS transparently via sidecars.
-
-### Zero-trust
-
-"Never trust, always verify." Don't assume that traffic inside the network perimeter is
-safe. Every request is authenticated, authorized, and encrypted regardless of origin;
-services authenticate each other (mTLS + service identity), apply least-privilege policy,
-and the network is treated as hostile. The perimeter firewall is no longer the security
-boundary — identity is.
-
----
-
-## Quick interview checklist
+## Quick Interview Checklist
 
 When asked to design a distributed system, hit these:
 
-1. **Boundaries** — what are the services and why (bounded contexts, not tiers)?
+1. **Boundaries** — what are the services and why (bounded contexts, not technical tiers)?
 2. **Communication** — sync vs async per interaction; protocol choice + justification.
 3. **Data** — database-per-service; how do you handle cross-service consistency (saga)?
-4. **API** — REST conventions, versioning, idempotency, pagination.
-5. **Entry** — API gateway responsibilities; auth (OAuth2/JWT), rate limiting.
-6. **Resilience** — timeouts, retries+backoff, circuit breakers, bulkheads.
-7. **Observability** — tracing, structured logs, metrics, health checks, SLOs.
-8. **Deploy/scale** — containers, K8s, autoscaling, zero-downtime rollouts.
-9. **Security** — mTLS between services, zero-trust, least privilege.
+4. **Resilience** — timeouts, retries+backoff, circuit breakers, bulkheads.
+5. **Observability** — tracing, structured logs, metrics, health checks, SLOs.
+6. **Deploy/scale** — containers, K8s, autoscaling, zero-downtime rollouts.
+7. **Team alignment** — Conway's Law; bounded context per team.
