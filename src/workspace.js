@@ -1126,7 +1126,7 @@ function toFourSpaces(code) {
 
 // Convert a JS value to a Java literal expression
 function _javaLiteral(val) {
-  if (val === null || val === undefined) return '(Object)null';
+  if (val === null || val === undefined) return 'null';
   if (typeof val === 'boolean') return val.toString();
   if (typeof val === 'number') {
     if (Number.isInteger(val)) return val.toString();
@@ -1137,23 +1137,275 @@ function _javaLiteral(val) {
   }
   if (Array.isArray(val)) {
     if (val.length === 0) return 'new int[]{}';
-    const first = val[0];
+    const hasNulls = val.some(x => x === null);
+    const first = val.find(x => x !== null);
     if (Array.isArray(first)) {
       if (!first.length || typeof first[0] === 'number') {
-        const inner = val.map(row => `{${row.join(',')}}`).join(',');
+        const inner = val.map(row => row ? `{${row.join(',')}}` : '{}').join(',');
         return `new int[][]{${inner}}`;
       }
       if (typeof first[0] === 'string') {
-        const inner = val.map(row => `{${row.map(s => `"${s.replace(/"/g, '\\"')}"`).join(',')}}`).join(',');
+        const inner = val.map(row => `{${(row||[]).map(s => `"${s.replace(/"/g, '\\"')}"`).join(',')}}`).join(',');
         return `new String[][]{${inner}}`;
       }
     }
-    if (typeof first === 'number' && Number.isInteger(first)) return `new int[]{${val.join(',')}}`;
-    if (typeof first === 'number') return `new double[]{${val.join(',')}}`;
-    if (typeof first === 'string') return `new String[]{${val.map(s => `"${s.replace(/"/g, '\\"')}"`).join(',')}}`;
-    if (typeof first === 'boolean') return `new boolean[]{${val.join(',')}}`;
+    if (hasNulls) return `new Integer[]{${val.map(v => v === null ? 'null' : v).join(',')}}`;
+    if (first !== undefined && typeof first === 'number' && Number.isInteger(first)) return `new int[]{${val.join(',')}}`;
+    if (first !== undefined && typeof first === 'number') return `new double[]{${val.join(',')}}`;
+    if (first !== undefined && typeof first === 'string') return `new String[]{${val.map(s => `"${s.replace(/"/g, '\\"')}"`).join(',')}}`;
+    if (first !== undefined && typeof first === 'boolean') return `new boolean[]{${val.join(',')}}`;
   }
-  return '(Object)null';
+  return 'null';
+}
+
+function _inferJavaReturnType(expected) {
+  if (expected === null || expected === undefined) return 'void';
+  if (typeof expected === 'boolean') return 'boolean';
+  if (typeof expected === 'number' && Number.isInteger(expected)) return 'int';
+  if (typeof expected === 'number') return 'double';
+  if (typeof expected === 'string') return 'String';
+  if (Array.isArray(expected)) {
+    if (!expected.length) return 'int[]';
+    const first = expected.find(x => x !== null);
+    if (first === undefined) return 'int[]';
+    if (Array.isArray(first)) return 'int[][]';
+    if (typeof first === 'number' && Number.isInteger(first)) return 'int[]';
+    if (typeof first === 'number') return 'double[]';
+    if (typeof first === 'string') return 'String[]';
+    if (typeof first === 'boolean') return 'boolean[]';
+  }
+  return 'Object';
+}
+
+function _javaPlaceholderReturn(type) {
+  const map = { void: '', boolean: 'return false;', int: 'return 0;', long: 'return 0L;', double: 'return 0.0;', String: 'return "";' };
+  return map[type] ?? 'return null;';
+}
+
+// ── Java main() body builders ─────────────────────────────────────────────────
+
+function _javaStandardBody(question) {
+  const { testCases, functionName } = question;
+  const visible = (testCases || []).filter(t => !t.hidden);
+  const toShow = visible.length ? visible : (testCases || []).slice(0, 2);
+  return toShow.map(t =>
+    `        System.out.println(${functionName}(${t.args.map(_javaLiteral).join(', ')})); // expected: ${JSON.stringify(t.expected)}`
+  ).join('\n');
+}
+
+function _javaTreeBody(question) {
+  const { testCases, functionName } = question;
+  const visible = (testCases || []).filter(t => !t.hidden);
+  const toShow = visible.length ? visible : (testCases || []).slice(0, 2);
+  return toShow.map(t => {
+    const lo = t.args[0];
+    if (!lo || !lo.length) return `        System.out.println(${functionName}(null)); // expected: ${JSON.stringify(t.expected)}`;
+    const hasNulls = lo.some(x => x === null);
+    const lit = hasNulls ? `new Integer[]{${lo.map(v => v === null ? 'null' : v).join(',')}}` : `new Integer[]{${lo.join(',')}}`;
+    return `        System.out.println(${functionName}(_build(${lit}))); // expected: ${JSON.stringify(t.expected)}`;
+  }).join('\n');
+}
+
+function _javaLcaBody(question) {
+  const fn = question.functionName || 'lowestCommonAncestor';
+  const { testCases } = question;
+  const visible = (testCases || []).filter(t => !t.hidden);
+  const toShow = visible.length ? visible : (testCases || []).slice(0, 2);
+  const bst = `new TreeNode(6, new TreeNode(2, new TreeNode(0), new TreeNode(4, new TreeNode(3), new TreeNode(5))), new TreeNode(8, new TreeNode(7), new TreeNode(9)))`;
+  const calls = toShow.map(t =>
+    `        System.out.println(${fn}(_bst, _find(_bst,${t.pVal}), _find(_bst,${t.qVal})).val); // expected: ${t.expected}`
+  ).join('\n');
+  return `        TreeNode _bst = ${bst};\n${calls}`;
+}
+
+function _javaListBody(question) {
+  const fns = question.functionNames || [question.functionName];
+  const { testCases } = question;
+  const visible = (testCases || []).filter(t => !t.hidden);
+  const toShow = visible.length ? visible : (testCases || []).slice(0, 2);
+  return fns.flatMap((fn, fi) => {
+    const header = fi > 0 ? [`        // -- ${fn} --`] : [];
+    return [...header, ...toShow.map(t => {
+      const vals = t.args[0] || [];
+      const lit = vals.length ? `new int[]{${vals.join(',')}}` : 'new int[]{}';
+      const exp = JSON.stringify(t.expected).replace(/,/g, ', ');
+      return `        System.out.println(_str(${fn}(_arr(${lit})))); // expected: ${exp}`;
+    })];
+  }).join('\n');
+}
+
+function _javaClassBody(question) {
+  const { className, testCases } = question;
+  const cn = (className || 'Solution').toLowerCase().replace(/[^a-z]/g, '');
+  return (testCases || []).map((tc, i) => {
+    const ctorArgs = (tc.constructorArgs || []).map(_javaLiteral).join(', ');
+    const varName = `_${cn}${i + 1}`;
+    const lines = [`        // ${tc.desc}`, `        ${className} ${varName} = new ${className}(${ctorArgs});`];
+    for (const step of (tc.steps || [])) {
+      const args = (step.args || []).map(_javaLiteral).join(', ');
+      const call = `${varName}.${step.method}(${args})`;
+      lines.push('returns' in step && step.returns !== null
+        ? `        System.out.println(${call}); // expected: ${JSON.stringify(step.returns)}`
+        : `        ${call};`);
+    }
+    return lines.join('\n');
+  }).join('\n');
+}
+
+// Helper method strings to inject into Solution class
+const _JAVA_BUILD_TREE = `
+    static TreeNode _build(Integer[] a) {
+        if (a == null || a.length == 0 || a[0] == null) return null;
+        TreeNode root = new TreeNode(a[0]);
+        java.util.Queue<TreeNode> q = new java.util.LinkedList<>();
+        q.add(root); int i = 1;
+        while (!q.isEmpty() && i < a.length) {
+            TreeNode n = q.poll();
+            if (i < a.length) { if (a[i] != null) { n.left = new TreeNode(a[i]); q.add(n.left); } i++; }
+            if (i < a.length) { if (a[i] != null) { n.right = new TreeNode(a[i]); q.add(n.right); } i++; }
+        }
+        return root;
+    }`;
+
+const _JAVA_FIND_NODE = `
+    static TreeNode _find(TreeNode root, int val) {
+        if (root == null) return null;
+        if (root.val == val) return root;
+        return val < root.val ? _find(root.left, val) : _find(root.right, val);
+    }`;
+
+const _JAVA_LIST_HELPERS = `
+    static ListNode _arr(int[] a) {
+        if (a.length == 0) return null;
+        ListNode h = new ListNode(a[0]), c = h;
+        for (int i = 1; i < a.length; i++) { c.next = new ListNode(a[i]); c = c.next; }
+        return h;
+    }
+    static String _str(ListNode h) {
+        java.util.StringBuilder sb = new java.util.StringBuilder("[");
+        while (h != null) { sb.append(h.val); if (h.next != null) sb.append(", "); h = h.next; }
+        return sb.append("]").toString();
+    }`;
+
+// Returns { mainBody, helpers } — helpers is a string of static methods to inject before main()
+function _buildJavaTestSetup(question) {
+  if (question.classTest)           return { mainBody: _javaClassBody(question),    helpers: '' };
+  if (question.treeTest)            return { mainBody: _javaTreeBody(question),     helpers: _JAVA_BUILD_TREE };
+  if (question.lcaTest)             return { mainBody: _javaLcaBody(question),      helpers: _JAVA_FIND_NODE };
+  if (question.linkedListRoundTrip) return { mainBody: _javaListBody(question),     helpers: _JAVA_LIST_HELPERS };
+  if (question.testCases?.length)   return { mainBody: _javaStandardBody(question), helpers: '' };
+  return { mainBody: '        // write your test calls here', helpers: '' };
+}
+
+// Replace (or inject) the main() body and optional helper methods in an existing java class string
+function _injectJavaMain(classCode, mainBody, helpers = '') {
+  const lines = classCode.split('\n');
+  let inMain = false, depth = 0, mainStart = -1, mainEnd = -1;
+  for (let i = 0; i < lines.length; i++) {
+    if (!inMain && /public static void main\s*\(\s*String\s*\[\]\s*\w+\s*\)/.test(lines[i])) {
+      inMain = true; mainStart = i; depth = 0;
+    }
+    if (inMain) {
+      for (const ch of lines[i]) {
+        if (ch === '{') depth++;
+        else if (ch === '}') { if (--depth === 0) { mainEnd = i; inMain = false; break; } }
+      }
+    }
+    if (mainEnd !== -1) break;
+  }
+  const newMain = ['    public static void main(String[] args) {', mainBody, '    }'];
+  const insertion = helpers ? [helpers, '', ...newMain] : newMain;
+  if (mainStart === -1) {
+    const lb = lines.lastIndexOf('}');
+    return [...lines.slice(0, lb), '', ...insertion, '}'].join('\n');
+  }
+  return [...lines.slice(0, mainStart), ...insertion, ...lines.slice(mainEnd + 1)].join('\n');
+}
+
+// Full class templates for questions WITHOUT starterCode.java ─────────────────
+
+function _buildJavaFnTemplate(question) {
+  const fns = question.functionNames || [question.functionName || 'solve'];
+  const returnType = _inferJavaReturnType(question.testCases?.[0]?.expected);
+  const ph = _javaPlaceholderReturn(returnType);
+  const { mainBody, helpers } = _buildJavaTestSetup(question);
+  const methods = fns.map(f => `    public static ${returnType} ${f}(/* TODO: add params */) {\n        // your solution here\n        ${ph}\n    }`).join('\n\n');
+  return `class Solution {\n${methods}\n${helpers}\n\n    public static void main(String[] args) {\n${mainBody}\n    }\n}`;
+}
+
+function _buildJavaTreeTemplate(question) {
+  const fn = question.functionName || (question.lcaTest ? 'lowestCommonAncestor' : 'solve');
+  const isLca = !!question.lcaTest;
+  const returnType = _inferJavaReturnType(question.testCases?.[0]?.expected);
+  const ph = _javaPlaceholderReturn(returnType);
+  const paramExtra = isLca ? ', TreeNode p, TreeNode q' : '';
+  const { mainBody, helpers } = _buildJavaTestSetup(question);
+  return `class TreeNode {
+    int val; TreeNode left, right;
+    TreeNode(int val) { this.val = val; }
+    TreeNode(int val, TreeNode left, TreeNode right) { this.val = val; this.left = left; this.right = right; }
+}
+
+class Solution {
+    public static ${returnType} ${fn}(TreeNode root${paramExtra}) {
+        // your solution here
+        ${ph}
+    }
+${helpers}
+
+    public static void main(String[] args) {
+${mainBody}
+    }
+}`;
+}
+
+function _buildJavaListTemplate(question) {
+  const fns = question.functionNames || [question.functionName || 'solve'];
+  const { mainBody, helpers } = _buildJavaTestSetup(question);
+  const methods = fns.map(f => `    public static ListNode ${f}(ListNode head) {\n        // your solution here\n        return null;\n    }`).join('\n\n');
+  return `class ListNode {
+    int val; ListNode next;
+    ListNode(int val) { this.val = val; }
+}
+
+class Solution {
+${methods}
+${helpers}
+
+    public static void main(String[] args) {
+${mainBody}
+    }
+}`;
+}
+
+function _buildJavaClassTemplate(question) {
+  const { className, testCases } = question;
+  const { mainBody } = _buildJavaTestSetup(question);
+  const methodMap = new Map();
+  for (const tc of (testCases || [])) {
+    for (const step of (tc.steps || [])) {
+      if (!methodMap.has(step.method)) {
+        methodMap.set(step.method, 'returns' in step ? _inferJavaReturnType(step.returns) : 'void');
+      }
+    }
+  }
+  const ctorArgHint = (testCases?.[0]?.constructorArgs?.length) ? '/* TODO: add params */' : '';
+  const methods = [...methodMap.entries()].map(([name, retType]) => {
+    const ph = _javaPlaceholderReturn(retType);
+    return `    ${retType} ${name}(/* TODO */) { ${ph} }`;
+  }).join('\n');
+  return `class ${className} {
+    ${className}(${ctorArgHint}) {
+        // initialize your data structures here
+    }
+${methods}
+}
+
+class Solution {
+    public static void main(String[] args) {
+${mainBody}
+    }
+}`;
 }
 
 function _buildJavaStandardRunner(question) {
@@ -1204,24 +1456,22 @@ ${cases}
 `;
 }
 
-function _buildJavaGenericStarter(question) {
-  const fn = question.functionName || 'solve';
-  return `class Solution {
-    public static void ${fn}(/* TODO: add parameters and return type */) {
-        // your solution here
-    }
-
-    public static void main(String[] args) {
-        // test your solution here
-        // System.out.println(${fn}(...));
-    }
-}`;
-}
-
 function buildCodingTemplate(question, language) {
-  // Java gets its own template path — compiled language, no test injection
+  // Java: compiled language — no runtime test injection; test calls go in main()
   if (language === 'java') {
-    const starter = question.starterCode?.java || _buildJavaGenericStarter(question);
+    let starter;
+    if (question.starterCode?.java) {
+      const { mainBody, helpers } = _buildJavaTestSetup(question);
+      starter = _injectJavaMain(question.starterCode.java, mainBody, helpers);
+    } else if (question.treeTest || question.lcaTest) {
+      starter = _buildJavaTreeTemplate(question);
+    } else if (question.linkedListRoundTrip) {
+      starter = _buildJavaListTemplate(question);
+    } else if (question.classTest) {
+      starter = _buildJavaClassTemplate(question);
+    } else {
+      starter = _buildJavaFnTemplate(question);
+    }
     const promptLines = question.prompt.split('\n').map(l => ` * ${l}`).join('\n');
     return `/**
  * ${question.title}
@@ -1229,9 +1479,8 @@ function buildCodingTemplate(question, language) {
  *
 ${promptLines}
  *
- * NOTE: Standard function problems have hidden tests that compile alongside
- * your solution and run automatically. Class/tree/cycle problems do not —
- * add your own test calls in main() for those.
+ * NOTE: Standard function problems run hidden tests automatically when you
+ * submit. Class/tree/LCA problems use the test calls in main() below.
  */
 
 ${starter}
