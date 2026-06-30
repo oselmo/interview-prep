@@ -580,9 +580,13 @@ async function practiceSession(category) {
       { name: 'Easy', value: 'easy' },
       { name: 'Medium', value: 'medium' },
       { name: 'Hard', value: 'hard' },
+      new inquirer.Separator(),
+      { name: chalk.gray('← Back'), value: '__back__' },
+      new inquirer.Separator(),
     ],
     default: session.difficulty,
   }]);
+  if (difficulty === '__back__') return;
   session.difficulty = difficulty;
 
   const filters = { category, difficulty };
