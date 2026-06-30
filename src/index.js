@@ -542,37 +542,7 @@ async function teacherChat(question, getFilepath) {
   });
 }
 
-// ── Category + difficulty selection ───────────────────────────────────────
-
-const CATEGORY_CHOICES = [
-  { name: 'All categories', value: 'all' },
-  { name: 'Coding  (algorithms + data structures)', value: 'coding' },
-  { name: 'System Design / Architecture', value: 'architecture' },
-  { name: 'Behavioral  (STAR)', value: 'behavioral' },
-  { name: 'Trivia  (language + tech concepts)', value: 'trivia' },
-];
-
-const CATEGORY_LABELS = {
-  all: 'All',
-  coding: 'Coding',
-  architecture: 'System Design',
-  behavioral: 'Behavioral',
-  trivia: 'Trivia',
-};
-
-async function selectCategory() {
-  const { category } = await inquirer.prompt([{
-    type: 'list',
-    name: 'category',
-    message: 'Which category?',
-    choices: CATEGORY_CHOICES,
-    default: session.category || 'all',
-  }]);
-  session.category = category;
-  saveSession();
-
-  // Language is now selected per-problem — no global prompt here
-}
+// ── Difficulty selection ───────────────────────────────────────────────────
 
 // ── Question picker: incomplete first, then lowest-scored completed ──────────
 
@@ -599,14 +569,14 @@ function pickQuestion(filters, skipIds = new Set()) {
 
 // ── Practice session (loops questions in the current category) ─────────────
 
-async function practiceSession() {
+async function practiceSession(category) {
   const { difficulty } = await inquirer.prompt([{
     type: 'list',
     name: 'difficulty',
     message: 'Which difficulty?',
     choices: [
       { name: 'All', value: 'all' },
-      { name: 'Starter  (broad warmup, teacher mode)', value: 'starter' },
+      ...(category === 'coding' ? [{ name: 'Starter  (warmup, teacher mode)', value: 'starter' }] : []),
       { name: 'Easy', value: 'easy' },
       { name: 'Medium', value: 'medium' },
       { name: 'Hard', value: 'hard' },
@@ -615,8 +585,7 @@ async function practiceSession() {
   }]);
   session.difficulty = difficulty;
 
-  // No language filter — language is chosen per-problem when the question opens
-  const filters = { category: session.category, difficulty };
+  const filters = { category, difficulty };
 
   // Show how many are still incomplete
   const incompleteCount = getQuestions({ ...filters, excludeIds: session.completedIds }).length;
@@ -646,21 +615,11 @@ async function practiceSession() {
 // ── Main menu ──────────────────────────────────────────────────────────────
 
 async function mainMenu() {
-  // First run: pick category
-  if (!session.category) {
-    displayBanner();
-    await selectCategory();
-  }
-
   displayBanner();
 
   // Status line
-  const catLabel = CATEGORY_LABELS[session.category] || session.category;
-  const available = getQuestions({ category: session.category, excludeIds: session.seenIds });
-  console.log(
-    chalk.cyan('  Category: ') + chalk.bold.white(catLabel) +
-    chalk.gray(`  ·  ${available.length} unseen questions`)
-  );
+  const available = getQuestions({ excludeIds: session.seenIds });
+  console.log(chalk.gray(`  ${available.length} unseen questions`));
   if (session.attempted + session.skipped > 0) {
     const avg = session.scores.length
       ? (session.scores.reduce((a, b) => a + b, 0) / session.scores.length).toFixed(1)
@@ -669,52 +628,39 @@ async function mainMenu() {
   }
   console.log();
 
+  const articlesTotal = (() => { try { return readdirSync(KNOWLEDGE_DIR).filter(f => f.endsWith('.md')).length; } catch { return '?'; } })();
+
   const { action } = await inquirer.prompt([{
     type: 'list',
     name: 'action',
     message: 'What would you like to do?',
     choices: [
-      { name: `Starter Question  [${catLabel}]  (warmup, teacher mode)`, value: 'starter' },
-      { name: `Practice Session  [${catLabel}]`, value: 'practice' },
-      { name: `Random Question   [${catLabel}]`, value: 'random' },
-      { name: 'Change Category', value: 'category' },
-      { name: `Knowledge Review  (${session.knowledgeCompleted.size}/${(() => { try { return readdirSync(KNOWLEDGE_DIR).filter(f => f.endsWith('.md')).length; } catch { return '?'; } })()} articles reviewed)`, value: 'knowledge' },
-      { name: 'Resume Interview  (behavioral mock based on your resume)', value: 'resume' },
-      { name: 'Study Guides  (open an article in editor)', value: 'study' },
+      { name: 'Starter Questions          (coding warmup, teacher mode)', value: 'starter' },
+      { name: 'Coding Practice', value: 'coding' },
+      { name: 'Architecture Practice', value: 'architecture' },
+      { name: 'Trivia Practice', value: 'trivia' },
+      { name: 'Behavioral Practice', value: 'behavioral' },
+      new inquirer.Separator(),
+      { name: `Knowledge Review           (${session.knowledgeCompleted.size}/${articlesTotal} articles reviewed)`, value: 'knowledge' },
+      { name: 'Resume Interview           (behavioral mock based on your resume)', value: 'resume' },
+      { name: 'Study Guides              (open an article in editor)', value: 'study' },
+      new inquirer.Separator(),
       { name: 'View Session Stats', value: 'stats' },
-      { name: 'Reset Session (clear history)', value: 'reset' },
+      { name: 'Reset Session             (clear history)', value: 'reset' },
       { name: 'Exit', value: 'exit' },
     ],
   }]);
 
   switch (action) {
-    case 'starter': {
-      if (session.category !== 'coding' && session.category !== 'all') {
-        console.log(chalk.yellow('\n  Starter questions are only available for Coding. Change your category to Coding.'));
-        await pause();
-        break;
-      }
+    case 'starter':
       await starterMenu();
       break;
-    }
 
-    case 'practice':
-      await practiceSession();
-      break;
-
-    case 'random': {
-      const q = pickQuestion({ category: session.category });
-      if (!q) {
-        console.log(chalk.yellow(`\n  No questions available in [${catLabel}].`));
-        await pause();
-      } else {
-        await runQuestion(q);
-      }
-      break;
-    }
-
-    case 'category':
-      await selectCategory();
+    case 'coding':
+    case 'architecture':
+    case 'trivia':
+    case 'behavioral':
+      await practiceSession(action);
       break;
 
     case 'stats':
@@ -969,7 +915,24 @@ async function studyMenu() {
 
 // ── Resume behavioral interview ────────────────────────────────────────────
 
-const RESUME_PATH_TEXT = join(WORKSPACE_DIR, 'resume.txt');
+const RESUME_PATH_TEXT    = join(WORKSPACE_DIR, 'resume.txt');
+const RESUME_HISTORY_PATH = join(WORKSPACE_DIR, 'resume_history.json');
+
+function loadResumeHistory() {
+  try {
+    const raw = readFileSync(RESUME_HISTORY_PATH, 'utf8');
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch { return []; }
+}
+
+function saveResumeHistory(history) {
+  try { writeFileSync(RESUME_HISTORY_PATH, JSON.stringify(history), 'utf8'); } catch {}
+}
+
+function clearResumeHistory() {
+  try { writeFileSync(RESUME_HISTORY_PATH, '[]', 'utf8'); } catch {}
+}
 
 function getStoredResume() {
   try {
@@ -1097,26 +1060,63 @@ async function resumeInterviewMenu() {
 
   // Run the interview
   const div = '─'.repeat(58);
-  const history = [];
+
+  // Check for saved conversation
+  const saved = loadResumeHistory();
+  let history = [];
+  let continuing = false;
+
+  if (saved.length > 0) {
+    const lastMsg = saved.filter(m => m.role === 'assistant').at(-1)?.content ?? '';
+    const preview = lastMsg.slice(0, 100).replace(/\n/g, ' ');
+    console.log(chalk.cyan(`\n  ${div}`));
+    console.log(chalk.gray(`  Previous session found (${saved.length} messages).`));
+    console.log(chalk.gray(`  Last: "${preview}..."`));
+    const { choice } = await inquirer.prompt([{
+      type: 'list',
+      name: 'choice',
+      message: 'Continue where you left off?',
+      choices: [
+        { name: 'Continue previous session', value: 'continue' },
+        { name: 'Start over (clear history)', value: 'restart' },
+      ],
+    }]);
+    if (choice === 'continue') {
+      history = saved;
+      continuing = true;
+    } else {
+      clearResumeHistory();
+    }
+  }
 
   console.log(chalk.cyan(`\n  ${div}`));
   console.log(chalk.cyan('  Resume Behavioral Interview'));
-  console.log(chalk.gray('  The interviewer will ask questions based on your resume.'));
-  console.log(chalk.gray('  Type "done" at any time to exit.\n'));
+  console.log(chalk.gray('  Type "done" to exit · "start over" to clear history and restart.'));
+  console.log(chalk.gray('  You can steer: "ask me more architecture questions", "focus on my X project", etc.\n'));
 
-  // Get the opening question
-  process.stdout.write(chalk.cyan('  Interviewer: ') + chalk.gray('thinking...\r'));
-  try {
-    const firstQ = await talkToResumeInterviewer(resumeText, [], null);
-    process.stdout.write('\x1b[1A\x1b[2K');
-    console.log(chalk.cyan('  Interviewer: ') + chalk.white(firstQ));
-    console.log();
-    history.push({ role: 'assistant', content: firstQ });
-  } catch (err) {
-    process.stdout.write('\x1b[1A\x1b[2K');
-    console.log(chalk.red(`  Error: ${err.message}`));
-    await pause();
-    return;
+  if (continuing) {
+    // Replay the last interviewer message so user knows where they are
+    const lastInterviewer = history.filter(m => m.role === 'assistant').at(-1)?.content;
+    if (lastInterviewer) {
+      console.log(chalk.cyan('  Interviewer: ') + chalk.white(lastInterviewer));
+      console.log();
+    }
+  } else {
+    // Get the opening question
+    process.stdout.write(chalk.cyan('  Interviewer: ') + chalk.gray('thinking...\r'));
+    try {
+      const firstQ = await talkToResumeInterviewer(resumeText, [], null);
+      process.stdout.write('\x1b[1A\x1b[2K');
+      console.log(chalk.cyan('  Interviewer: ') + chalk.white(firstQ));
+      console.log();
+      history.push({ role: 'assistant', content: firstQ });
+      saveResumeHistory(history);
+    } catch (err) {
+      process.stdout.write('\x1b[1A\x1b[2K');
+      console.log(chalk.red(`  Error: ${err.message}`));
+      await pause();
+      return;
+    }
   }
 
   while (true) {
@@ -1127,21 +1127,44 @@ async function resumeInterviewMenu() {
       validate: v => v.trim().length > 0 || 'Type something',
     }]);
 
-    if (message.trim().toLowerCase() === 'done') {
+    const trimmed = message.trim();
+    const lower = trimmed.toLowerCase();
+
+    if (lower === 'done') {
       console.log(chalk.gray(`\n  ${div}\n`));
       return;
     }
 
-    history.push({ role: 'user', content: message.trim() });
+    if (lower === 'start over' || lower === 'clear history') {
+      clearResumeHistory();
+      history = [];
+      console.log(chalk.green('\n  History cleared. Starting fresh...\n'));
+      process.stdout.write(chalk.cyan('  Interviewer: ') + chalk.gray('thinking...\r'));
+      try {
+        const firstQ = await talkToResumeInterviewer(resumeText, [], null);
+        process.stdout.write('\x1b[1A\x1b[2K');
+        console.log(chalk.cyan('  Interviewer: ') + chalk.white(firstQ));
+        console.log();
+        history.push({ role: 'assistant', content: firstQ });
+        saveResumeHistory(history);
+      } catch (err) {
+        process.stdout.write('\x1b[1A\x1b[2K');
+        console.log(chalk.red(`  Error: ${err.message}\n`));
+      }
+      continue;
+    }
+
+    history.push({ role: 'user', content: trimmed });
 
     process.stdout.write(chalk.cyan('\n  Interviewer: ') + chalk.gray('thinking...\r'));
     try {
-      const reply = await talkToResumeInterviewer(resumeText, history, message.trim());
+      const reply = await talkToResumeInterviewer(resumeText, history, trimmed);
       process.stdout.write('\x1b[1A\x1b[2K');
       console.log(chalk.cyan('  Interviewer: ') + chalk.white(reply));
       console.log();
       history.push({ role: 'assistant', content: reply });
-      if (history.length > 20) history.splice(0, 2);
+      if (history.length > 40) history.splice(0, 2);
+      saveResumeHistory(history);
     } catch (err) {
       process.stdout.write('\x1b[1A\x1b[2K');
       console.log(chalk.red(`  Error: ${err.message}\n`));
