@@ -648,6 +648,7 @@ async function mainMenu() {
       new inquirer.Separator(),
       { name: 'View Session Stats', value: 'stats' },
       { name: 'Reset Session             (clear history)', value: 'reset' },
+      new inquirer.Separator(),
       { name: 'Exit', value: 'exit' },
     ],
   }]);
