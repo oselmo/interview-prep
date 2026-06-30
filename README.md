@@ -55,9 +55,9 @@ JavaScript · TypeScript · Python · Java — selected per problem from a list 
 
 Java notes:
 - Compiles with `javac` and runs with `java -cp . Solution`
-- Standard function problems run hidden tests via a generated `_HiddenTestRunner` class
-- All problems (including classTest, treeTest, LCA, linked list) have pre-built test calls in `main()` — no setup needed
-- Class/tree/LCA problems use `main()` for testing since test injection isn't supported for compiled languages
+- All problem types (standard fn, tree, LCA, linked list, class) run hidden tests via a generated `_HiddenTestRunner` class — same as JS/TS/Python
+- `main()` also has pre-built test calls for development use
+- Exception: questions with LeetCode-style `starterCode.java` (where `TreeNode`/`ListNode` are inner classes) fall back to `main()` only
 
 ## DSA Patterns Covered
 
@@ -97,7 +97,7 @@ When you run or submit a solution, the app generates a temp file combining your 
 
 **JS / TypeScript / Python** — test runner appended as text to a temp file and executed.
 
-**Java** — for standard function problems, a `_HiddenTestRunner` class is appended to a temp `.java` file alongside your `Solution` class, both compiled with `javac`, then `_HiddenTestRunner.main()` runs. For class/tree/linked-list problems, your `main()` is used instead.
+**Java** — a `_HiddenTestRunner` class is appended to a temp `.java` file alongside your `Solution` class, both compiled with `javac`, then `_HiddenTestRunner.main()` runs. Supports all question types: standard functions, tree/LCA (top-level `TreeNode`), linked list (top-level `ListNode`), and class-based problems.
 
 Supported test runner types:
 

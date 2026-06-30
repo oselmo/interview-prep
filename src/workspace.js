@@ -160,17 +160,23 @@ export async function runSolution(filepath, language, question) {
   // Appending text doesn't work for compiled code, so Java uses its own runner
   // that generates a second class (_HiddenTestRunner) compiled alongside Solution.
   if (language === 'java') {
-    const javaHasCases = !!(question?.functionName && question?.testCases?.length > 0
-      && !question.classTest && !question.treeTest && !question.cycleTest
-      && !question.linkedListRoundTrip && !question.lcaTest
-      && !question.memoizeTest && !question.debounceTest
-      && !question.functionNames?.length);
+    const javaHasCases = !!(
+      question?.testCases?.length > 0 &&
+      !question.cycleTest && !question.memoizeTest && !question.debounceTest &&
+      (
+        (question.functionName && !question.treeTest && !question.lcaTest && !question.linkedListRoundTrip && !question.classTest) ||
+        (question.functionNames?.length && !question.treeTest && !question.lcaTest && !question.linkedListRoundTrip && !question.classTest) ||
+        question.classTest ||
+        ((question.treeTest || question.lcaTest) && !question.starterCode?.java) ||
+        (question.linkedListRoundTrip && !question.starterCode?.java)
+      )
+    );
 
     let javaRunFile = filepath;
     let javaTempFile = null;
 
     if (javaHasCases) {
-      const runner = _buildJavaStandardRunner(question);
+      const runner = _buildJavaHiddenRunner(question);
       const tempName = `_test_${question.id.replace(/-/g, '_')}.java`;
       javaTempFile = join(WORKSPACE_DIR, tempName);
       writeFileSync(javaTempFile, solutionCode + '\n\n' + runner, 'utf8');
@@ -1408,31 +1414,8 @@ ${mainBody}
 }`;
 }
 
-function _buildJavaStandardRunner(question) {
-  const { testCases, functionName } = question;
-
-  const cases = testCases.map((t, i) => {
-    const args = t.args.map(_javaLiteral).join(', ');
-    const expected = _javaLiteral(t.expected);
-    const sort = !!t.sortResult;
-    const desc = t.desc.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
-    return `        { // ${t.desc}
-            Object _actual; try { _actual = Solution.${functionName}(${args}); } catch (Exception _e) { _actual = "ERROR: " + _e.getMessage(); }
-            Object _expected = ${expected};
-            String _a = ${sort} ? _sortS(_actual) : _s(_actual);
-            String _e = ${sort} ? _sortS(_expected) : _s(_expected);
-            boolean _ok = _a.equals(_e);
-            System.out.println((_ok ? "\\u2713" : "\\u2717") + " ${desc}");
-            if (!_ok) { System.out.println("  expected: " + _e); System.out.println("  got:      " + _a); }
-            if (_ok) pass++;
-            total++;
-        }`;
-  }).join('\n');
-
-  return `
-// ─── Hidden Tests (Java) ──────────────────────────────────────────────────────
-class _HiddenTestRunner {
-    static String _s(Object o) {
+// Shared helpers block for all Java hidden test runners
+const _JAVA_RUNNER_HELPERS = `    static String _s(Object o) {
         if (o == null) return "null";
         if (o instanceof int[])     return java.util.Arrays.toString((int[])o);
         if (o instanceof long[])    return java.util.Arrays.toString((long[])o);
@@ -1446,7 +1429,35 @@ class _HiddenTestRunner {
     static String _sortS(Object o) {
         if (o instanceof int[]) { int[] a = ((int[])o).clone(); java.util.Arrays.sort(a); return java.util.Arrays.toString(a); }
         return _s(o);
-    }
+    }`;
+
+function _buildJavaStandardRunner(question) {
+  const { testCases } = question;
+  const fns = question.functionNames?.length ? question.functionNames : [question.functionName];
+
+  const cases = fns.flatMap(fn => testCases.map(t => {
+    const args = t.args.map(_javaLiteral).join(', ');
+    const expected = _javaLiteral(t.expected);
+    const sort = !!t.sortResult;
+    const desc = `${fns.length > 1 ? fn + ': ' : ''}${t.desc}`.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+    return `        { // ${desc}
+            try {
+                Object _actual = Solution.${fn}(${args});
+                Object _expected = ${expected};
+                String _a = ${sort} ? _sortS(_actual) : _s(_actual), _e = ${sort} ? _sortS(_expected) : _s(_expected);
+                boolean _ok = _a.equals(_e);
+                System.out.println((_ok ? "\\u2713" : "\\u2717") + " ${desc}");
+                if (!_ok) { System.out.println("  expected: " + _e); System.out.println("  got:      " + _a); }
+                if (_ok) pass++;
+            } catch (Exception _e) { System.out.println("\\u2717 ${desc}: " + _e.getMessage()); }
+            total++;
+        }`;
+  })).join('\n');
+
+  return `
+// ─── Hidden Tests (Java) ──────────────────────────────────────────────────────
+class _HiddenTestRunner {
+${_JAVA_RUNNER_HELPERS}
     public static void main(String[] args) {
         int pass = 0, total = 0;
 ${cases}
@@ -1454,6 +1465,177 @@ ${cases}
     }
 }
 `;
+}
+
+// Tree questions: TreeNode is a top-level class (only for templates we generated, no starterCode.java)
+function _buildJavaTreeRunner(question) {
+  const { testCases, functionName } = question;
+  const fn = functionName || 'solve';
+
+  const cases = testCases.map(t => {
+    const lo = t.args[0];
+    let treeArg;
+    if (!lo || !lo.length) {
+      treeArg = 'null';
+    } else {
+      const hasNulls = lo.some(x => x === null);
+      const lit = hasNulls
+        ? `new Integer[]{${lo.map(v => v === null ? 'null' : v).join(',')}}`
+        : `new Integer[]{${lo.join(',')}}`;
+      treeArg = `Solution._build(${lit})`;
+    }
+    const expected = _javaLiteral(t.expected);
+    const sort = !!t.sortResult;
+    const desc = t.desc.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+    return `        { // ${t.desc}
+            try {
+                Object _actual = Solution.${fn}(${treeArg});
+                Object _expected = ${expected};
+                String _a = ${sort} ? _sortS(_actual) : _s(_actual), _e = ${sort} ? _sortS(_expected) : _s(_expected);
+                boolean _ok = _a.equals(_e);
+                System.out.println((_ok ? "\\u2713" : "\\u2717") + " ${desc}");
+                if (!_ok) { System.out.println("  expected: " + _e); System.out.println("  got:      " + _a); }
+                if (_ok) pass++;
+            } catch (Exception _e) { System.out.println("\\u2717 ${desc}: " + _e.getMessage()); }
+            total++;
+        }`;
+  }).join('\n');
+
+  return `
+// ─── Hidden Tests (Java) ──────────────────────────────────────────────────────
+class _HiddenTestRunner {
+${_JAVA_RUNNER_HELPERS}
+    public static void main(String[] args) {
+        int pass = 0, total = 0;
+${cases}
+        System.out.println("\\n" + pass + "/" + total + " passed");
+    }
+}
+`;
+}
+
+// LCA questions: TreeNode is top-level (only for generated templates without starterCode.java)
+function _buildJavaLcaRunner(question) {
+  const { testCases } = question;
+  const fn = question.functionName || 'lowestCommonAncestor';
+
+  const cases = testCases.map(t => {
+    const desc = t.desc.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+    return `        { // ${t.desc}
+            try {
+                TreeNode _p = Solution._find(_bst, ${t.pVal}), _q = Solution._find(_bst, ${t.qVal});
+                TreeNode _r = Solution.${fn}(_bst, _p, _q);
+                int _actual = _r != null ? _r.val : -999, _expected = ${t.expected};
+                boolean _ok = _actual == _expected;
+                System.out.println((_ok ? "\\u2713" : "\\u2717") + " ${desc}");
+                if (!_ok) { System.out.println("  expected: " + _expected); System.out.println("  got:      " + _actual); }
+                if (_ok) pass++;
+            } catch (Exception _e) { System.out.println("\\u2717 ${desc}: " + _e.getMessage()); }
+            total++;
+        }`;
+  }).join('\n');
+
+  return `
+// ─── Hidden Tests (Java) ──────────────────────────────────────────────────────
+class _HiddenTestRunner {
+${_JAVA_RUNNER_HELPERS}
+    public static void main(String[] args) {
+        int pass = 0, total = 0;
+        TreeNode _bst = Solution._build(new Integer[]{6, 2, 8, 0, 4, 7, 9, null, null, 3, 5});
+${cases}
+        System.out.println("\\n" + pass + "/" + total + " passed");
+    }
+}
+`;
+}
+
+// Linked list round-trip: ListNode is top-level (only for generated templates without starterCode.java)
+function _buildJavaListRunner(question) {
+  const { testCases } = question;
+  const fns = question.functionNames?.length ? question.functionNames : [question.functionName || 'reverseList'];
+
+  const cases = fns.flatMap(fn => testCases.map(t => {
+    const vals = t.args[0] || [];
+    const inLit  = vals.length ? `new int[]{${vals.join(',')}}` : 'new int[]{}';
+    const expVals = t.expected || [];
+    const expLit  = expVals.length ? `new int[]{${expVals.join(',')}}` : 'new int[]{}';
+    const desc = `${fns.length > 1 ? fn + ': ' : ''}${t.desc}`.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+    return `        { // ${desc}
+            try {
+                String _actual = Solution._str(Solution.${fn}(Solution._arr(${inLit})));
+                String _expected = Solution._str(Solution._arr(${expLit}));
+                boolean _ok = _actual.equals(_expected);
+                System.out.println((_ok ? "\\u2713" : "\\u2717") + " ${desc}");
+                if (!_ok) { System.out.println("  expected: " + _expected); System.out.println("  got:      " + _actual); }
+                if (_ok) pass++;
+            } catch (Exception _e) { System.out.println("\\u2717 ${desc}: " + _e.getMessage()); }
+            total++;
+        }`;
+  })).join('\n');
+
+  return `
+// ─── Hidden Tests (Java) ──────────────────────────────────────────────────────
+class _HiddenTestRunner {
+${_JAVA_RUNNER_HELPERS}
+    public static void main(String[] args) {
+        int pass = 0, total = 0;
+${cases}
+        System.out.println("\\n" + pass + "/" + total + " passed");
+    }
+}
+`;
+}
+
+// Class-based questions: the tested class is always a top-level non-public class
+function _buildJavaClassRunner(question) {
+  const { className, testCases } = question;
+
+  const cases = testCases.map(tc => {
+    const ctorArgs = (tc.constructorArgs || []).map(_javaLiteral).join(', ');
+    const desc = tc.desc.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+    const steps = (tc.steps || []).map((step, j) => {
+      const args = (step.args || []).map(_javaLiteral).join(', ');
+      const call = `_inst.${step.method}(${args})`;
+      if ('returns' in step) {
+        const exp = _javaLiteral(step.returns);
+        const sdesc = step.method.replace(/"/g, '\\"');
+        return `                Object _r${j} = ${call};
+                if (!_s(_r${j}).equals(_s(${exp}))) { _ok = false; System.out.println("  fail ${sdesc}(): expected " + _s(${exp}) + " got " + _s(_r${j})); }`;
+      }
+      return `                ${call};`;
+    }).join('\n');
+
+    return `        { // ${tc.desc}
+            boolean _ok = true;
+            try {
+                ${className} _inst = new ${className}(${ctorArgs});
+${steps}
+            } catch (Exception _e) { _ok = false; System.out.println("  exception: " + _e.getMessage()); }
+            System.out.println((_ok ? "\\u2713" : "\\u2717") + " ${desc}");
+            if (_ok) pass++;
+            total++;
+        }`;
+  }).join('\n');
+
+  return `
+// ─── Hidden Tests (Java) ──────────────────────────────────────────────────────
+class _HiddenTestRunner {
+${_JAVA_RUNNER_HELPERS}
+    public static void main(String[] args) {
+        int pass = 0, total = 0;
+${cases}
+        System.out.println("\\n" + pass + "/" + total + " passed");
+    }
+}
+`;
+}
+
+function _buildJavaHiddenRunner(question) {
+  if (question.treeTest && !question.starterCode?.java)            return _buildJavaTreeRunner(question);
+  if (question.lcaTest && !question.starterCode?.java)             return _buildJavaLcaRunner(question);
+  if (question.linkedListRoundTrip && !question.starterCode?.java) return _buildJavaListRunner(question);
+  if (question.classTest)                                          return _buildJavaClassRunner(question);
+  return _buildJavaStandardRunner(question);
 }
 
 function buildCodingTemplate(question, language) {
@@ -1479,8 +1661,8 @@ function buildCodingTemplate(question, language) {
  *
 ${promptLines}
  *
- * NOTE: Standard function problems run hidden tests automatically when you
- * submit. Class/tree/LCA problems use the test calls in main() below.
+ * NOTE: Hidden tests run automatically when you submit. The test calls
+ * in main() below let you run and check your work during development.
  */
 
 ${starter}
