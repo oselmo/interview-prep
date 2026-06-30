@@ -781,7 +781,7 @@ async function knowledgeReviewLoop(articleFilename, articleName, articleContent)
   console.log(chalk.cyan(`\n  ${div}`));
   console.log(chalk.cyan(`  Knowledge Review: ${articleName}`));
   console.log(chalk.gray('  The teacher will walk you through concepts and quiz you.'));
-  console.log(chalk.gray('  Type "save progress" or "pause" to save and exit. Type "exit" to quit without saving.\n'));
+  console.log(chalk.gray('  Commands: "back" / "exit" to return to article list · "save progress" or "pause" to save and exit.\n'));
 
   if (continuing) {
     const lastTeacher = history.filter(m => m.role === 'assistant').at(-1)?.content;
@@ -825,8 +825,8 @@ async function knowledgeReviewLoop(articleFilename, articleName, articleContent)
       return false;
     }
 
-    if (lower === 'exit') {
-      console.log(chalk.gray('\n  Exited without saving.\n'));
+    if (lower === 'exit' || lower === 'back') {
+      console.log(chalk.gray('\n  Returning to article list.\n'));
       break;
     }
 
