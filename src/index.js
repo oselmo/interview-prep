@@ -691,6 +691,8 @@ async function mainMenu() {
         session.questionScores = {};
         Object.keys(session.byCategory).forEach(k => delete session.byCategory[k]);
         const deleted = clearWorkspace();
+        clearResumeHistory();
+        try { writeFileSync(KNOWLEDGE_HISTORY_PATH, '{}', 'utf8'); } catch {}
         saveSession();
         console.log(chalk.green(`\n  Session reset. ${deleted} workspace file(s) deleted.\n`));
       }
