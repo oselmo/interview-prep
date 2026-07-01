@@ -450,33 +450,38 @@ async function chatLoop({ question, getFilepath, systemPrompt, header, promptCol
       // Read the file fresh every turn — code may have changed since last message
       const currentCode = readSolutionFile(getFilepath());
       const codeSection = currentCode?.trim()
-        ? `\nCurrent code (as of right now):\n\`\`\`\n${currentCode.trim()}\n\`\`\``
+        ? `\nCurrent code (latest save):\n\`\`\`\n${currentCode.trim()}\n\`\`\``
         : '\n(No code written yet.)';
 
-      // Context preamble is rebuilt every turn with the latest file contents
       let testCaseSection = '';
       if (question.testCases?.length) {
         const caseLines = question.testCases
           .map((t, i) => `  ${i + 1}. ${t.desc}: input=${JSON.stringify(t.args)}, expected=${JSON.stringify(t.expected)}`)
           .join('\n');
-        testCaseSection = `\n\nAll test cases (including hidden ones the candidate cannot see):\n${caseLines}`;
+        testCaseSection = `\n\nAll test cases:\n${caseLines}`;
       }
 
+      // Problem description goes in the preamble; code goes on the CURRENT user turn
+      // so the AI always sees the freshest version right before it responds.
       const contextPreamble = [
         {
           role: 'user',
-          content: `Problem: ${question.title} [${question.category} · ${question.difficulty}]\n\n${question.prompt}${codeSection}${testCaseSection}\n\n---`,
+          content: `Problem: ${question.title} [${question.category} · ${question.difficulty}]\n\n${question.prompt}${testCaseSection}\n\n---`,
         },
         {
           role: 'assistant',
-          content: `Got it — I can see the problem, the candidate's current code, and all the test cases. What would you like to explore?`,
+          content: `Got it — I can see the problem and all the test cases. Share your code whenever you're ready.`,
         },
       ];
+
+      // Attach the current code snapshot to each user turn so it's always the last
+      // thing the model reads before generating a reply, regardless of history length.
+      const userContent = message.trim() + '\n' + codeSection;
 
       const callMessages = [
         ...contextPreamble,
         ...conversationHistory,
-        { role: 'user', content: message.trim() },
+        { role: 'user', content: userContent },
       ];
 
       const response = await anthropic().messages.create({

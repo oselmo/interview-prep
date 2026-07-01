@@ -276,7 +276,9 @@ Rules:
   - Keep each response under 150 words — concise is better
   - If their answer is completely wrong, briefly correct it before moving on
   - Do NOT ask open-ended "what do you know about X" questions — you are the teacher, you explain first, then quiz
-  - Opening message: start with the first concept immediately (no preamble)`;
+  - Opening message: start with the first concept immediately (no preamble)
+  - When using a code example or named function (e.g. two_sum, merge_intervals), always state in one sentence what the function does before using it — never assume the student knows it
+  - Prefer self-contained examples: show the input and expected output explicitly so the student can follow without prior knowledge of the function`;
 
 export async function reviewKnowledge(articleName, articleContent, history) {
   const messages = history.length === 0

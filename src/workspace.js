@@ -7,6 +7,14 @@ const execAsync = promisify(exec);
 const __dirname = dirname(fileURLToPath(import.meta.url));
 export const WORKSPACE_DIR = join(__dirname, '..', 'workspace');
 
+// Convert a JSON-serialised value to a Python literal (None/True/False).
+function pyLit(value) {
+  return JSON.stringify(value)
+    .replace(/\bnull\b/g, 'None')
+    .replace(/\btrue\b/g, 'True')
+    .replace(/\bfalse\b/g, 'False');
+}
+
 export function ensureWorkspace() {
   if (!existsSync(WORKSPACE_DIR)) {
     mkdirSync(WORKSPACE_DIR, { recursive: true });
@@ -216,7 +224,8 @@ export async function runSolution(filepath, language, question) {
     const runner = buildTestRunnerCode(question, language);
     const ext = filepath.split('.').pop();
     tempFile = join(WORKSPACE_DIR, `.test_${question.id}.${ext}`);
-    writeFileSync(tempFile, solutionCode + '\n\n' + runner, 'utf8');
+    const pyHeader = language === 'python' ? 'import sys\nsys.stdout.reconfigure(encoding="utf-8")\n\n' : '';
+    writeFileSync(tempFile, solutionCode + '\n\n' + pyHeader + runner, 'utf8');
     runFile = tempFile;
   }
 
@@ -276,7 +285,7 @@ function buildTestRunnerCode(question, language) {
   // Standard runner
   if (isPy) {
     const cases = testCases.map(t =>
-      `    {"args": ${JSON.stringify(t.args).replace(/null/g, 'None')}, "expected": ${JSON.stringify(t.expected).replace(/null/g, 'None')}, "desc": ${JSON.stringify(t.desc)}${t.sortResult ? ', "sort": True' : ''}}`
+      `    {"args": ${pyLit(t.args)}, "expected": ${pyLit(t.expected)}, "desc": ${JSON.stringify(t.desc)}${t.sortResult ? ', "sort": True' : ''}}`
     ).join(',\n');
     return `
 # ─── Hidden Tests (injected at run time, not in your file) ────────────────
@@ -688,7 +697,7 @@ function _buildLcaRunner(question, isPy) {
   //     3   5
 
   if (isPy) {
-    const casesPy = JSON.stringify(testCases, null, 4).replace(/null/g, 'None');
+    const casesPy = JSON.stringify(testCases, null, 4).replace(/\bnull\b/g, 'None').replace(/\btrue\b/g, 'True').replace(/\bfalse\b/g, 'False');
     return `
 # ─── Hidden Tests (injected at run time, not in your file) ────────────────
 def _hidden_lca_tests():
@@ -765,7 +774,7 @@ function _buildLinkedListRoundTripRunner(question, isPy, fnName) {
 
   if (isPy) {
     const pyFn = fnName;
-    const casesPy = JSON.stringify(testCases, null, 4).replace(/null/g, 'None');
+    const casesPy = JSON.stringify(testCases, null, 4).replace(/\bnull\b/g, 'None').replace(/\btrue\b/g, 'True').replace(/\bfalse\b/g, 'False');
     return `
 # ─── Hidden Tests (injected at run time, not in your file) ────────────────
 def _hidden_round_trip_${pyFn}():
@@ -817,7 +826,7 @@ function _buildCycleRunner(question, isPy) {
   const fnName = isPy ? 'has_cycle' : functionName;
 
   if (isPy) {
-    const casesJson = JSON.stringify(testCases, null, 4).replace(/null/g, 'None');
+    const casesJson = JSON.stringify(testCases, null, 4).replace(/\bnull\b/g, 'None').replace(/\btrue\b/g, 'True').replace(/\bfalse\b/g, 'False');
     return `
 # ─── Hidden Tests (injected at run time, not in your file) ────────────────
 def _hidden_cycle_tests():
@@ -953,7 +962,7 @@ function _buildClassRunner(question, isPy, toSnake) {
 
   if (isPy) {
     const casesJson = JSON.stringify(testCases, null, 4)
-      .replace(/null/g, 'None').replace(/: true/g, ': True').replace(/: false/g, ': False');
+      .replace(/\bnull\b/g, 'None').replace(/\btrue\b/g, 'True').replace(/\bfalse\b/g, 'False');
     return `
 # ─── Hidden Tests (injected at run time, not in your file) ────────────────
 def _hidden_class_tests():
@@ -1025,7 +1034,7 @@ function _buildTreeRunner(question, isPy, effectiveFnName) {
 
   if (isPy) {
     const cases = testCases.map(t =>
-      `        {"args": [${JSON.stringify(t.args[0]).replace(/null/g, 'None')}], "expected": ${JSON.stringify(t.expected)}, "desc": ${JSON.stringify(t.desc)}}`
+      `        {"args": [${pyLit(t.args[0])}], "expected": ${pyLit(t.expected)}, "desc": ${JSON.stringify(t.desc)}}`
     ).join(',\n');
     return `
 # ─── Hidden Tests (injected at run time, not in your file) ────────────────
