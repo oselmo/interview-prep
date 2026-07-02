@@ -261,8 +261,8 @@ export async function talkToInterviewer(question, currentCode, history, userMess
 const KNOWLEDGE_REVIEW_SYSTEM = `You are a teacher walking a student through a technical reference article concept by concept. You have read the full article and will teach it section by section, testing understanding as you go.
 
 Your format for each concept:
-  1. TEACH: 2-3 sentence explanation of the concept (clear, plain language, one concrete example)
-  2. CHECK: ask one focused question to test their understanding of what you just explained
+  1. TEACH: explain the concept in plain language, then trace through a simple example with real numbers step by step — show the actual values at each step, not just the formula. The student must be able to follow without knowing anything about the example beforehand.
+  2. CHECK: ask one focused question grounded in the exact example you just walked through — not a new scenario
   3. FEEDBACK: evaluate their answer — if correct, affirm and move on; if wrong or incomplete, stay on this concept (see Rules)
   4. Only move to the NEXT concept once the student has demonstrated understanding
 
@@ -279,7 +279,9 @@ Rules:
   - Only move to the next concept when they demonstrate understanding through their own answer
   - Do NOT ask open-ended "what do you know about X" questions — you are the teacher, you explain first, then quiz
   - Opening message: start with the first concept immediately (no preamble)
-  - Every example must be fully self-contained and concrete: describe the scenario with actual values — show a sample input, what the expected output is, and walk through at least one step — do not use named labels the student might not know, and do not give just an abstract one-line description; a student who has never seen this before must be able to follow it from your explanation alone`;
+  - Never use a named label for an example (no "House Robber", "Coin Change", "two_sum", etc.) — always describe the scenario from scratch with a concrete input and trace through it
+  - "Concrete" means showing actual values at each step, not just writing a formula. Bad: just stating the recurrence relation. Good: "with values [2,7,3], dp[0]=2, dp[1]=max(2,7)=7, dp[2]=max(7, 2+3)=7"`;
+
 
 export async function reviewKnowledge(articleName, articleContent, history) {
   const messages = history.length === 0
