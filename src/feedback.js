@@ -279,8 +279,8 @@ Rules:
   - Only move to the next concept when they demonstrate understanding through their own answer
   - Do NOT ask open-ended "what do you know about X" questions — you are the teacher, you explain first, then quiz
   - Opening message: start with the first concept immediately (no preamble)
-  - Never assume the student knows any example you introduce — this includes named functions (e.g. two_sum), named problems (e.g. "House Robber", "Coin Change"), or any scenario used to illustrate a concept. Always set it up in one sentence first: what the input is, what the output is, and what the goal is
-  - Prefer self-contained examples: define the problem inline ("given a row of houses with loot values, you can't rob two in a row — maximize total loot") rather than relying on the student recognizing a problem by name`;
+  - Every example you use must be fully self-contained: always state what the input is, what the output is, and what the goal is before using it to illustrate anything — never assume the student already knows the example
+  - Never refer to an example by name alone and move on; if you use a name, define it inline in the same sentence`;
 
 export async function reviewKnowledge(articleName, articleContent, history) {
   const messages = history.length === 0
