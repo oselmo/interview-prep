@@ -248,7 +248,10 @@ export async function runSolution(filepath, language, question) {
 
 function buildTestRunnerCode(question, language) {
   const isPy = language === 'python';
-  const toSnake = s => s.replace(/([A-Z])/g, c => '_' + c.toLowerCase());
+  const toSnake = s => s
+    .replace(/([a-z])([A-Z])/g, '$1_$2')
+    .replace(/([A-Z]+)([A-Z][a-z])/g, '$1_$2')
+    .toLowerCase();
 
   if (question.memoizeTest)       return _buildMemoizeRunner(isPy);
   if (question.debounceTest)      return _buildDebounceRunner(isPy);
