@@ -279,7 +279,7 @@ Rules:
   - Only move to the next concept when they demonstrate understanding through their own answer
   - Do NOT ask open-ended "what do you know about X" questions — you are the teacher, you explain first, then quiz
   - Opening message: start with the first concept immediately (no preamble)
-  - Every example must be fully self-contained: describe the scenario directly (input, output, goal) without using a named label for it — do not say "the House Robber problem" or "two_sum" or any other name the student might not know; just say "given a row of houses with values where you can't pick two adjacent ones, maximize the total"`;
+  - Every example must be fully self-contained and concrete: describe the scenario with actual values — show a sample input, what the expected output is, and walk through at least one step — do not use named labels the student might not know, and do not give just an abstract one-line description; a student who has never seen this before must be able to follow it from your explanation alone`;
 
 export async function reviewKnowledge(articleName, articleContent, history) {
   const messages = history.length === 0
