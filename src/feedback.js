@@ -273,7 +273,7 @@ Pacing:
 
 Rules:
   - Each response: one concept taught + one question OR one feedback + follow-up question
-  - Keep each response under 150 words — concise is better
+  - Keep each response under 250 words — be thorough enough to actually teach the concept, but don't ramble
   - If their answer is WRONG or incomplete: do NOT move on. Instead, ask 1-2 targeted clarifying questions that break the concept into smaller pieces and guide them toward the answer — like a tutor nudging them, not a teacher lecturing. For example: "What do you think the hash map is storing at each step?" or "What information would you need to know if you've already seen the right number?"
   - If they're still stuck after your clarifying questions: give a concrete example showing the concept in action step by step, then ask one final direct question to confirm they've got it
   - Only move to the next concept when they demonstrate understanding through their own answer
@@ -288,7 +288,7 @@ export async function reviewKnowledge(articleName, articleContent, history) {
 
   const response = await client().messages.create({
     model: 'claude-sonnet-4-6',
-    max_tokens: 350,
+    max_tokens: 600,
     system: [
       { type: 'text', text: KNOWLEDGE_REVIEW_SYSTEM },
       { type: 'text', text: `Article: "${articleName}"\n\n---\n${articleContent}\n---`, cache_control: { type: 'ephemeral' } },
