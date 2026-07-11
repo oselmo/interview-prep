@@ -577,26 +577,8 @@ function pickQuestion(filters, skipIds = new Set()) {
 const DIFF_COLORS = { easy: chalk.green, medium: chalk.yellow, hard: chalk.red };
 
 async function listSession(category) {
-  const { difficulty } = await inquirer.prompt([{
-    type: 'list',
-    name: 'difficulty',
-    message: 'Which difficulty?',
-    choices: [
-      { name: 'All', value: 'all' },
-      { name: 'Easy', value: 'easy' },
-      { name: 'Medium', value: 'medium' },
-      { name: 'Hard', value: 'hard' },
-      new inquirer.Separator(),
-      { name: chalk.gray('← Back'), value: '__back__' },
-      new inquirer.Separator(),
-    ],
-    default: session.difficulty,
-  }]);
-  if (difficulty === '__back__') return;
-  session.difficulty = difficulty;
-
   while (true) {
-    const questions = getQuestions({ category, difficulty });
+    const questions = getQuestions({ category });
 
     if (!questions.length) {
       console.log(chalk.yellow('\n  No questions found.\n'));
