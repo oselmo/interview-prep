@@ -572,6 +572,78 @@ function pickQuestion(filters, skipIds = new Set()) {
   return lowestTier[Math.floor(Math.random() * lowestTier.length)];
 }
 
+// ── List-based session (architecture / trivia) ────────────────────────────
+
+const DIFF_COLORS = { easy: chalk.green, medium: chalk.yellow, hard: chalk.red };
+
+async function listSession(category) {
+  const { difficulty } = await inquirer.prompt([{
+    type: 'list',
+    name: 'difficulty',
+    message: 'Which difficulty?',
+    choices: [
+      { name: 'All', value: 'all' },
+      { name: 'Easy', value: 'easy' },
+      { name: 'Medium', value: 'medium' },
+      { name: 'Hard', value: 'hard' },
+      new inquirer.Separator(),
+      { name: chalk.gray('← Back'), value: '__back__' },
+      new inquirer.Separator(),
+    ],
+    default: session.difficulty,
+  }]);
+  if (difficulty === '__back__') return;
+  session.difficulty = difficulty;
+
+  while (true) {
+    const questions = getQuestions({ category, difficulty });
+
+    if (!questions.length) {
+      console.log(chalk.yellow('\n  No questions found.\n'));
+      await pause();
+      return;
+    }
+
+    // Incomplete first, then completed (greyed out)
+    const incomplete = questions.filter(q => !session.completedIds.has(q.id));
+    const completed  = questions.filter(q =>  session.completedIds.has(q.id));
+    const sorted = [...incomplete, ...completed];
+
+    const choices = sorted.map((q, i) => {
+      const done       = session.completedIds.has(q.id);
+      const score      = session.questionScores?.[q.id];
+      const scoreBadge = score != null ? chalk.gray(` [${score}/10]`) : '';
+      const diffColor  = DIFF_COLORS[q.difficulty] || chalk.white;
+      const check      = done ? chalk.green('✓') : ' ';
+      const title      = done ? chalk.gray(q.title) : q.title;
+      const num        = String(i + 1).padStart(3);
+      return {
+        name: `${check} ${num}. ${title}  ${diffColor(`(${q.difficulty})`)}${scoreBadge}`,
+        value: q.id,
+      };
+    });
+
+    choices.push(new inquirer.Separator());
+    choices.push({ name: chalk.gray('← Back'), value: '__back__' });
+    choices.push(new inquirer.Separator());
+
+    const label = category.charAt(0).toUpperCase() + category.slice(1);
+    const { questionId } = await inquirer.prompt([{
+      type: 'list',
+      name: 'questionId',
+      message: `${chalk.bold(label)} — ${completed.length}/${questions.length} completed`,
+      choices,
+      pageSize: 15,
+    }]);
+
+    if (questionId === '__back__') return;
+
+    const q = questions.find(q => q.id === questionId);
+    const result = await runQuestion(q);
+    if (result === 'menu') return;
+  }
+}
+
 // ── Practice session (loops questions in the current category) ─────────────
 
 async function practiceSession(category) {
@@ -668,10 +740,13 @@ async function mainMenu() {
       break;
 
     case 'coding':
-    case 'architecture':
-    case 'trivia':
     case 'behavioral':
       await practiceSession(action);
+      break;
+
+    case 'architecture':
+    case 'trivia':
+      await listSession(action);
       break;
 
     case 'stats':
