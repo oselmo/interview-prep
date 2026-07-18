@@ -11880,6 +11880,312 @@ class Solution {
     ],
     tags: ["API design", "security", "mTLS", "zero-trust", "service mesh"],
   },
+
+  // ─── AWS (expanded) ────────────────────────────────────────────────────────
+
+  {
+    id: 'trivia-299',
+    category: 'trivia',
+    difficulty: 'medium',
+    title: 'AWS IAM: Roles, Policies, and Least Privilege',
+    prompt: `Answer each of the following about AWS IAM:
+
+  a) What is the difference between an IAM User and an IAM Role? Why should services use roles instead of users?
+  b) A Lambda function needs to write to DynamoDB and read from S3. Write the minimum IAM policy for it (describe the structure — no need to write full JSON).
+  c) What is an IAM resource-based policy? How does it differ from an identity-based policy?
+  d) What is the IAM policy evaluation order? If a policy says Allow and another says Deny for the same action, what happens?
+  e) What is the principle of least privilege and why does it matter in AWS?`,
+    hints: [
+      'User: long-lived credentials (access key + secret key). Role: assumed temporarily; generates short-lived credentials via STS. Services should use roles — no static keys to leak or rotate.',
+      'Minimum policy: Allow dynamodb:PutItem + dynamodb:UpdateItem on the specific table ARN. Allow s3:GetObject on the specific bucket ARN. Not dynamodb:* or s3:*.',
+      'Resource-based policy: attached to the resource (S3 bucket policy, Lambda resource policy). Controls who can access from outside the account. Identity-based: attached to who is making the call.',
+      'Evaluation: explicit Deny always wins, regardless of any Allow. Default is Deny everything. Only Allow explicitly grants access.',
+    ],
+    followUps: [
+      'What is STS (Security Token Service) and how do roles use it?',
+      'What is an IAM permission boundary?',
+      'How do you audit which IAM roles and users have been recently active?',
+    ],
+    tags: ['AWS', 'IAM', 'security', 'least privilege', 'roles'],
+  },
+
+  {
+    id: 'trivia-300',
+    category: 'trivia',
+    difficulty: 'medium',
+    title: 'AWS Security: KMS, Secrets Manager, and Encryption',
+    prompt: `Answer each of the following about AWS security services:
+
+  a) What is AWS KMS and what is the difference between AWS-managed keys and Customer-managed keys (CMKs)?
+  b) What is envelope encryption? How does KMS use it when encrypting an S3 object?
+  c) What is the difference between AWS Secrets Manager and SSM Parameter Store? When would you use each?
+  d) How does Secrets Manager auto-rotate a database password? Walk through what happens step by step.
+  e) Why should your application code fetch secrets at runtime rather than baking them into environment variables at deploy time?`,
+    hints: [
+      'AWS-managed keys: created/rotated automatically by AWS, no direct control or cost. CMKs: you create and control them, required for cross-account use, audit trails, or custom rotation.',
+      'Envelope encryption: KMS generates a data key that actually encrypts the data. The data key itself is encrypted by the CMK and stored alongside the data. KMS never stores plaintext data keys.',
+      'Secrets Manager: rotation built in, native RDS rotation support, costs ~$0.40/secret/month. Parameter Store: free tier, no built-in rotation. Use Secrets Manager for anything that needs to rotate.',
+      'Runtime fetch: your code always gets the current (rotated) secret. If baked into env vars at deploy, the app still holds the old password after rotation until redeployed.',
+    ],
+    followUps: [
+      'How do you grant a Lambda function access to a secret in Secrets Manager?',
+      'What is the difference between encryption at rest and encryption in transit?',
+      'How does Cognito User Pools integrate with API Gateway for authentication?',
+    ],
+    tags: ['AWS', 'KMS', 'Secrets Manager', 'security', 'encryption'],
+  },
+
+  {
+    id: 'trivia-301',
+    category: 'trivia',
+    difficulty: 'medium',
+    title: 'AWS VPC: Subnets, Security Groups, NACLs, and VPC Endpoints',
+    prompt: `Answer each of the following about AWS networking:
+
+  a) What is the difference between a public subnet and a private subnet in a VPC? What component makes a subnet "public"?
+  b) Your EC2 instance in a private subnet needs to download a package from the internet. What component enables this, and where does it live?
+  c) Compare Security Groups and Network ACLs. Which is stateful? What does that mean in practice?
+  d) What is a VPC Endpoint? What problem does it solve, and what are the two types?
+  e) You have an RDS database in a private subnet and a Lambda function that needs to connect to it. The Lambda is also in a VPC. What must you configure for this to work?`,
+    hints: [
+      'Public subnet: has a route to an Internet Gateway in its route table. Private subnet: no IGW route. Public does not mean resources have public IPs automatically — you must also assign a public IP or Elastic IP.',
+      'NAT Gateway: lives in a public subnet, has a public IP. Private subnet routes 0.0.0.0/0 to the NAT GW. The NAT GW forwards to the IGW. Outbound only — the internet cannot initiate connections inward.',
+      'Security Group: stateful — if you allow inbound port 443, the response is automatically allowed outbound. NACL: stateless — you must explicitly allow both directions. Security Groups are per-instance; NACLs are per-subnet.',
+      'VPC Endpoint: keeps traffic on the AWS private network, no NAT Gateway needed. Gateway Endpoint (free, S3 + DynamoDB) adds a route to your route table. Interface Endpoint (PrivateLink, most services) creates an ENI in your subnet.',
+    ],
+    followUps: [
+      'What is VPC peering and what are its limitations?',
+      'What is AWS PrivateLink and when would you use it over VPC peering?',
+      'What are VPC Flow Logs and what do they capture?',
+    ],
+    tags: ['AWS', 'VPC', 'networking', 'Security Groups', 'subnets'],
+  },
+
+  {
+    id: 'trivia-302',
+    category: 'trivia',
+    difficulty: 'medium',
+    title: 'AWS Lambda: Concurrency, Cold Starts, and Execution Model',
+    prompt: `Answer each of the following about AWS Lambda's execution model:
+
+  a) What is a Lambda cold start? What happens during one, and what factors make it worse?
+  b) What is the difference between reserved concurrency and provisioned concurrency?
+  c) A Lambda handles database writes. If 500 requests arrive simultaneously, what happens to database connections? What can you do about it?
+  d) A user complains of ~2 second latency on their first request after several minutes of inactivity, then < 50ms on subsequent requests. What is the likely cause and fix?
+  e) What is the Lambda execution context and what does it mean to reuse it across invocations?`,
+    hints: [
+      'Cold start: when no warm instance exists, AWS must download your package, start the runtime (JVM, Python interpreter), and run your initialization code. Large packages + heavy imports = longer cold starts. Java/C# runtimes are slower than Python/Node.',
+      'Reserved concurrency: caps the maximum number of concurrent instances for this function. Prevents it from consuming the whole account limit. Provisioned concurrency: keeps N instances warm at all times — eliminates cold starts, costs money.',
+      'DB connections: Lambda at 500 concurrent = 500 simultaneous connections. RDS can handle ~1,000 connections max. Use RDS Proxy to pool connections — Lambda instances share a smaller pool via the proxy.',
+      'Execution context reuse: the Lambda container is reused across invocations if still warm. Connections, loaded modules, and temp files persist between invocations. Good: amortize setup cost. Bad: stale state if not handled carefully.',
+    ],
+    followUps: [
+      'What is the maximum memory and timeout for a Lambda function?',
+      'How does Lambda handle failures — what is the retry behavior for async vs sync invocations?',
+      'What is Lambda@Edge and where does it run?',
+    ],
+    tags: ['AWS', 'Lambda', 'serverless', 'cold start', 'concurrency'],
+  },
+
+  {
+    id: 'trivia-303',
+    category: 'trivia',
+    difficulty: 'medium',
+    title: 'AWS Observability: CloudWatch, X-Ray, and CloudTrail',
+    prompt: `Answer each of the following about AWS observability:
+
+  a) What is the difference between CloudWatch Metrics, CloudWatch Logs, and CloudWatch Alarms? Give one concrete use for each.
+  b) A Lambda function is slow on some requests but not others. Which AWS service do you use to diagnose this, and what does it show you?
+  c) Your team needs to know who deleted an S3 bucket last Tuesday. Which service tells you this, and what information does it record?
+  d) What is CloudWatch Log Insights and when is it more useful than searching raw logs?
+  e) Describe the three pillars of observability (logs, metrics, traces) and which AWS service covers each.`,
+    hints: [
+      'Metrics: numeric time-series (Lambda invocation count, CPU %). Logs: text records of events (your print/logging calls). Alarms: trigger actions when a metric crosses a threshold (send SNS, scale out).',
+      'X-Ray: distributed tracing. Shows the full request path across Lambda, API Gateway, DynamoDB, etc. with per-service latency breakdown. Identifies which downstream call is slow.',
+      'CloudTrail: records every AWS API call — who (IAM identity), what (API action), when, from where. Answers "who changed what" questions. Different from CloudWatch which tracks resource performance metrics.',
+      'Three pillars: Logs → CloudWatch Logs. Metrics → CloudWatch Metrics. Traces → X-Ray. Together they answer: what happened (logs), how the system is performing (metrics), where time is spent in a request (traces).',
+    ],
+    followUps: [
+      'How do you emit a custom metric from your application code to CloudWatch?',
+      'What is a CloudWatch Dashboard and how does it differ from CloudWatch Alarms?',
+      'How does X-Ray propagate trace context through a Lambda → SQS → Lambda chain?',
+    ],
+    tags: ['AWS', 'CloudWatch', 'X-Ray', 'CloudTrail', 'observability'],
+  },
+
+  {
+    id: 'trivia-304',
+    category: 'trivia',
+    difficulty: 'easy',
+    title: 'AWS S3: Storage Classes, Pre-Signed URLs, and Event Notifications',
+    prompt: `Answer each of the following about S3:
+
+  a) Name four S3 storage classes and explain the key trade-off between Standard and Glacier.
+  b) A user needs to download a private file from S3, but you don't want to proxy the download through your server. How do you handle this?
+  c) When a file is uploaded to S3, you need to automatically resize it and store the result. How do you wire this up on AWS?
+  d) What is S3 Versioning and what does it protect against?
+  e) An S3 object is 20 GB. What upload mechanism should you use and why?`,
+    hints: [
+      'Standard vs Glacier: Standard = instant access, highest cost. Glacier = very low cost, but retrieval takes minutes to hours. Use S3 Lifecycle policies to automatically move objects between classes by age.',
+      'Pre-signed URL: generate a time-limited signed URL in your backend. The client downloads directly from S3 — no data flows through your server. Works for both GET (download) and PUT (direct upload).',
+      'S3 Event Notification → Lambda trigger: on PutObject, S3 invokes your Lambda with the event. Lambda processes the file (resize) and writes the result back to S3 (different key or bucket).',
+      'Multipart upload: required above 5 GB, recommended above 100 MB. Splits the file into parts uploaded in parallel. If a part fails, only that part is retried. Dramatically faster than sequential upload.',
+    ],
+    followUps: [
+      'What is S3 Object Lock and when would you use it?',
+      'How does S3 Cross-Region Replication work and what does it require?',
+      'What is a bucket policy vs an ACL?',
+    ],
+    tags: ['AWS', 'S3', 'storage', 'pre-signed URL', 'object storage'],
+  },
+
+  {
+    id: 'trivia-305',
+    category: 'trivia',
+    difficulty: 'medium',
+    title: 'AWS CDK vs CloudFormation — Infrastructure as Code',
+    prompt: `Answer each of the following about AWS IaC:
+
+  a) What is AWS CDK? How does it relate to CloudFormation?
+  b) What is the difference between an L1, L2, and L3 CDK construct?
+  c) What is "cdk synth" and what does it produce? What is "cdk deploy"?
+  d) CloudFormation has drift detection. You made manual changes to a stack in the AWS console. What is drift, why is it a problem, and how do you fix it?
+  e) When would you still choose plain CloudFormation over CDK?`,
+    hints: [
+      'CDK: write infra in TypeScript/Python/etc. CDK synthesizes it to CloudFormation YAML/JSON, then CloudFormation deploys it. CDK is a higher-level abstraction on top of CloudFormation — it still uses CF under the hood.',
+      'L1: one-to-one mapping to a CloudFormation resource (CfnBucket). L2: higher-level construct with sensible defaults and helper methods (s3.Bucket with grantRead, addEventNotification). L3 (patterns): multi-resource compositions for common patterns (LambdaRestApi, ApplicationLoadBalancedFargateService).',
+      'cdk synth: generates the CloudFormation template from your CDK code. Output is CloudFormation JSON/YAML. cdk deploy: synthesizes then calls CloudFormation to create/update the stack.',
+      'Drift: the actual deployed resource differs from the CloudFormation template (manual console edit). Drift is a problem because your next CloudFormation deployment may overwrite the manual change or fail. Fix: import the resource back or redeploy the stack.',
+    ],
+    followUps: [
+      'How do you share CDK constructs between projects?',
+      'What is a CDK stack and how do you deploy multiple stacks to different environments?',
+      'How does CDK handle existing resources (not created by CDK)?',
+    ],
+    tags: ['AWS', 'CDK', 'CloudFormation', 'IaC', 'infrastructure'],
+  },
+
+  {
+    id: 'trivia-306',
+    category: 'trivia',
+    difficulty: 'medium',
+    title: 'AWS High Availability: Multi-AZ, Auto Scaling, and Resilience',
+    prompt: `Answer each of the following about AWS high availability:
+
+  a) What is an Availability Zone (AZ)? Why should production services span multiple AZs?
+  b) You have an RDS database. What does "Multi-AZ" mean for RDS? How does failover work?
+  c) Your ECS service has 3 tasks. How do you ensure they don't all land on the same AZ?
+  d) Describe how Application Auto Scaling works for an ECS service. What triggers a scale-out event?
+  e) What is the difference between a "warm standby" and "active-active" DR strategy?`,
+    hints: [
+      'AZ: a physically separate data center within a region, with independent power and networking. If one AZ fails, others keep running. Span 2-3 AZs so a single failure does not take down your service.',
+      'RDS Multi-AZ: AWS maintains a synchronous standby replica in a second AZ. On primary failure, AWS automatically promotes the standby. Failover takes ~60 seconds. The connection string (endpoint) stays the same — DNS is updated.',
+      'ECS placement constraint: use the "spread" placement strategy with "attribute:ecs.availability-zone" to distribute tasks evenly across AZs. Prevents all tasks landing in the same AZ.',
+      'Warm standby: a smaller version of the stack runs in the DR region, scales up on failover. Active-active: full-capacity stacks in multiple regions serve live traffic simultaneously. Active-active is more expensive but eliminates failover time.',
+    ],
+    followUps: [
+      'What is an Auto Scaling Group (ASG) and how does it differ from ECS Auto Scaling?',
+      'How does Route 53 health-check-based failover work?',
+      'What is the difference between RTO (Recovery Time Objective) and RPO (Recovery Point Objective)?',
+    ],
+    tags: ['AWS', 'high availability', 'Multi-AZ', 'Auto Scaling', 'disaster recovery'],
+  },
+
+  {
+    id: 'trivia-307',
+    category: 'trivia',
+    difficulty: 'easy',
+    title: 'AWS Bedrock and GenAI Services',
+    prompt: `Answer each of the following about GenAI on AWS:
+
+  a) What is Amazon Bedrock? How does it differ from calling a model API directly (e.g. Anthropic's API)?
+  b) What is Bedrock Knowledge Bases? What AWS services does it use under the hood?
+  c) What is a Bedrock Agent? How does it differ from a simple model invocation?
+  d) What are Bedrock Guardrails and what problems do they solve?
+  e) When would you use Bedrock vs SageMaker for a GenAI workload?`,
+    hints: [
+      'Bedrock: managed API for foundation models from multiple providers (Claude, Llama, Titan, Mistral). No GPU management. Unified API across providers. Billed per token. SageMaker is for training and hosting custom/fine-tuned models on your own compute.',
+      'Knowledge Bases: RAG pipeline managed by AWS. Upload documents to S3; Bedrock handles chunking, embedding (your choice of model), and vector storage (Amazon OpenSearch Serverless). Query it and get grounded responses.',
+      'Bedrock Agent: orchestrates multi-step agentic workflows. The model decides which tools (Lambda functions you define) to call and in what order, across multiple turns. Goes beyond a single invoke_model call.',
+      'Guardrails: content filtering, PII detection/redaction, topic restrictions, grounding checks. Applied consistently across any model in Bedrock without modifying application code.',
+    ],
+    followUps: [
+      'How do you implement streaming responses from Bedrock in Python?',
+      'What is prompt caching in Bedrock and when does it reduce cost?',
+      'How does Bedrock handle data privacy — does your data train the foundation models?',
+    ],
+    tags: ['AWS', 'Bedrock', 'GenAI', 'RAG', 'LLM', 'AI'],
+  },
+
+  // ─── AWS Architecture ─────────────────────────────────────────────────────
+
+  {
+    id: 'arch-51',
+    category: 'architecture',
+    difficulty: 'medium',
+    title: 'Design an Event-Driven Data Pipeline on AWS',
+    prompt: `Design an AWS pipeline that:
+
+  - Ingests CSV files uploaded to S3 (up to 10,000 files/day, each up to 500 MB)
+  - Parses, validates, and transforms each file
+  - Stores results in a queryable data store for a reporting dashboard
+  - Sends an alert when a file fails validation
+  - Handles retries automatically for transient failures
+
+Address:
+  1. The end-to-end AWS architecture (which services at each step and why)
+  2. How you trigger processing when a file lands in S3
+  3. How you handle files larger than Lambda's /tmp limit (512 MB default)
+  4. Where you store the processed data and how the dashboard queries it
+  5. How failed-file alerts work (what triggers them, what they contain)
+  6. How you handle retries without reprocessing files that already succeeded`,
+    hints: [
+      'S3 Event Notification → SQS queue → Lambda consumer. SQS decouples the trigger from processing and provides built-in retry with DLQ.',
+      'Large files: Lambda /tmp is 512 MB (expandable to 10 GB with ephemeral storage). Stream from S3 instead of loading fully into memory — use boto3 streaming responses. Or use ECS Fargate for very large files.',
+      'Processed data: DynamoDB for fast key-value lookups, or Aurora for SQL queries. For analytics/reporting, consider S3 + Athena (query CSV/Parquet directly with SQL, no DB to manage).',
+      'Failed-file alert: DLQ on the SQS queue after N retries → Lambda → SNS → email/Slack. Include the S3 key, error message, and timestamp in the notification.',
+    ],
+    followUps: [
+      'How would you add idempotency so reprocessing a file does not duplicate records?',
+      'How would you monitor pipeline health — what metrics and alarms?',
+      'How would you handle schema changes in the incoming CSV files?',
+    ],
+    tags: ['AWS', 'S3', 'Lambda', 'SQS', 'event-driven', 'data pipeline', 'system design'],
+  },
+
+  {
+    id: 'arch-52',
+    category: 'architecture',
+    difficulty: 'hard',
+    title: 'Design a Multi-Region Active-Active API on AWS',
+    prompt: `Design a globally distributed REST API that:
+
+  - Serves users in the US, Europe, and Asia with < 100ms p99 latency
+  - Writes are consistent across regions within 2 seconds
+  - Reads can tolerate up to 1 second of staleness
+  - A full AWS region outage should cause < 30 seconds of user impact
+  - The system handles 50,000 requests/second globally
+
+Address:
+  1. How you route users to the nearest region (DNS + health checks)
+  2. The compute and API layer in each region
+  3. How data is replicated across regions and what consistency model you accept
+  4. How you handle a write conflict when two regions accept writes to the same record simultaneously
+  5. How you detect and fail over from a regional outage
+  6. The tradeoffs of active-active vs active-passive for this use case`,
+    hints: [
+      'Route 53 latency-based routing: users DNS-resolve to the nearest region. Health checks on each region endpoint. Failover policy: if a region is unhealthy, Route 53 stops routing to it.',
+      'Data replication: DynamoDB Global Tables provides multi-region active-active with < 1 second replication lag. Last-writer-wins conflict resolution. Aurora Global Database provides cross-region replication with a single writer.',
+      'Write conflicts (DynamoDB Global Tables): uses last-writer-wins with a timestamp. If your business logic needs stronger conflict resolution, implement application-level versioning (optimistic locking with a version attribute).',
+      'Active-active tradeoff: higher complexity (conflict resolution, replication lag), but zero-downtime regional failover and lower global latency. Active-passive is simpler but has failover delay and the standby region is idle cost.',
+    ],
+    followUps: [
+      'How would you test regional failover without impacting production users?',
+      'How does eventual consistency affect your API contract with clients?',
+      'What is the cost structure of DynamoDB Global Tables vs Aurora Global Database?',
+    ],
+    tags: ['AWS', 'multi-region', 'Route 53', 'DynamoDB', 'high availability', 'system design'],
+  },
 ];
 
 export function getQuestions(filters = {}) {
