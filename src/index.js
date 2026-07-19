@@ -580,13 +580,36 @@ function pickQuestion(filters, skipIds = new Set()) {
   return lowestTier[Math.floor(Math.random() * lowestTier.length)];
 }
 
-// ── List-based session (architecture / trivia) ────────────────────────────
+// ── List-based session (coding / architecture / trivia) ───────────────────
 
 const DIFF_COLORS = { easy: chalk.green, medium: chalk.yellow, hard: chalk.red };
 
 async function listSession(category) {
+  // Coding: pick a language once up front so the list is filtered and no
+  // per-question language prompt appears mid-flow.
+  let sessionLang = null;
+  if (category === 'coding') {
+    const defaultLang = session.language || 'js';
+    const { lang } = await inquirer.prompt([{
+      type: 'list',
+      name: 'lang',
+      message: 'Language for this session:',
+      choices: [
+        ...Object.entries(LANG_LABELS).map(([v, n]) => ({ name: n, value: v })),
+        new inquirer.Separator(),
+        { name: chalk.gray('← Back'), value: '__back__' },
+        new inquirer.Separator(),
+      ],
+      default: defaultLang,
+    }]);
+    if (lang === '__back__') return;
+    sessionLang = lang;
+    session.language = lang;
+    saveSession();
+  }
+
   while (true) {
-    const questions = getQuestions({ category });
+    const questions = getQuestions({ category, language: sessionLang || undefined });
 
     if (!questions.length) {
       console.log(chalk.yellow('\n  No questions found.\n'));
@@ -618,10 +641,11 @@ async function listSession(category) {
     choices.push(new inquirer.Separator());
 
     const label = category.charAt(0).toUpperCase() + category.slice(1);
+    const langSuffix = sessionLang ? chalk.gray(`  [${LANG_LABELS[sessionLang]?.split(' ')[0] || sessionLang}]`) : '';
     const { questionId } = await inquirer.prompt([{
       type: 'list',
       name: 'questionId',
-      message: `${chalk.bold(label)} — ${completed.length}/${questions.length} completed`,
+      message: `${chalk.bold(label)}${langSuffix} — ${completed.length}/${questions.length} completed`,
       choices,
       pageSize: 15,
     }]);
@@ -629,9 +653,9 @@ async function listSession(category) {
     if (questionId === '__back__') return;
 
     const q = questions.find(q => q.id === questionId);
-    const result = await runQuestion(q);
+    const result = await runQuestion(q, sessionLang);
     if (result === 'menu') return;
-    // 'back' means user hit ← Back on the language picker — stay on the list
+    // 'back' from language picker re-shows this list
   }
 }
 
