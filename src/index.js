@@ -732,7 +732,6 @@ async function mainMenu() {
     message: 'What would you like to do?',
     choices: [
       new inquirer.Separator(),
-      { name: 'Starter Questions          (coding warmup, teacher mode)', value: 'starter' },
       { name: 'Coding Practice', value: 'coding' },
       { name: 'Architecture Practice', value: 'architecture' },
       { name: 'Trivia Practice', value: 'trivia' },
@@ -750,10 +749,6 @@ async function mainMenu() {
   }]);
 
   switch (action) {
-    case 'starter':
-      await starterMenu();
-      break;
-
     case 'behavioral':
       await practiceSession(action);
       break;
