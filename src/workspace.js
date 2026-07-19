@@ -290,17 +290,29 @@ function buildTestRunnerCode(question, language) {
     const cases = testCases.map(t =>
       `    {"args": ${pyLit(t.args)}, "expected": ${pyLit(t.expected)}, "desc": ${JSON.stringify(t.desc)}${t.sortResult ? ', "sort": True' : ''}}`
     ).join(',\n');
+    const llHelpers = question.linkedListTest ? `
+    class _LN:
+        def __init__(self, val=0, next=None):
+            self.val = val; self.next = next
+    def _fa(arr):
+        h = None
+        for v in reversed(arr): h = _LN(v, h)
+        return h
+` : '';
+    const actualExprPy = question.linkedListTest
+      ? `result = ${effectiveFnName}(_fa(t["args"][0]))\n            actual = result.val if result else None`
+      : `actual = ${effectiveFnName}(*copy.deepcopy(t["args"]))`;
     return `
 # ─── Hidden Tests (injected at run time, not in your file) ────────────────
 def _hidden_tests():
     import json, copy
-    cases = [
+${llHelpers}    cases = [
 ${cases}
     ]
     passed = 0
     for t in cases:
         try:
-            actual = ${effectiveFnName}(*copy.deepcopy(t["args"]))
+            ${actualExprPy}
             if t.get("sort") and isinstance(actual, list):
                 actual = sorted(actual)
                 t["expected"] = sorted(t["expected"])
