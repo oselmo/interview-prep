@@ -585,31 +585,10 @@ function pickQuestion(filters, skipIds = new Set()) {
 const DIFF_COLORS = { easy: chalk.green, medium: chalk.yellow, hard: chalk.red };
 
 async function listSession(category) {
-  // Coding: pick a language once up front so the list is filtered and no
-  // per-question language prompt appears mid-flow.
-  let sessionLang = null;
-  if (category === 'coding') {
-    const defaultLang = session.language || 'js';
-    const { lang } = await inquirer.prompt([{
-      type: 'list',
-      name: 'lang',
-      message: 'Language for this session:',
-      choices: [
-        ...Object.entries(LANG_LABELS).map(([v, n]) => ({ name: n, value: v })),
-        new inquirer.Separator(),
-        { name: chalk.gray('← Back'), value: '__back__' },
-        new inquirer.Separator(),
-      ],
-      default: defaultLang,
-    }]);
-    if (lang === '__back__') return;
-    sessionLang = lang;
-    session.language = lang;
-    saveSession();
-  }
+  const LANG_BADGES = { js: 'JS', typescript: 'TS', python: 'PY', java: 'JV' };
 
   while (true) {
-    const questions = getQuestions({ category, language: sessionLang || undefined });
+    const questions = getQuestions({ category });
 
     if (!questions.length) {
       console.log(chalk.yellow('\n  No questions found.\n'));
@@ -630,8 +609,11 @@ async function listSession(category) {
       const check      = done ? chalk.green('✓') : ' ';
       const title      = done ? chalk.gray(q.title) : q.title;
       const num        = String(i + 1).padStart(3);
+      const langTag    = category === 'coding'
+        ? ' ' + chalk.gray(getAvailableLanguages(q).map(l => LANG_BADGES[l] || l.toUpperCase()).join(' '))
+        : '';
       return {
-        name: `${check} ${num}. ${title}  ${diffColor(`(${q.difficulty})`)}${scoreBadge}`,
+        name: `${check} ${num}. ${title}  ${diffColor(`(${q.difficulty})`)}${langTag}${scoreBadge}`,
         value: q.id,
       };
     });
@@ -641,11 +623,10 @@ async function listSession(category) {
     choices.push(new inquirer.Separator());
 
     const label = category.charAt(0).toUpperCase() + category.slice(1);
-    const langSuffix = sessionLang ? chalk.gray(`  [${LANG_LABELS[sessionLang]?.split(' ')[0] || sessionLang}]`) : '';
     const { questionId } = await inquirer.prompt([{
       type: 'list',
       name: 'questionId',
-      message: `${chalk.bold(label)}${langSuffix} — ${completed.length}/${questions.length} completed`,
+      message: `${chalk.bold(label)} — ${completed.length}/${questions.length} completed`,
       choices,
       pageSize: 15,
     }]);
@@ -653,7 +634,7 @@ async function listSession(category) {
     if (questionId === '__back__') return;
 
     const q = questions.find(q => q.id === questionId);
-    const result = await runQuestion(q, sessionLang);
+    const result = await runQuestion(q);
     if (result === 'menu') return;
     // 'back' from language picker re-shows this list
   }
