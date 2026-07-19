@@ -3485,7 +3485,6 @@ Cover:
       "Why does the fast pointer inevitably lap the slow pointer if there's a cycle?",
       "How does this compare to just using a Set — what are you trading off?",
     ],
-    suitableLanguages: ['js', 'typescript'],
     title: 'Starter: Detect a Cycle in a Linked List',
     prompt: `Given the head of a linked list, return true if the list has a cycle (a node that points back to a previously visited node), or false otherwise.
 
@@ -3546,6 +3545,51 @@ const m2 = { val: 2, next: null as any };
 m1.next = m2;
 console.log(hasCycle(m1));   // false
 console.log(hasCycle(null)); // false`,
+      python: `class ListNode:
+    def __init__(self, val=0, next=None):
+        self.val = val
+        self.next = next
+
+def has_cycle(head):
+    # Your solution here
+    pass
+
+# Manual test — build a cyclic list
+n1, n2, n3 = ListNode(1), ListNode(2), ListNode(3)
+n1.next = n2; n2.next = n3; n3.next = n2  # cycle: 3 → 2
+print(has_cycle(n1))    # True
+
+m1, m2 = ListNode(1), ListNode(2)
+m1.next = m2
+print(has_cycle(m1))    # False
+print(has_cycle(None))  # False`,
+      java: `public class Solution {
+    static class ListNode {
+        int val;
+        ListNode next;
+        ListNode(int val) { this.val = val; }
+    }
+
+    public static boolean hasCycle(ListNode head) {
+        // Your solution here
+        return false;
+    }
+
+    public static void main(String[] args) {
+        // Build a cyclic list: 1 → 2 → 3 → (back to 2)
+        ListNode n1 = new ListNode(1);
+        ListNode n2 = new ListNode(2);
+        ListNode n3 = new ListNode(3);
+        n1.next = n2; n2.next = n3; n3.next = n2;
+        System.out.println(hasCycle(n1));    // true
+
+        ListNode m1 = new ListNode(1);
+        ListNode m2 = new ListNode(2);
+        m1.next = m2;
+        System.out.println(hasCycle(m1));    // false
+        System.out.println(hasCycle(null));  // false
+    }
+}`,
     },
     tags: ['fast-slow-pointers', 'linked-list', 'cycle-detection', 'two-pointers'],
   },
@@ -3555,7 +3599,6 @@ console.log(hasCycle(null)); // false`,
     category: 'coding',
     difficulty: 'medium',
     pattern: 'Fast & Slow Pointers',
-    suitableLanguages: ['js', 'typescript'],
     functionName: 'isHappy',
     testCases: [
       { desc: 'happy number — 19',    args: [19],   expected: true },
@@ -3605,6 +3648,39 @@ console.log(isHappy(2));  // false`,
 
 console.log(isHappy(19)); // true
 console.log(isHappy(2));  // false`,
+      python: `def is_happy(n):
+    def next_num(num):
+        total = 0
+        while num > 0:
+            d = num % 10
+            total += d * d
+            num //= 10
+        return total
+
+    # Your solution here
+    pass
+
+print(is_happy(19))  # True
+print(is_happy(2))   # False`,
+      java: `public class Solution {
+    static int next(int num) {
+        int sum = 0;
+        while (num > 0) { int d = num % 10; sum += d * d; num /= 10; }
+        return sum;
+    }
+
+    public static boolean isHappy(int n) {
+        // Your solution here
+        return false;
+    }
+
+    public static void main(String[] args) {
+        System.out.println(isHappy(19)); // true
+        System.out.println(isHappy(2));  // false
+        System.out.println(isHappy(1));  // true
+        System.out.println(isHappy(7));  // true
+    }
+}`,
     },
     tags: ['fast-slow-pointers', 'cycle-detection', 'math'],
   },
@@ -4242,7 +4318,6 @@ print(search_rotated([4,5,6,7,0,1,2], 3))  # -1`,
     difficulty: 'starter',
     pattern: 'Trie',
     teacherMode: true,
-    suitableLanguages: ['js', 'typescript'],
     classTest: true,
     className: 'Trie',
     testCases: [
@@ -4367,6 +4442,71 @@ console.log(trie.search('app'));      // false
 console.log(trie.startsWith('app'));  // true
 trie.insert('app');
 console.log(trie.search('app'));      // true`,
+      python: `class TrieNode:
+    def __init__(self):
+        self.children = {}
+        self.is_end = False
+
+class Trie:
+    def __init__(self):
+        self.root = TrieNode()
+
+    def insert(self, word):
+        # Traverse from root, creating nodes as needed
+        pass
+
+    def search(self, word):
+        # Return True if the exact word exists
+        return False
+
+    def starts_with(self, prefix):
+        # Return True if any inserted word starts with this prefix
+        return False
+
+trie = Trie()
+trie.insert('apple')
+print(trie.search('apple'))      # True
+print(trie.search('app'))        # False
+print(trie.starts_with('app'))   # True
+trie.insert('app')
+print(trie.search('app'))        # True`,
+      java: `import java.util.HashMap;
+import java.util.Map;
+
+public class Solution {
+    static class TrieNode {
+        Map<Character, TrieNode> children = new HashMap<>();
+        boolean isEnd = false;
+    }
+
+    static class Trie {
+        private TrieNode root = new TrieNode();
+
+        public void insert(String word) {
+            // Traverse from root, creating nodes as needed
+        }
+
+        public boolean search(String word) {
+            // Return true if the exact word exists
+            return false;
+        }
+
+        public boolean startsWith(String prefix) {
+            // Return true if any inserted word starts with this prefix
+            return false;
+        }
+    }
+
+    public static void main(String[] args) {
+        Trie trie = new Trie();
+        trie.insert("apple");
+        System.out.println(trie.search("apple"));     // true
+        System.out.println(trie.search("app"));       // false
+        System.out.println(trie.startsWith("app"));   // true
+        trie.insert("app");
+        System.out.println(trie.search("app"));       // true
+    }
+}`,
     },
     followUpQuestions: [
       "What does each node in your trie store?",
