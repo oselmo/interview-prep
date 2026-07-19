@@ -118,9 +118,15 @@ async function pickLanguageForQuestion(question) {
     type: 'list',
     name: 'lang',
     message: 'Language:',
-    choices: available.map(l => ({ name: LANG_LABELS[l] || l, value: l })),
+    choices: [
+      ...available.map(l => ({ name: LANG_LABELS[l] || l, value: l })),
+      new inquirer.Separator(),
+      { name: chalk.gray('← Back'), value: '__back__' },
+      new inquirer.Separator(),
+    ],
     default: defaultLang,
   }]);
+  if (lang === '__back__') return null;
   session.language = lang;
   saveSession();
   return lang;
@@ -133,7 +139,9 @@ async function runQuestion(question, language = null) {
   const isStarter = question.teacherMode === true;
 
   // If no language passed in, pick one now (per-problem language selection)
-  const lang = language || (isCoding ? await pickLanguageForQuestion(question) : session.language || 'js');
+  const pickedLang = language || (isCoding ? await pickLanguageForQuestion(question) : session.language || 'js');
+  if (pickedLang === null) return 'back';
+  const lang = pickedLang;
 
   displayQuestion(question, session.attempted + session.skipped + 1);
 
@@ -623,6 +631,7 @@ async function listSession(category) {
     const q = questions.find(q => q.id === questionId);
     const result = await runQuestion(q);
     if (result === 'menu') return;
+    // 'back' means user hit ← Back on the language picker — stay on the list
   }
 }
 
@@ -721,11 +730,11 @@ async function mainMenu() {
       await starterMenu();
       break;
 
-    case 'coding':
     case 'behavioral':
       await practiceSession(action);
       break;
 
+    case 'coding':
     case 'architecture':
     case 'trivia':
       await listSession(action);
