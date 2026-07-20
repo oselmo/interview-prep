@@ -12294,6 +12294,33 @@ Address:
   },
 
   {
+    id: 'trivia-308',
+    category: 'trivia',
+    difficulty: 'medium',
+    title: 'Closures, Debounce & Throttle',
+    prompt: `Answer each of the following about closures and rate-limiting patterns in JavaScript:
+
+  a) What is a closure? What does it mean for a function to "close over" a variable?
+  b) What is the classic bug when using var inside a for loop with setTimeout, and how does let fix it?
+  c) Explain how debounce works. What problem does it solve, and where does the timer ID live between calls?
+  d) How does throttle differ from debounce? Give an example use case for each.
+  e) In a debounce implementation, what happens to the arguments when the function is called multiple times before the timer fires?`,
+    hints: [
+      'Closure: an inner function retains a reference to variables in its outer scope even after that scope has finished. The outer variable stays alive as long as the inner function exists.',
+      'var is function-scoped — all loop iterations share the same i, which is 3 by the time the timeouts fire. let is block-scoped — each iteration gets its own i.',
+      'Debounce: the timer ID lives in the closure. Each call clears the previous timer and starts a new one. The real function only fires after N ms of silence. Solves: firing on every keystroke.',
+      'Throttle fires at most once per N ms regardless of call frequency — good for scroll/resize. Debounce waits for a pause — good for search inputs. Throttle: steady cadence. Debounce: wait for stop.',
+      'Debounce always uses args from the LAST call (earlier timers were cancelled). Throttle uses args from the FIRST call in each window (later calls are ignored until the window resets).',
+    ],
+    followUps: [
+      'How would you implement leading-edge debounce (fire immediately on first call, ignore subsequent ones)?',
+      'How do you clean up a debounced function in a React useEffect?',
+      'What happens to the return value of the wrapped function in a basic debounce implementation?',
+    ],
+    tags: ['javascript', 'closures', 'debounce', 'throttle', 'scope', 'higher-order-functions'],
+  },
+
+  {
     id: 'arch-52',
     category: 'architecture',
     difficulty: 'hard',
