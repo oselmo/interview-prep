@@ -12353,7 +12353,189 @@ Address:
     ],
     tags: ['AWS', 'multi-region', 'Route 53', 'DynamoDB', 'high availability', 'system design'],
   },
+
+  // ─── Secure Coding ────────────────────────────────────────────────────────
+
+  {
+    id: 'trivia-309',
+    category: 'trivia',
+    difficulty: 'medium',
+    title: 'Secure Coding: OWASP Top 10',
+    prompt: `Answer each of the following about application security:
+
+  a) What is SQL injection and how do you prevent it?
+  b) What is the difference between XSS and CSRF? How do you defend against each?
+  c) What does "broken access control" mean? Give a concrete example of this vulnerability.
+  d) What is the principle of least privilege and where would you apply it in a cloud application?
+  e) Why should error messages shown to users be generic, while detailed errors are logged server-side?`,
+    hints: [
+      'SQL injection: user input is concatenated directly into a SQL query. Fix: parameterized queries / prepared statements — DB treats input as data, never as SQL.',
+      'XSS: injecting scripts into a page viewed by others. Fix: escape output, use framework defaults, never dangerouslySetInnerHTML with untrusted input. CSRF: tricking a browser into making an authenticated request. Fix: CSRF tokens, SameSite cookies.',
+      'Broken access control: server does not verify the logged-in user is allowed to access the requested resource. Example: GET /api/invoices/5 returns invoice 5 without checking if the logged-in user owns it.',
+      'Least privilege: IAM roles scoped to exactly what a service needs (no wildcard *). DB users with only SELECT if they only read. Lambda with access to one specific S3 bucket, not all.',
+      'Generic errors to users prevent attackers from learning about your system (DB schema, file paths, stack traces). Detailed logs server-side let you debug. Leaking stack traces is a common OWASP misconfiguration finding.',
+    ],
+    followUps: [
+      'What is SSRF and how would an attacker use it against an AWS-hosted application?',
+      'What is the difference between authentication and authorization?',
+      'How would you securely store API keys or database credentials in a cloud application?',
+    ],
+    tags: ['security', 'OWASP', 'SQL injection', 'XSS', 'CSRF', 'access control'],
+  },
+
+  {
+    id: 'trivia-310',
+    category: 'trivia',
+    difficulty: 'easy',
+    title: 'Secure Coding: Secrets, Encryption & Secure Defaults',
+    prompt: `Answer each of the following:
+
+  a) Where should secrets (API keys, DB passwords) be stored in a production application? Where should they NOT be?
+  b) Why is MD5 or SHA-1 not acceptable for storing passwords? What should you use instead?
+  c) What does "defense in depth" mean in the context of a web application?
+  d) What is input validation and at which layer(s) of the stack should it happen?
+  e) What is a CVE and how do you protect your application against vulnerable dependencies?`,
+    hints: [
+      'Secrets: environment variables, AWS Secrets Manager, or Parameter Store. NEVER in source code, config files committed to git, or client-side code.',
+      'MD5/SHA1 are fast — an attacker can brute-force billions of guesses per second. Use bcrypt, argon2, or scrypt — they are intentionally slow (work factor is tunable) and include a salt to prevent rainbow table attacks.',
+      'Defense in depth: multiple independent security layers. Network (VPC, security groups) + application (auth, input validation) + data (encryption, access control). One failure does not expose everything.',
+      'Input validation: enforce type, length, format, range at the entry point (API boundary). Client-side validation is UX only — never trust it for security. Server-side is mandatory.',
+      'CVE: Common Vulnerabilities and Exposures — a public database of known security flaws in software. Protect with: npm audit / pip-audit, Dependabot, Snyk. Update dependencies regularly and pin versions in production.',
+    ],
+    followUps: [
+      'What is the difference between hashing and encryption? When would you use each?',
+      'If you found a hardcoded API key in a git commit, what steps would you take?',
+      'What does HTTPS protect against and what does it NOT protect against?',
+    ],
+    tags: ['security', 'secrets management', 'encryption', 'dependencies', 'input validation'],
+  },
+
+  // ─── Software Testing ──────────────────────────────────────────────────────
+
+  {
+    id: 'trivia-311',
+    category: 'trivia',
+    difficulty: 'easy',
+    title: 'Software Testing: Unit, Integration & Test Design',
+    prompt: `Answer each of the following about software testing:
+
+  a) What is the testing pyramid? What types of tests sit at each level and why?
+  b) What is the difference between a mock and a stub?
+  c) What does AAA stand for in unit testing? Describe each step.
+  d) What is a "Definition of Done" and why does it matter?
+  e) Why is 100% code coverage not sufficient to guarantee correctness?`,
+    hints: [
+      'Testing pyramid: unit tests (base — many, fast, isolated), integration tests (middle — test components together), E2E tests (top — few, slow, full stack). Higher = more confidence, more cost, more brittle.',
+      'Stub: returns a predefined value to control the scenario. Mock: a fake you can assert was called with specific arguments. Spy: wraps the real implementation and records calls. All are "test doubles."',
+      'AAA: Arrange (set up data and dependencies), Act (call the function under test), Assert (verify the result). Gives every test a consistent, readable structure.',
+      'Definition of Done: shared team agreement on what "complete" means — tests written, code reviewed, staging verified, docs updated. Without it, "done" means different things to different people.',
+      '100% coverage means every line was executed, not that every case was tested correctly. You can have full coverage with assertions that always pass regardless of the output. Branch coverage is better but still not sufficient.',
+    ],
+    followUps: [
+      'When should you mock a dependency vs use a real one in a test?',
+      'What is TDD? Walk through the red-green-refactor cycle for a simple function.',
+      'What makes a test "flaky" and how do you fix it?',
+    ],
+    tags: ['testing', 'unit testing', 'integration testing', 'TDD', 'mocking', 'code quality'],
+  },
+
+  // ─── Agile / SDLC ─────────────────────────────────────────────────────────
+
+  {
+    id: 'trivia-312',
+    category: 'trivia',
+    difficulty: 'easy',
+    title: 'Agile & Scrum Fundamentals',
+    prompt: `Answer each of the following about Agile and Scrum:
+
+  a) What are the four core Agile Manifesto values?
+  b) What are the three Scrum roles and what is each responsible for?
+  c) What happens in a sprint retrospective? How does it differ from a sprint review?
+  d) What is a user story? Write an example for a car search feature.
+  e) What is technical debt and how do Agile teams typically handle it?`,
+    hints: [
+      'Manifesto values: Individuals & interactions over processes & tools. Working software over documentation. Customer collaboration over contract negotiation. Responding to change over following a plan.',
+      'Product Owner: owns backlog, prioritizes by business value. Scrum Master: facilitates process, removes blockers. Development Team: self-organizing, delivers the increment.',
+      'Sprint Review: demo working software to stakeholders, gather feedback on what was built. Sprint Retrospective: internal team reflection — what went well, what to improve in how we work. Review = product. Retro = process.',
+      'User story format: "As a [user], I want [goal] so that [benefit]." Example: "As a car buyer, I want to filter by make and model so that I can quickly find the car I\'m looking for."',
+      'Technical debt: shortcuts that create future maintenance burden. Handled by: adding debt items to the backlog, dedicating a portion of each sprint to paying it down, never letting it block a release indefinitely.',
+    ],
+    followUps: [
+      'What is the difference between Scrum and Kanban? When would you use each?',
+      'What is velocity and how should (and should NOT) it be used?',
+      'How do you handle a situation where a stakeholder adds scope mid-sprint?',
+    ],
+    tags: ['agile', 'scrum', 'SDLC', 'sprint', 'user stories', 'product management'],
+  },
+
+  // ─── Architecture: Security & Testing ─────────────────────────────────────
+
+  {
+    id: 'arch-53',
+    category: 'architecture',
+    difficulty: 'medium',
+    title: 'Design a Secure REST API with Authentication',
+    prompt: `Design a secure REST API for a web application that manages user accounts and resources (e.g., vehicle listings at an auto marketplace). Address:
+
+  1. Authentication — how do users log in? How are subsequent requests authenticated?
+  2. Authorization — how do you ensure users can only access their own resources?
+  3. Secrets management — where do API keys, DB credentials, and signing secrets live?
+  4. Input validation and error handling — how do you prevent injection and avoid leaking implementation details?
+  5. Rate limiting and abuse prevention — how do you protect against brute-force and scraping?
+  6. Audit logging — what events do you log and where?`,
+    followUpQuestions: [
+      'How would you handle token refresh without requiring re-login every hour?',
+      'If a signing secret was accidentally committed to git, what steps do you take immediately?',
+      'How does your design handle a compromised JWT — e.g., a user whose token was stolen?',
+      'What HTTP response codes would you use for auth failures and why?',
+    ],
+    hints: [
+      'Auth: JWT (short-lived access token) + refresh token (long-lived, stored as HttpOnly cookie). Or session-based with a secure session store. Stateless JWTs are common for APIs.',
+      'Authorization: check ownership server-side on every request. Middleware that reads the JWT subject and verifies the requested resource belongs to that user. Deny-by-default.',
+      'Secrets: AWS Secrets Manager or Parameter Store. Never in .env files committed to git. Rotate regularly. App fetches secret at startup (or runtime for Secrets Manager).',
+      'Input validation: validate type, length, format at the API boundary. Return 400 with a generic message. Log the detail server-side. Never return stack traces.',
+      'Rate limiting: token-bucket or leaky-bucket per IP/user. Redis for distributed state. 429 Too Many Requests. Exponential backoff on retries.',
+      'Audit log: authentication events (success/failure), resource access, permission denials, admin actions. Immutable log store (CloudWatch Logs, S3 with object lock). Retain per compliance requirements.',
+    ],
+    tags: ['security', 'authentication', 'authorization', 'JWT', 'REST API', 'system design'],
+  },
 ];
+
+// Maps question IDs to a display track label shown in the question list.
+// Tracks are generic role categories — not specific company names.
+const TRACK_MAP = {
+  // JS Frontend — questions primarily relevant for frontend or JS-specific roles
+  'trivia-2': 'JS Frontend',
+  'trivia-3': 'JS Frontend',
+  'trivia-308': 'JS Frontend',
+  'coding-2': 'JS Frontend',
+  'coding-4': 'JS Frontend',
+  'starter-typescript': 'JS Frontend',
+  'coding-21': 'JS Frontend',
+  'coding-22': 'JS Frontend',
+  'trivia-224': 'JS Frontend', 'trivia-225': 'JS Frontend', 'trivia-226': 'JS Frontend',
+  'trivia-227': 'JS Frontend', 'trivia-228': 'JS Frontend', 'trivia-229': 'JS Frontend',
+  'trivia-230': 'JS Frontend', 'trivia-231': 'JS Frontend', 'trivia-232': 'JS Frontend',
+  'trivia-233': 'JS Frontend',
+
+  // GenAI — questions primarily relevant for roles involving AI/ML/LLM work
+  'trivia-1': 'GenAI', 'trivia-4': 'GenAI', 'trivia-5': 'GenAI',
+  'trivia-12': 'GenAI', 'trivia-17': 'GenAI', 'trivia-18': 'GenAI',
+  'trivia-234': 'GenAI', 'trivia-235': 'GenAI', 'trivia-236': 'GenAI',
+  'trivia-237': 'GenAI', 'trivia-238': 'GenAI', 'trivia-239': 'GenAI',
+  'trivia-240': 'GenAI', 'trivia-241': 'GenAI', 'trivia-242': 'GenAI',
+  'trivia-243': 'GenAI', 'trivia-244': 'GenAI', 'trivia-245': 'GenAI',
+  'trivia-246': 'GenAI', 'trivia-247': 'GenAI', 'trivia-248': 'GenAI',
+  'trivia-249': 'GenAI', 'trivia-250': 'GenAI', 'trivia-251': 'GenAI',
+  'trivia-252': 'GenAI', 'trivia-253': 'GenAI', 'trivia-307': 'GenAI',
+  'coding-23': 'GenAI',
+  'arch-1': 'GenAI', 'arch-2': 'GenAI', 'arch-4': 'GenAI', 'arch-8': 'GenAI',
+
+  // Cloud SWE — general software engineering with cloud/backend focus
+  'trivia-309': 'Cloud SWE', 'trivia-310': 'Cloud SWE',
+  'trivia-311': 'Cloud SWE', 'trivia-312': 'Cloud SWE',
+  'arch-53': 'Cloud SWE',
+};
 
 export function getQuestions(filters = {}) {
   return QUESTIONS.filter(q => {
@@ -12363,7 +12545,7 @@ export function getQuestions(filters = {}) {
     // If a question declares suitableLanguages, only show it for those languages
     if (filters.language && q.suitableLanguages && !q.suitableLanguages.includes(filters.language)) return false;
     return true;
-  });
+  }).map(q => ({ ...q, track: TRACK_MAP[q.id] || q.track || null }));
 }
 
 export function getRandomQuestion(filters = {}) {

@@ -612,8 +612,9 @@ async function listSession(category) {
       const langTag    = category === 'coding'
         ? ' ' + chalk.gray(getAvailableLanguages(q).map(l => LANG_BADGES[l] || l.toUpperCase()).join(' '))
         : '';
+      const trackTag   = q.track ? ' ' + chalk.magenta(`[${q.track}]`) : '';
       return {
-        name: `${check} ${num}. ${title}  ${diffColor(`(${q.difficulty})`)}${langTag}${scoreBadge}`,
+        name: `${check} ${num}. ${title}  ${diffColor(`(${q.difficulty})`)}${langTag}${trackTag}${scoreBadge}`,
         value: q.id,
       };
     });
