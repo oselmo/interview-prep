@@ -821,6 +821,20 @@ const GUIDE_LABELS = {
   'trie.md':                                'Tries',
   'typescript.md':                          'TypeScript Deep Dive',
   'union-find.md':                          'Union Find (Disjoint Set)',
+  'agile-sdlc.md':                          'Agile & SDLC',
+  'debounce-closures.md':                   'Closures, Debounce & Throttle',
+  'secure-coding.md':                       'Secure Coding (OWASP)',
+  'software-testing.md':                    'Software Testing',
+};
+
+const KNOWLEDGE_TRACK_MAP = {
+  'typescript.md':                        'JS Frontend',
+  'debounce-closures.md':                 'JS Frontend',
+  'rag-genai.md':                         'GenAI',
+  'palantir-foundry-data-engineering.md': 'GenAI',
+  'agile-sdlc.md':                        'Cloud SWE',
+  'secure-coding.md':                     'Cloud SWE',
+  'software-testing.md':                  'Cloud SWE',
 };
 
 // ── Knowledge review (Socratic quiz on an article) ────────────────────────
@@ -967,7 +981,8 @@ async function knowledgeMenu() {
       const done = session.knowledgeCompleted.has(f);
       const badge = done ? chalk.green('✓') : chalk.gray('○');
       const label = GUIDE_LABELS[f] || f.replace('.md', '').replace(/-/g, ' ');
-      return { name: `  ${badge}  ${label}`, value: f };
+      const trackTag = KNOWLEDGE_TRACK_MAP[f] ? ' ' + chalk.magenta(`[${KNOWLEDGE_TRACK_MAP[f]}]`) : '';
+      return { name: `  ${badge}  ${label}${trackTag}`, value: f };
     });
     choices.push(new inquirer.Separator(), { name: chalk.gray('  ← Back to main menu'), value: null }, new inquirer.Separator());
 
@@ -1022,10 +1037,11 @@ async function studyMenu() {
     return;
   }
 
-  const choices = files.map(f => ({
-    name: GUIDE_LABELS[f] || f.replace('.md', '').replace(/-/g, ' '),
-    value: join(KNOWLEDGE_DIR, f),
-  }));
+  const choices = files.map(f => {
+    const label = GUIDE_LABELS[f] || f.replace('.md', '').replace(/-/g, ' ');
+    const trackTag = KNOWLEDGE_TRACK_MAP[f] ? ' ' + chalk.magenta(`[${KNOWLEDGE_TRACK_MAP[f]}]`) : '';
+    return { name: `${label}${trackTag}`, value: join(KNOWLEDGE_DIR, f) };
+  });
   choices.push({ name: chalk.gray('← Back to menu'), value: null });
 
   const { filepath } = await inquirer.prompt([{

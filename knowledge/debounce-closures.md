@@ -1,4 +1,4 @@
-# Closures, Debounce & Throttle
+# Closures, Debounce & Throttle (JavaScript)
 
 ## What Is a Closure?
 
