@@ -345,13 +345,13 @@ function fromArray(arr: number[]): ListNode | null {
 console.log(middleNode(fromArray([1,2,3,4,5]))?.val);    // 3
 console.log(middleNode(fromArray([1,2,3,4,5,6]))?.val);  // 4
 `,
-      java: `public class Solution {
-    static class ListNode {
-        int val;
-        ListNode next;
-        ListNode(int val) { this.val = val; }
-    }
+      java: `class ListNode {
+    int val;
+    ListNode next;
+    ListNode(int val) { this.val = val; }
+}
 
+class Solution {
     public static ListNode middleNode(ListNode head) {
         // Use fast/slow pointers — one pass, O(1) space
         return head;
@@ -738,15 +738,15 @@ const root = new TreeNode(3, new TreeNode(9), new TreeNode(20, new TreeNode(15),
 console.log(maxDepth(root));  // 3
 console.log(maxDepth(null));  // 0
 `,
-      java: `public class Solution {
-    static class TreeNode {
-        int val; TreeNode left, right;
-        TreeNode(int val) { this.val = val; }
-        TreeNode(int val, TreeNode left, TreeNode right) {
-            this.val = val; this.left = left; this.right = right;
-        }
+      java: `class TreeNode {
+    int val; TreeNode left, right;
+    TreeNode(int val) { this.val = val; }
+    TreeNode(int val, TreeNode left, TreeNode right) {
+        this.val = val; this.left = left; this.right = right;
     }
+}
 
+class Solution {
     public static int maxDepth(TreeNode root) {
         // base case + recursive case
         return 0;
@@ -2672,13 +2672,13 @@ print(to_array(reverse_list(from_array([1,2,3,4,5]))))  # [5,4,3,2,1]
 `,
       java: `import java.util.*;
 
-public class Solution {
-    static class ListNode {
-        int val;
-        ListNode next;
-        ListNode(int val) { this.val = val; }
-    }
+class ListNode {
+    int val;
+    ListNode next;
+    ListNode(int val) { this.val = val; }
+}
 
+class Solution {
     public static ListNode reverseList(ListNode head) {
         // Iterative solution
         return null;
@@ -3028,15 +3028,15 @@ p2, q2 = root.left, root.left.right     # nodes 2 and 4
 print(lowest_common_ancestor(root, p1, q1).val)  # 6
 print(lowest_common_ancestor(root, p2, q2).val)  # 2
 `,
-      java: `public class Solution {
-    static class TreeNode {
-        int val; TreeNode left, right;
-        TreeNode(int val) { this.val = val; }
-        TreeNode(int val, TreeNode left, TreeNode right) {
-            this.val = val; this.left = left; this.right = right;
-        }
+      java: `class TreeNode {
+    int val; TreeNode left, right;
+    TreeNode(int val) { this.val = val; }
+    TreeNode(int val, TreeNode left, TreeNode right) {
+        this.val = val; this.left = left; this.right = right;
     }
+}
 
+class Solution {
     public static TreeNode lowestCommonAncestor(TreeNode root, int p, int q) {
         // Use the BST property
         return null;
@@ -7754,15 +7754,15 @@ def is_valid_bst(root):
     # carry a (low, high) range down, or do an in-order check
     pass
 `,
-      java: `class Solution {
-    static class TreeNode {
-        int val; TreeNode left, right;
-        TreeNode(int val) { this.val = val; }
-        TreeNode(int val, TreeNode left, TreeNode right) {
-            this.val = val; this.left = left; this.right = right;
-        }
+      java: `class TreeNode {
+    int val; TreeNode left, right;
+    TreeNode(int val) { this.val = val; }
+    TreeNode(int val, TreeNode left, TreeNode right) {
+        this.val = val; this.left = left; this.right = right;
     }
+}
 
+class Solution {
     public static boolean isValidBST(TreeNode root) {
         // carry a (low, high) range down, or do an in-order check
         return true;

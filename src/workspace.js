@@ -172,11 +172,12 @@ export async function runSolution(filepath, language, question) {
       question?.testCases?.length > 0 &&
       !question.cycleTest && !question.memoizeTest && !question.debounceTest &&
       (
-        (question.functionName && !question.treeTest && !question.lcaTest && !question.linkedListRoundTrip && !question.classTest) ||
-        (question.functionNames?.length && !question.treeTest && !question.lcaTest && !question.linkedListRoundTrip && !question.classTest) ||
+        (question.functionName && !question.treeTest && !question.lcaTest && !question.linkedListRoundTrip && !question.classTest && !question.linkedListTest) ||
+        (question.functionNames?.length && !question.treeTest && !question.lcaTest && !question.linkedListRoundTrip && !question.classTest && !question.linkedListTest) ||
         question.classTest ||
-        ((question.treeTest || question.lcaTest) && !question.starterCode?.java) ||
-        (question.linkedListRoundTrip && !question.starterCode?.java)
+        question.treeTest || question.lcaTest ||
+        question.linkedListRoundTrip ||
+        question.linkedListTest
       )
     );
 
@@ -1491,7 +1492,7 @@ ${cases}
 `;
 }
 
-// Tree questions: TreeNode is a top-level class (only for templates we generated, no starterCode.java)
+// Tree questions: _build is self-contained in the runner so it works with any Solution file
 function _buildJavaTreeRunner(question) {
   const { testCases, functionName } = question;
   const fn = functionName || 'solve';
@@ -1506,7 +1507,7 @@ function _buildJavaTreeRunner(question) {
       const lit = hasNulls
         ? `new Integer[]{${lo.map(v => v === null ? 'null' : v).join(',')}}`
         : `new Integer[]{${lo.join(',')}}`;
-      treeArg = `Solution._build(${lit})`;
+      treeArg = `_build(${lit})`;
     }
     const expected = _javaLiteral(t.expected);
     const sort = !!t.sortResult;
@@ -1529,6 +1530,18 @@ function _buildJavaTreeRunner(question) {
 // ─── Hidden Tests (Java) ──────────────────────────────────────────────────────
 class _HiddenTestRunner {
 ${_JAVA_RUNNER_HELPERS}
+    static TreeNode _build(Integer[] a) {
+        if (a == null || a.length == 0 || a[0] == null) return null;
+        TreeNode root = new TreeNode(a[0]);
+        java.util.Queue<TreeNode> q = new java.util.LinkedList<>();
+        q.add(root); int i = 1;
+        while (!q.isEmpty() && i < a.length) {
+            TreeNode n = q.poll();
+            if (i < a.length) { if (a[i] != null) { n.left = new TreeNode(a[i]); q.add(n.left); } i++; }
+            if (i < a.length) { if (a[i] != null) { n.right = new TreeNode(a[i]); q.add(n.right); } i++; }
+        }
+        return root;
+    }
     public static void main(String[] args) {
         int pass = 0, total = 0;
 ${cases}
@@ -1538,7 +1551,7 @@ ${cases}
 `;
 }
 
-// LCA questions: TreeNode is top-level (only for generated templates without starterCode.java)
+// LCA questions: _build/_find are self-contained in the runner
 function _buildJavaLcaRunner(question) {
   const { testCases } = question;
   const fn = question.functionName || 'lowestCommonAncestor';
@@ -1547,7 +1560,7 @@ function _buildJavaLcaRunner(question) {
     const desc = t.desc.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
     return `        { // ${t.desc}
             try {
-                TreeNode _p = Solution._find(_bst, ${t.pVal}), _q = Solution._find(_bst, ${t.qVal});
+                TreeNode _p = _find(_bst, ${t.pVal}), _q = _find(_bst, ${t.qVal});
                 TreeNode _r = Solution.${fn}(_bst, _p, _q);
                 int _actual = _r != null ? _r.val : -999, _expected = ${t.expected};
                 boolean _ok = _actual == _expected;
@@ -1563,9 +1576,26 @@ function _buildJavaLcaRunner(question) {
 // ─── Hidden Tests (Java) ──────────────────────────────────────────────────────
 class _HiddenTestRunner {
 ${_JAVA_RUNNER_HELPERS}
+    static TreeNode _build(Integer[] a) {
+        if (a == null || a.length == 0 || a[0] == null) return null;
+        TreeNode root = new TreeNode(a[0]);
+        java.util.Queue<TreeNode> q = new java.util.LinkedList<>();
+        q.add(root); int i = 1;
+        while (!q.isEmpty() && i < a.length) {
+            TreeNode n = q.poll();
+            if (i < a.length) { if (a[i] != null) { n.left = new TreeNode(a[i]); q.add(n.left); } i++; }
+            if (i < a.length) { if (a[i] != null) { n.right = new TreeNode(a[i]); q.add(n.right); } i++; }
+        }
+        return root;
+    }
+    static TreeNode _find(TreeNode root, int val) {
+        if (root == null) return null;
+        if (root.val == val) return root;
+        return val < root.val ? _find(root.left, val) : _find(root.right, val);
+    }
     public static void main(String[] args) {
         int pass = 0, total = 0;
-        TreeNode _bst = Solution._build(new Integer[]{6, 2, 8, 0, 4, 7, 9, null, null, 3, 5});
+        TreeNode _bst = _build(new Integer[]{6, 2, 8, 0, 4, 7, 9, null, null, 3, 5});
 ${cases}
         System.out.println("\\n" + pass + "/" + total + " passed");
     }
@@ -1573,7 +1603,7 @@ ${cases}
 `;
 }
 
-// Linked list round-trip: ListNode is top-level (only for generated templates without starterCode.java)
+// Linked list round-trip: _arr/_str are self-contained in the runner
 function _buildJavaListRunner(question) {
   const { testCases } = question;
   const fns = question.functionNames?.length ? question.functionNames : [question.functionName || 'reverseList'];
@@ -1586,8 +1616,8 @@ function _buildJavaListRunner(question) {
     const desc = `${fns.length > 1 ? fn + ': ' : ''}${t.desc}`.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
     return `        { // ${desc}
             try {
-                String _actual = Solution._str(Solution.${fn}(Solution._arr(${inLit})));
-                String _expected = Solution._str(Solution._arr(${expLit}));
+                String _actual = _str(Solution.${fn}(_arr(${inLit})));
+                String _expected = _str(_arr(${expLit}));
                 boolean _ok = _actual.equals(_expected);
                 System.out.println((_ok ? "\\u2713" : "\\u2717") + " ${desc}");
                 if (!_ok) { System.out.println("  expected: " + _expected); System.out.println("  got:      " + _actual); }
@@ -1601,6 +1631,17 @@ function _buildJavaListRunner(question) {
 // ─── Hidden Tests (Java) ──────────────────────────────────────────────────────
 class _HiddenTestRunner {
 ${_JAVA_RUNNER_HELPERS}
+    static ListNode _arr(int[] a) {
+        if (a.length == 0) return null;
+        ListNode h = new ListNode(a[0]), c = h;
+        for (int i = 1; i < a.length; i++) { c.next = new ListNode(a[i]); c = c.next; }
+        return h;
+    }
+    static String _str(ListNode h) {
+        java.util.StringBuilder sb = new java.util.StringBuilder("[");
+        while (h != null) { sb.append(h.val); if (h.next != null) sb.append(", "); h = h.next; }
+        return sb.append("]").toString();
+    }
     public static void main(String[] args) {
         int pass = 0, total = 0;
 ${cases}
@@ -1654,11 +1695,55 @@ ${cases}
 `;
 }
 
+// linkedListTest: build chain from args[0] array, call fn, extract .val from result
+function _buildJavaLinkedListTestRunner(question) {
+  const { testCases, functionName } = question;
+  const fn = functionName || 'solve';
+  const cases = testCases.map(t => {
+    const vals = t.args[0] || [];
+    const inLit = vals.length ? `new int[]{${vals.join(',')}}` : 'new int[]{}';
+    const expected = _javaLiteral(t.expected);
+    const desc = t.desc.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+    return `        { // ${t.desc}
+            try {
+                ListNode _head = _arr(${inLit});
+                ListNode _res = Solution.${fn}(_head);
+                Object _actual = _res != null ? _res.val : null;
+                Object _expected = ${expected};
+                boolean _ok = String.valueOf(_actual).equals(String.valueOf(_expected));
+                System.out.println((_ok ? "\\u2713" : "\\u2717") + " ${desc}");
+                if (!_ok) { System.out.println("  expected: " + _expected); System.out.println("  got:      " + _actual); }
+                if (_ok) pass++;
+            } catch (Exception _e) { System.out.println("\\u2717 ${desc}: " + _e.getMessage()); }
+            total++;
+        }`;
+  }).join('\n');
+
+  return `
+// ─── Hidden Tests (Java) ──────────────────────────────────────────────────────
+class _HiddenTestRunner {
+${_JAVA_RUNNER_HELPERS}
+    static ListNode _arr(int[] a) {
+        if (a.length == 0) return null;
+        ListNode h = new ListNode(a[0]), c = h;
+        for (int i = 1; i < a.length; i++) { c.next = new ListNode(a[i]); c = c.next; }
+        return h;
+    }
+    public static void main(String[] args) {
+        int pass = 0, total = 0;
+${cases}
+        System.out.println("\\n" + pass + "/" + total + " passed");
+    }
+}
+`;
+}
+
 function _buildJavaHiddenRunner(question) {
-  if (question.treeTest && !question.starterCode?.java)            return _buildJavaTreeRunner(question);
-  if (question.lcaTest && !question.starterCode?.java)             return _buildJavaLcaRunner(question);
-  if (question.linkedListRoundTrip && !question.starterCode?.java) return _buildJavaListRunner(question);
-  if (question.classTest)                                          return _buildJavaClassRunner(question);
+  if (question.treeTest)            return _buildJavaTreeRunner(question);
+  if (question.lcaTest)             return _buildJavaLcaRunner(question);
+  if (question.linkedListRoundTrip) return _buildJavaListRunner(question);
+  if (question.linkedListTest)      return _buildJavaLinkedListTestRunner(question);
+  if (question.classTest)           return _buildJavaClassRunner(question);
   return _buildJavaStandardRunner(question);
 }
 
