@@ -81,6 +81,19 @@ const words = ["apple", "banana", "apple", "cherry", "banana", "apple"];
 console.log(countFrequencies(words));  // Map { apple: 3, banana: 2, cherry: 1 }
 console.log(mostFrequent(words));      // "apple"
 `,
+      java: `import java.util.*;
+
+public class Solution {
+    public static String mostFrequent(String[] words) {
+        // Your solution here
+        return "";
+    }
+
+    public static void main(String[] args) {
+        System.out.println(mostFrequent(new String[]{"apple","banana","apple","cherry","banana","apple"}));  // apple
+        System.out.println(mostFrequent(new String[]{"a","b","c"}));  // a
+    }
+}`,
     },
   },
 
@@ -145,6 +158,17 @@ print(max_sum_subarray([2, 3, 4, 1, 5], 2))      # 7
 console.log(maxSumSubarray([2, 1, 5, 1, 3, 2], 3));  // 9
 console.log(maxSumSubarray([2, 3, 4, 1, 5], 2));      // 7
 `,
+      java: `public class Solution {
+    public static int maxSumSubarray(int[] nums, int k) {
+        // Your solution — O(n), not O(n*k)
+        return 0;
+    }
+
+    public static void main(String[] args) {
+        System.out.println(maxSumSubarray(new int[]{2,1,5,1,3,2}, 3));  // 9
+        System.out.println(maxSumSubarray(new int[]{2,3,4,1,5}, 2));    // 7
+    }
+}`,
     },
   },
 
@@ -213,6 +237,18 @@ print(has_pair_sum([1, 3, 5, 7], 6))          # True
 console.log(hasPairSum([1, 2, 4, 6, 8, 9], 10));  // true
 console.log(hasPairSum([1, 2, 4, 6, 8, 9], 3));   // false
 `,
+      java: `public class Solution {
+    public static boolean hasPairSum(int[] nums, int target) {
+        // Use two pointers — O(n) time, O(1) space
+        return false;
+    }
+
+    public static void main(String[] args) {
+        System.out.println(hasPairSum(new int[]{1,2,4,6,8,9}, 10));  // true
+        System.out.println(hasPairSum(new int[]{1,2,4,6,8,9}, 3));   // false
+        System.out.println(hasPairSum(new int[]{1,3,5,7}, 6));        // true
+    }
+}`,
     },
   },
 
@@ -309,6 +345,26 @@ function fromArray(arr: number[]): ListNode | null {
 console.log(middleNode(fromArray([1,2,3,4,5]))?.val);    // 3
 console.log(middleNode(fromArray([1,2,3,4,5,6]))?.val);  // 4
 `,
+      java: `public class Solution {
+    static class ListNode {
+        int val;
+        ListNode next;
+        ListNode(int val) { this.val = val; }
+    }
+
+    public static ListNode middleNode(ListNode head) {
+        // Use fast/slow pointers — one pass, O(1) space
+        return head;
+    }
+
+    public static void main(String[] args) {
+        // Build 1->2->3->4->5
+        ListNode n1 = new ListNode(1);
+        n1.next = new ListNode(2); n1.next.next = new ListNode(3);
+        n1.next.next.next = new ListNode(4); n1.next.next.next.next = new ListNode(5);
+        System.out.println(middleNode(n1).val);  // 3
+    }
+}`,
     },
   },
 
@@ -384,6 +440,20 @@ const grid = [[1,1,1],[1,1,0],[1,0,1]];
 console.log(floodFill(grid, 1, 1, 2));
 // [[2,2,2],[2,2,0],[2,0,1]]
 `,
+      java: `import java.util.Arrays;
+
+public class Solution {
+    public static int[][] floodFill(int[][] grid, int row, int col, int newColor) {
+        // Implement with DFS (recursion)
+        return grid;
+    }
+
+    public static void main(String[] args) {
+        int[][] grid = {{1,1,1},{1,1,0},{1,0,1}};
+        System.out.println(Arrays.deepToString(floodFill(grid, 1, 1, 2)));
+        // [[2, 2, 2], [2, 2, 0], [2, 0, 1]]
+    }
+}`,
     },
   },
 
@@ -465,6 +535,19 @@ def valid_path(n, edges, source, destination):
 print(valid_path(3, [[0,1],[1,2],[2,0]], 0, 2))  # True
 print(valid_path(6, [[0,1],[0,2],[3,5],[5,4],[4,3]], 0, 5))  # False
 `,
+      java: `import java.util.*;
+
+public class Solution {
+    public static boolean validPath(int n, int[][] edges, int source, int destination) {
+        // Your solution here
+        return false;
+    }
+
+    public static void main(String[] args) {
+        System.out.println(validPath(3, new int[][]{{0,1},{1,2},{2,0}}, 0, 2));  // true
+        System.out.println(validPath(6, new int[][]{{0,1},{0,2},{3,5},{5,4},{4,3}}, 0, 5));  // false
+    }
+}`,
     },
   },
 
@@ -546,6 +629,19 @@ console.log(hasCycle(3, [[0,1],[1,2]]));        // false
 print(has_cycle(3, [[0,1],[1,2],[2,0]]))  # True
 print(has_cycle(3, [[0,1],[1,2]]))         # False
 `,
+      java: `import java.util.*;
+
+public class Solution {
+    public static boolean hasCycle(int n, int[][] edges) {
+        // Build directed adjacency list, detect cycle with DFS (3-color)
+        return false;
+    }
+
+    public static void main(String[] args) {
+        System.out.println(hasCycle(3, new int[][]{{0,1},{1,2},{2,0}}));  // true
+        System.out.println(hasCycle(3, new int[][]{{0,1},{1,2}}));         // false
+    }
+}`,
     },
   },
 
@@ -642,6 +738,28 @@ const root = new TreeNode(3, new TreeNode(9), new TreeNode(20, new TreeNode(15),
 console.log(maxDepth(root));  // 3
 console.log(maxDepth(null));  // 0
 `,
+      java: `public class Solution {
+    static class TreeNode {
+        int val; TreeNode left, right;
+        TreeNode(int val) { this.val = val; }
+        TreeNode(int val, TreeNode left, TreeNode right) {
+            this.val = val; this.left = left; this.right = right;
+        }
+    }
+
+    public static int maxDepth(TreeNode root) {
+        // base case + recursive case
+        return 0;
+    }
+
+    public static void main(String[] args) {
+        TreeNode root = new TreeNode(3,
+            new TreeNode(9),
+            new TreeNode(20, new TreeNode(15), new TreeNode(7)));
+        System.out.println(maxDepth(root));  // 3
+        System.out.println(maxDepth(null));  // 0
+    }
+}`,
     },
   },
 
@@ -713,6 +831,19 @@ print(search_insert([1,3,5,6], 0))  # 0
 console.log(searchInsert([1,3,5,6], 5));  // 2
 console.log(searchInsert([1,3,5,6], 2));  // 1
 `,
+      java: `public class Solution {
+    public static int searchInsert(int[] nums, int target) {
+        // Binary search — O(log n)
+        return 0;
+    }
+
+    public static void main(String[] args) {
+        System.out.println(searchInsert(new int[]{1,3,5,6}, 5));  // 2
+        System.out.println(searchInsert(new int[]{1,3,5,6}, 2));  // 1
+        System.out.println(searchInsert(new int[]{1,3,5,6}, 7));  // 4
+        System.out.println(searchInsert(new int[]{1,3,5,6}, 0));  // 0
+    }
+}`,
     },
   },
 
@@ -786,6 +917,20 @@ print(min_time(10, [1, 1, 1, 1]))              # 4
 console.log(minTime(5, [8, 3, 6, 2, 7, 1, 4, 5]));
 console.log(minTime(0, [1, 1, 1, 1]));   // 2
 `,
+      java: `import java.util.Arrays;
+
+public class Solution {
+    public static int minTime(int[] tasks, int delay) {
+        // tasks: durations, delay: when processor B starts (A starts at 0)
+        return 0;
+    }
+
+    public static void main(String[] args) {
+        System.out.println(minTime(new int[]{8,3,6,2,7,1,4,5}, 5));   // find minimum
+        System.out.println(minTime(new int[]{1,1,1,1}, 0));            // 2
+        System.out.println(minTime(new int[]{1,1,1,1}, 10));           // 4
+    }
+}`,
     },
   },
 
@@ -887,6 +1032,19 @@ function climbDP(n: number): number {
 console.log(climbDP(2));  // 2
 console.log(climbDP(5));  // 8
 `,
+      java: `public class Solution {
+    public static int climbDP(int n) {
+        // Bottom-up DP, O(n) time, O(1) space
+        return 0;
+    }
+
+    public static void main(String[] args) {
+        System.out.println(climbDP(2));   // 2
+        System.out.println(climbDP(3));   // 3
+        System.out.println(climbDP(5));   // 8
+        System.out.println(climbDP(10));  // 89
+    }
+}`,
     },
   },
 
@@ -1113,6 +1271,29 @@ console.log(s.getMin());  // 1
 s.pop();
 console.log(s.getMin());  // 3
 `,
+      java: `import java.util.*;
+
+public class Solution {
+    static class MinStack {
+        private Deque<Integer> stack = new ArrayDeque<>();
+        private Deque<Integer> minStack = new ArrayDeque<>();
+
+        public void push(int val) {
+            // Your implementation
+        }
+        public int pop() { return 0; }
+        public int top() { return 0; }
+        public int getMin() { return 0; }  // O(1)
+    }
+
+    public static void main(String[] args) {
+        MinStack s = new MinStack();
+        s.push(5); s.push(3); s.push(7); s.push(1);
+        System.out.println(s.getMin());  // 1
+        s.pop();
+        System.out.println(s.getMin());  // 3
+    }
+}`,
     },
   },
 
@@ -1418,6 +1599,19 @@ console.log(twoSum([3, 2, 4], 6));        // [1, 2]
 print(two_sum([2, 7, 11, 15], 9))  # [0, 1]
 print(two_sum([3, 2, 4], 6))        # [1, 2]
 `,
+      java: `import java.util.*;
+
+public class Solution {
+    public static int[] twoSum(int[] nums, int target) {
+        // Your solution here
+        return new int[]{};
+    }
+
+    public static void main(String[] args) {
+        System.out.println(Arrays.toString(twoSum(new int[]{2,7,11,15}, 9)));  // [0, 1]
+        System.out.println(Arrays.toString(twoSum(new int[]{3,2,4}, 6)));       // [1, 2]
+    }
+}`,
     },
   },
 
@@ -1550,6 +1744,38 @@ data = {
 }
 print(flatten(data))
 `,
+      java: `import java.util.*;
+
+public class Solution {
+    public static Map<String, String> flatten(Map<String, Object> obj) {
+        // Recursively flatten nested map to dot-notation keys
+        return new HashMap<>();
+    }
+
+    @SuppressWarnings("unchecked")
+    private static void helper(Map<String, Object> obj, String prefix, Map<String, String> result) {
+        for (Map.Entry<String, Object> entry : obj.entrySet()) {
+            String key = prefix.isEmpty() ? entry.getKey() : prefix + "." + entry.getKey();
+            if (entry.getValue() instanceof Map) {
+                helper((Map<String, Object>) entry.getValue(), key, result);
+            } else {
+                result.put(key, String.valueOf(entry.getValue()));
+            }
+        }
+    }
+
+    public static void main(String[] args) {
+        Map<String, Object> inner = new HashMap<>();
+        inner.put("city", "Atlanta");
+        Map<String, Object> user = new HashMap<>();
+        user.put("name", "Alice");
+        user.put("address", inner);
+        Map<String, Object> input = new HashMap<>();
+        input.put("user", user);
+        input.put("active", true);
+        System.out.println(flatten(input));  // {user.name=Alice, user.address.city=Atlanta, active=true}
+    }
+}`,
     },
   },
 
@@ -1770,6 +1996,38 @@ cache.put(3, 3)       # evicts 2
 print(cache.get(2))   # -1
 print(cache.get(3))   # 3
 `,
+      java: `import java.util.*;
+
+public class Solution {
+    static class LRUCache {
+        private final int capacity;
+        private final Map<Integer, Integer> map;
+
+        public LRUCache(int capacity) {
+            this.capacity = capacity;
+            this.map = new LinkedHashMap<>();
+        }
+
+        public int get(int key) {
+            // Your implementation
+            return -1;
+        }
+
+        public void put(int key, int val) {
+            // Your implementation
+        }
+    }
+
+    public static void main(String[] args) {
+        LRUCache cache = new LRUCache(2);
+        cache.put(1, 1);
+        cache.put(2, 2);
+        System.out.println(cache.get(1));   // 1
+        cache.put(3, 3);
+        System.out.println(cache.get(2));   // -1
+        System.out.println(cache.get(3));   // 3
+    }
+}`,
     },
   },
 
@@ -1837,6 +2095,19 @@ def min_makespan(delays, tasks):
 print(min_makespan([1, 10], [8, 7, 6, 5, 4, 3, 2, 1]))  # 24
 print(min_makespan([0, 0], [3, 3, 3, 3, 3, 3, 3, 3]))    # 12
 `,
+      java: `import java.util.*;
+
+public class Solution {
+    public static int minMakespan(int[] delays, int[] tasks) {
+        // delays: length n, tasks: length 4n
+        return 0;
+    }
+
+    public static void main(String[] args) {
+        System.out.println(minMakespan(new int[]{1,10}, new int[]{8,7,6,5,4,3,2,1}));  // 24
+        System.out.println(minMakespan(new int[]{0,0},  new int[]{3,3,3,3,3,3,3,3}));  // 12
+    }
+}`,
     },
   },
 
@@ -2399,6 +2670,36 @@ def to_array(head):
 
 print(to_array(reverse_list(from_array([1,2,3,4,5]))))  # [5,4,3,2,1]
 `,
+      java: `import java.util.*;
+
+public class Solution {
+    static class ListNode {
+        int val;
+        ListNode next;
+        ListNode(int val) { this.val = val; }
+    }
+
+    public static ListNode reverseList(ListNode head) {
+        // Iterative solution
+        return null;
+    }
+
+    public static ListNode reverseListRecursive(ListNode head) {
+        // Recursive solution
+        return null;
+    }
+
+    public static void main(String[] args) {
+        // Build 1->2->3->4->5
+        ListNode n = new ListNode(1);
+        n.next = new ListNode(2); n.next.next = new ListNode(3);
+        n.next.next.next = new ListNode(4); n.next.next.next.next = new ListNode(5);
+        ListNode rev = reverseList(n);
+        List<Integer> res = new ArrayList<>();
+        while (rev != null) { res.add(rev.val); rev = rev.next; }
+        System.out.println(res);  // [5, 4, 3, 2, 1]
+    }
+}`,
     },
   },
 
@@ -2453,6 +2754,18 @@ print(search([-1,0,3,5,9,12], 9))  # 4
 print(search([-1,0,3,5,9,12], 2))  # -1
 print(search([5], 5))               # 0
 `,
+      java: `public class Solution {
+    public static int search(int[] nums, int target) {
+        // Binary search — O(log n)
+        return -1;
+    }
+
+    public static void main(String[] args) {
+        System.out.println(search(new int[]{-1,0,3,5,9,12}, 9));  // 4
+        System.out.println(search(new int[]{-1,0,3,5,9,12}, 2));  // -1
+        System.out.println(search(new int[]{5}, 5));               // 0
+    }
+}`,
     },
   },
 
@@ -2509,6 +2822,19 @@ print(length_of_longest_substring("abcabcbb"))  # 3
 print(length_of_longest_substring("bbbbb"))     # 1
 print(length_of_longest_substring("pwwkew"))    # 3
 `,
+      java: `public class Solution {
+    public static int lengthOfLongestSubstring(String s) {
+        // Sliding window with a hash map
+        return 0;
+    }
+
+    public static void main(String[] args) {
+        System.out.println(lengthOfLongestSubstring("abcabcbb"));  // 3
+        System.out.println(lengthOfLongestSubstring("bbbbb"));     // 1
+        System.out.println(lengthOfLongestSubstring("pwwkew"));    // 3
+        System.out.println(lengthOfLongestSubstring(""));           // 0
+    }
+}`,
     },
   },
 
@@ -2597,6 +2923,22 @@ print(num_islands([
     ["0","0","0","1","1"]
 ]))  # 3
 `,
+      java: `public class Solution {
+    public static int numIslands(char[][] grid) {
+        // DFS or BFS on char[][] grid
+        return 0;
+    }
+
+    public static void main(String[] args) {
+        char[][] grid = {
+            {'1','1','1','1','0'},
+            {'1','1','0','1','0'},
+            {'1','1','0','0','0'},
+            {'0','0','0','0','0'}
+        };
+        System.out.println(numIslands(grid));  // 1
+    }
+}`,
     },
   },
 
@@ -2686,6 +3028,28 @@ p2, q2 = root.left, root.left.right     # nodes 2 and 4
 print(lowest_common_ancestor(root, p1, q1).val)  # 6
 print(lowest_common_ancestor(root, p2, q2).val)  # 2
 `,
+      java: `public class Solution {
+    static class TreeNode {
+        int val; TreeNode left, right;
+        TreeNode(int val) { this.val = val; }
+        TreeNode(int val, TreeNode left, TreeNode right) {
+            this.val = val; this.left = left; this.right = right;
+        }
+    }
+
+    public static TreeNode lowestCommonAncestor(TreeNode root, int p, int q) {
+        // Use the BST property
+        return null;
+    }
+
+    public static void main(String[] args) {
+        TreeNode root = new TreeNode(6,
+            new TreeNode(2, new TreeNode(0), new TreeNode(4, new TreeNode(3), new TreeNode(5))),
+            new TreeNode(8, new TreeNode(7), new TreeNode(9)));
+        System.out.println(lowestCommonAncestor(root, 2, 8).val);  // 6
+        System.out.println(lowestCommonAncestor(root, 2, 4).val);  // 2
+    }
+}`,
     },
   },
 
@@ -2740,6 +3104,19 @@ def top_k_frequent(nums, k):
 print(top_k_frequent([1,1,1,2,2,3], 2))  # [1, 2]
 print(top_k_frequent([1], 1))             # [1]
 `,
+      java: `import java.util.*;
+
+public class Solution {
+    public static int[] topKFrequent(int[] nums, int k) {
+        // Your solution — must be better than O(n log n)
+        return new int[]{};
+    }
+
+    public static void main(String[] args) {
+        System.out.println(Arrays.toString(topKFrequent(new int[]{1,1,1,2,2,3}, 2)));  // [1, 2]
+        System.out.println(Arrays.toString(topKFrequent(new int[]{1}, 1)));             // [1]
+    }
+}`,
     },
   },
 
@@ -2790,6 +3167,19 @@ console.log(productExceptSelf([-1,1,0,-3,3]));    // [0,0,9,0,0]
 print(product_except_self([1,2,3,4]))       # [24,12,8,6]
 print(product_except_self([-1,1,0,-3,3]))   # [0,0,9,0,0]
 `,
+      java: `import java.util.*;
+
+public class Solution {
+    public static int[] productExceptSelf(int[] nums) {
+        // O(n) time, O(1) extra space (output array doesn't count)
+        return new int[]{};
+    }
+
+    public static void main(String[] args) {
+        System.out.println(Arrays.toString(productExceptSelf(new int[]{1,2,3,4})));       // [24, 12, 8, 6]
+        System.out.println(Arrays.toString(productExceptSelf(new int[]{-1,1,0,-3,3})));   // [0, 0, 9, 0, 0]
+    }
+}`,
     },
   },
 
@@ -2843,6 +3233,21 @@ def group_anagrams(strs):
 print(group_anagrams(["eat","tea","tan","ate","nat","bat"]))
 # [["bat"],["nat","tan"],["ate","eat","tea"]] (order may vary)
 `,
+      java: `import java.util.*;
+
+public class Solution {
+    public static List<List<String>> groupAnagrams(String[] strs) {
+        // Your solution
+        return new ArrayList<>();
+    }
+
+    public static void main(String[] args) {
+        System.out.println(groupAnagrams(new String[]{"eat","tea","tan","ate","nat","bat"}));
+        // [[bat], [nat, tan], [ate, eat, tea]] (order may vary)
+        System.out.println(groupAnagrams(new String[]{""}));   // [[]]
+        System.out.println(groupAnagrams(new String[]{"a"}));  // [[a]]
+    }
+}`,
     },
   },
 
@@ -3065,6 +3470,20 @@ print(min_meeting_rooms([[0,30],[5,10],[15,20]]))  # 2
 print(min_meeting_rooms([[7,10],[2,4]]))            # 1
 print(min_meeting_rooms([[1,5],[2,6],[3,7]]))       # 3
 `,
+      java: `import java.util.*;
+
+public class Solution {
+    public static int minMeetingRooms(int[][] intervals) {
+        // Sort by start time, use min-heap of end times
+        return 0;
+    }
+
+    public static void main(String[] args) {
+        System.out.println(minMeetingRooms(new int[][]{{0,30},{5,10},{15,20}}));  // 2
+        System.out.println(minMeetingRooms(new int[][]{{7,10},{2,4}}));           // 1
+        System.out.println(minMeetingRooms(new int[][]{{1,5},{2,6},{3,7}}));      // 3
+    }
+}`,
     },
   },
 
@@ -3129,6 +3548,17 @@ def least_interval(tasks, n):
 print(least_interval(["A","A","A","B","B","B"], 2))  # 8
 print(least_interval(["A","A","A","B","B","B"], 0))  # 6
 `,
+      java: `public class Solution {
+    public static int leastInterval(char[] tasks, int n) {
+        // Your solution here
+        return 0;
+    }
+
+    public static void main(String[] args) {
+        System.out.println(leastInterval(new char[]{'A','A','A','B','B','B'}, 2));  // 8
+        System.out.println(leastInterval(new char[]{'A','A','A','B','B','B'}, 0));  // 6
+    }
+}`,
     },
   },
 
@@ -3194,6 +3624,17 @@ print(can_jump([2,3,1,1,4]))  # True
 print(can_jump([3,2,1,0,4]))  # False
 print(jump([2,3,1,1,4]))      # 2
 `,
+      java: `public class Solution {
+    public static boolean canJump(int[] nums) {
+        // Greedy — track farthest reachable index
+        return false;
+    }
+
+    public static void main(String[] args) {
+        System.out.println(canJump(new int[]{2,3,1,1,4}));  // true
+        System.out.println(canJump(new int[]{3,2,1,0,4}));  // false
+    }
+}`,
     },
   },
 
@@ -3249,6 +3690,20 @@ print(num_rescue_boats([1,2], 3))        # 1
 print(num_rescue_boats([3,2,2,1], 3))    # 3
 print(num_rescue_boats([3,5,3,4], 5))    # 4
 `,
+      java: `import java.util.Arrays;
+
+public class Solution {
+    public static int numRescueBoats(int[] people, int limit) {
+        // Sort, then two pointers
+        return 0;
+    }
+
+    public static void main(String[] args) {
+        System.out.println(numRescueBoats(new int[]{1,2}, 3));       // 1
+        System.out.println(numRescueBoats(new int[]{3,2,2,1}, 3));   // 3
+        System.out.println(numRescueBoats(new int[]{3,5,3,4}, 5));   // 4
+    }
+}`,
     },
   },
 
@@ -3376,6 +3831,20 @@ def job_scheduling(jobs):
 print(job_scheduling([[1,3,50],[2,5,20],[4,6,70],[6,9,60]]))  # 180
 print(job_scheduling([[1,2,50],[3,5,20],[6,9,100]]))           # 170
 `,
+      java: `import java.util.*;
+
+public class Solution {
+    public static int jobScheduling(int[][] jobs) {
+        // Sort by end time, DP with binary search for last non-overlapping job
+        // Each job is [start, end, profit]
+        return 0;
+    }
+
+    public static void main(String[] args) {
+        System.out.println(jobScheduling(new int[][]{{1,3,50},{2,5,20},{4,6,70},{6,9,60}}));  // 180
+        System.out.println(jobScheduling(new int[][]{{1,2,50},{3,5,20},{6,9,100}}));          // 170
+    }
+}`,
     },
   },
 
@@ -3742,6 +4211,19 @@ console.log(JSON.stringify(merge([[1,4],[4,5]])));                // [[1,5]]`,
     pass
 
 print(merge([[1,3],[2,6],[8,10],[15,18]]))  # [[1,6],[8,10],[15,18]]`,
+      java: `import java.util.*;
+
+public class Solution {
+    public static int[][] merge(int[][] intervals) {
+        // Sort by start time, then merge overlapping intervals
+        return new int[][]{};
+    }
+
+    public static void main(String[] args) {
+        System.out.println(Arrays.deepToString(merge(new int[][]{{1,3},{2,6},{8,10},{15,18}})));  // [[1,6],[8,10],[15,18]]
+        System.out.println(Arrays.deepToString(merge(new int[][]{{1,4},{4,5}})));                  // [[1,5]]
+    }
+}`,
     },
     tags: ['merge-intervals', 'sorting', 'arrays'],
   },
@@ -3791,6 +4273,19 @@ console.log(JSON.stringify(insert([], [5,7])));             // [[5,7]]`,
 
 print(insert([[1,3],[6,9]], [2,5]))   # [[1,5],[6,9]]
 print(insert([], [5,7]))             # [[5,7]]`,
+      java: `import java.util.*;
+
+public class Solution {
+    public static int[][] insert(int[][] intervals, int[] newInterval) {
+        // Insert and merge the new interval
+        return new int[][]{};
+    }
+
+    public static void main(String[] args) {
+        System.out.println(Arrays.deepToString(insert(new int[][]{{1,3},{6,9}}, new int[]{2,5})));  // [[1,5],[6,9]]
+        System.out.println(Arrays.deepToString(insert(new int[][]{}, new int[]{5,7})));             // [[5,7]]
+    }
+}`,
     },
     tags: ['merge-intervals', 'arrays'],
   },
@@ -3854,6 +4349,18 @@ console.log(missingNumber([9,6,4,2,3,5,7,0,1])); // 8`,
 
 print(missing_number([3,0,1]))   # 2
 print(missing_number([9,6,4,2,3,5,7,0,1]))  # 8`,
+      java: `public class Solution {
+    public static int missingNumber(int[] nums) {
+        // Cyclic sort or math formula
+        return 0;
+    }
+
+    public static void main(String[] args) {
+        System.out.println(missingNumber(new int[]{3,0,1}));              // 2
+        System.out.println(missingNumber(new int[]{9,6,4,2,3,5,7,0,1})); // 8
+        System.out.println(missingNumber(new int[]{0,1}));                // 2
+    }
+}`,
     },
     tags: ['cyclic-sort', 'arrays', 'in-place'],
   },
@@ -3931,6 +4438,19 @@ def can_finish(num_courses, prerequisites):
 
 print(can_finish(2, [[1,0]]))        # True
 print(can_finish(2, [[1,0],[0,1]]))  # False`,
+      java: `import java.util.*;
+
+public class Solution {
+    public static boolean canFinish(int numCourses, int[][] prerequisites) {
+        // Kahn's BFS topological sort — return true if no cycle
+        return false;
+    }
+
+    public static void main(String[] args) {
+        System.out.println(canFinish(2, new int[][]{{1,0}}));           // true
+        System.out.println(canFinish(2, new int[][]{{1,0},{0,1}}));     // false
+    }
+}`,
     },
     tags: ['topological-sort', 'graph', 'BFS', 'cycle-detection', 'directed-graph'],
   },
@@ -4012,6 +4532,19 @@ console.log(dailyTemperatures([73,74,75,71,69,72,76,73]));
 
 print(daily_temperatures([73,74,75,71,69,72,76,73]))
 # [1, 1, 4, 2, 1, 1, 0, 0]`,
+      java: `import java.util.*;
+
+public class Solution {
+    public static int[] dailyTemperatures(int[] temps) {
+        // Monotonic decreasing stack of indices
+        return new int[temps.length];
+    }
+
+    public static void main(String[] args) {
+        System.out.println(Arrays.toString(dailyTemperatures(new int[]{73,74,75,71,69,72,76,73})));
+        // [1, 1, 4, 2, 1, 1, 0, 0]
+    }
+}`,
     },
     tags: ['monotonic-stack', 'stack', 'arrays'],
   },
@@ -4069,6 +4602,19 @@ console.log(largestRectangleArea([2,4]));          // 4`,
     pass
 
 print(largest_rectangle_area([2,1,5,6,2,3]))  # 10`,
+      java: `import java.util.*;
+
+public class Solution {
+    public static int largestRectangleArea(int[] heights) {
+        // Monotonic increasing stack of indices
+        return 0;
+    }
+
+    public static void main(String[] args) {
+        System.out.println(largestRectangleArea(new int[]{2,1,5,6,2,3}));  // 10
+        System.out.println(largestRectangleArea(new int[]{2,4}));           // 4
+    }
+}`,
     },
     tags: ['monotonic-stack', 'stack', 'hard', 'histogram'],
   },
@@ -4150,6 +4696,17 @@ console.log(findCircleNum([[1,0,0],[0,1,0],[0,0,1]])); // 3`,
 
 print(find_circle_num([[1,1,0],[1,1,0],[0,0,1]]))  # 2
 print(find_circle_num([[1,0,0],[0,1,0],[0,0,1]]))  # 3`,
+      java: `public class Solution {
+    public static int findCircleNum(int[][] isConnected) {
+        // Union-Find with path compression
+        return 0;
+    }
+
+    public static void main(String[] args) {
+        System.out.println(findCircleNum(new int[][]{{1,1,0},{1,1,0},{0,0,1}}));  // 2
+        System.out.println(findCircleNum(new int[][]{{1,0,0},{0,1,0},{0,0,1}}));  // 3
+    }
+}`,
     },
     tags: ['union-find', 'disjoint-set', 'graph', 'connected-components'],
   },
@@ -4226,6 +4783,29 @@ console.log(JSON.stringify(subsets([0])));     // [[], [0]]`,
 
 print(subsets([1,2,3]))  # [[], [1], [1,2], [1,2,3], [1,3], [2], [2,3], [3]]
 print(subsets([0]))      # [[], [0]]`,
+      java: `import java.util.*;
+
+public class Solution {
+    public static List<List<Integer>> subsets(int[] nums) {
+        List<List<Integer>> result = new ArrayList<>();
+        backtrack(nums, 0, new ArrayList<>(), result);
+        return result;
+    }
+
+    private static void backtrack(int[] nums, int start, List<Integer> current, List<List<Integer>> result) {
+        result.add(new ArrayList<>(current));
+        for (int i = start; i < nums.length; i++) {
+            current.add(nums[i]);
+            backtrack(nums, i + 1, current, result);
+            current.remove(current.size() - 1);
+        }
+    }
+
+    public static void main(String[] args) {
+        System.out.println(subsets(new int[]{1,2,3}));  // [[], [1], [1,2], ...]
+        System.out.println(subsets(new int[]{0}));       // [[], [0]]
+    }
+}`,
     },
     tags: ['backtracking', 'recursion', 'subsets', 'decision-tree'],
   },
@@ -4306,6 +4886,34 @@ console.log(searchRotated([4,5,6,7,0,1,2], 3)); // -1`,
 
 print(search_rotated([4,5,6,7,0,1,2], 0))  # 4
 print(search_rotated([4,5,6,7,0,1,2], 3))  # -1`,
+      java: `public class Solution {
+    public static int searchRotated(int[] nums, int target) {
+        int lo = 0, hi = nums.length - 1;
+
+        while (lo <= hi) {
+            int mid = lo + (hi - lo) / 2;
+            if (nums[mid] == target) return mid;
+
+            // Determine which half is sorted
+            if (nums[lo] <= nums[mid]) {
+                // Left half is sorted
+                if (nums[lo] <= target && target < nums[mid]) hi = mid - 1;
+                else lo = mid + 1;
+            } else {
+                // Right half is sorted
+                if (nums[mid] < target && target <= nums[hi]) lo = mid + 1;
+                else hi = mid - 1;
+            }
+        }
+
+        return -1;
+    }
+
+    public static void main(String[] args) {
+        System.out.println(searchRotated(new int[]{4,5,6,7,0,1,2}, 0));  // 4
+        System.out.println(searchRotated(new int[]{4,5,6,7,0,1,2], 3));  // -1
+    }
+}`,
     },
     tags: ['binary-search', 'rotated-array', 'modified-binary-search'],
   },
@@ -4799,6 +5407,41 @@ console.log(hasCycleUndirected(4, [[0,1],[1,2],[2,3]])); // false
 print(has_cycle_undirected(3, [[0,1],[1,2],[2,0]]))  # True
 print(has_cycle_undirected(4, [[0,1],[1,2],[2,3]]))  # False
 `,
+      java: `import java.util.*;
+
+public class Solution {
+    public static boolean hasCycleUndirected(int n, int[][] edges) {
+        List<List<Integer>> adj = new ArrayList<>();
+        for (int i = 0; i < n; i++) adj.add(new ArrayList<>());
+        for (int[] e : edges) {
+            adj.get(e[0]).add(e[1]);
+            adj.get(e[1]).add(e[0]);
+        }
+        boolean[] visited = new boolean[n];
+
+        for (int i = 0; i < n; i++) {
+            if (!visited[i] && dfs(adj, visited, i, -1)) return true;
+        }
+        return false;
+    }
+
+    private static boolean dfs(List<List<Integer>> adj, boolean[] visited, int node, int parent) {
+        visited[node] = true;
+        for (int nei : adj.get(node)) {
+            if (!visited[nei]) {
+                if (dfs(adj, visited, nei, node)) return true;
+            } else if (nei != parent) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static void main(String[] args) {
+        System.out.println(hasCycleUndirected(3, new int[][]{{0,1},{1,2},{2,0}}));  // true
+        System.out.println(hasCycleUndirected(4, new int[][]{{0,1},{1,2},{2,3}}));  // false
+    }
+}`,
     },
   },
 
@@ -4876,6 +5519,44 @@ console.log(countComponents(5, [[0,1],[1,2],[2,3],[3,4]])); // 1
 print(count_components(5, [[0,1],[1,2],[3,4]]))         # 2
 print(count_components(5, [[0,1],[1,2],[2,3],[3,4]]))   # 1
 `,
+      java: `import java.util.*;
+
+public class Solution {
+    static int[] parent, rank;
+
+    public static int countComponents(int n, int[][] edges) {
+        parent = new int[n];
+        rank = new int[n];
+        for (int i = 0; i < n; i++) parent[i] = i;
+        int components = n;
+
+        for (int[] e : edges) {
+            int rootA = find(e[0]);
+            int rootB = find(e[1]);
+            if (rootA != rootB) {
+                union(rootA, rootB);
+                components--;
+            }
+        }
+        return components;
+    }
+
+    private static int find(int x) {
+        if (parent[x] != x) parent[x] = find(parent[x]);
+        return parent[x];
+    }
+
+    private static void union(int x, int y) {
+        if (rank[x] < rank[y]) parent[x] = y;
+        else if (rank[x] > rank[y]) parent[y] = x;
+        else { parent[y] = x; rank[x]++; }
+    }
+
+    public static void main(String[] args) {
+        System.out.println(countComponents(5, new int[][]{{0,1},{1,2},{3,4}}));       // 2
+        System.out.println(countComponents(5, new int[][]{{0,1},{1,2},{2,3},{3,4}})); // 1
+    }
+}`,
     },
   },
 
@@ -4930,6 +5611,36 @@ console.log(findRedundantConnection([[1,2],[2,3],[3,4],[1,4],[1,5]])); // [1,4]
 print(find_redundant_connection([[1,2],[1,3],[2,3]]))              # [2,3]
 print(find_redundant_connection([[1,2],[2,3],[3,4],[1,4],[1,5]]))  # [1,4]
 `,
+      java: `import java.util.Arrays;
+
+public class Solution {
+    static int[] parent;
+
+    public static int[] findRedundantConnection(int[][] edges) {
+        parent = new int[edges.length + 1];
+        for (int i = 0; i < parent.length; i++) parent[i] = i;
+
+        for (int[] e : edges) {
+            if (find(e[0]) == find(e[1])) return e;
+            union(e[0], e[1]);
+        }
+        return new int[]{};
+    }
+
+    private static int find(int x) {
+        if (parent[x] != x) parent[x] = find(parent[x]);
+        return parent[x];
+    }
+
+    private static void union(int x, int y) {
+        parent[find(x)] = find(y);
+    }
+
+    public static void main(String[] args) {
+        System.out.println(Arrays.toString(findRedundantConnection(new int[][]{{1,2},{1,3},{2,3}})));             // [2,3]
+        System.out.println(Arrays.toString(findRedundantConnection(new int[][]{{1,2},{2,3},{3,4},{1,4},{1,5}}))); // [1,4]
+    }
+}`,
     },
   },
 
@@ -5084,6 +5795,55 @@ print(trie.search('apple'))     # True
 print(trie.search('app'))       # False
 print(trie.starts_with('app'))  # True
 `,
+      java: `public class Solution {
+    static class Trie {
+        private TrieNode root;
+
+        static class TrieNode {
+            java.util.Map<Character, TrieNode> children = new java.util.HashMap<>();
+            boolean isEnd = false;
+        }
+
+        public Trie() {
+            root = new TrieNode();
+        }
+
+        public void insert(String word) {
+            TrieNode node = root;
+            for (char c : word.toCharArray()) {
+                node.children.putIfAbsent(c, new TrieNode());
+                node = node.children.get(c);
+            }
+            node.isEnd = true;
+        }
+
+        public boolean search(String word) {
+            TrieNode node = root;
+            for (char c : word.toCharArray()) {
+                if (!node.children.containsKey(c)) return false;
+                node = node.children.get(c);
+            }
+            return node.isEnd;
+        }
+
+        public boolean startsWith(String prefix) {
+            TrieNode node = root;
+            for (char c : prefix.toCharArray()) {
+                if (!node.children.containsKey(c)) return false;
+                node = node.children.get(c);
+            }
+            return true;
+        }
+    }
+
+    public static void main(String[] args) {
+        Trie trie = new Trie();
+        trie.insert("apple");
+        System.out.println(trie.search("apple"));    // true
+        System.out.println(trie.search("app"));      // false
+        System.out.println(trie.startsWith("app"));  // true
+    }
+}`,
     },
   },
 
@@ -5168,6 +5928,54 @@ print(find_words(
     ['oath','pea','eat','rain']
 ))  # ['eat','oath']
 `,
+      java: `import java.util.*;
+
+public class Solution {
+    static class TrieNode {
+        Map<Character, TrieNode> children = new HashMap<>();
+        String word = null;
+    }
+
+    public static List<String> findWords(char[][] board, String[] words) {
+        TrieNode root = new TrieNode();
+        for (String w : words) {
+            TrieNode node = root;
+            for (char c : w.toCharArray()) {
+                node.children.putIfAbsent(c, new TrieNode());
+                node = node.children.get(c);
+            }
+            node.word = w;
+        }
+
+        List<String> result = new ArrayList<>();
+        int m = board.length, n = board[0].length;
+        for (int r = 0; r < m; r++) {
+            for (int c = 0; c < n; c++) {
+                dfs(board, r, c, root, result);
+            }
+        }
+        return result;
+    }
+
+    private static void dfs(char[][] board, int r, int c, TrieNode node, List<String> result) {
+        if (r < 0 || r >= board.length || c < 0 || c >= board[0].length) return;
+        char ch = board[r][c];
+        if (ch == '#' || !node.children.containsKey(ch)) return;
+        TrieNode next = node.children.get(ch);
+        if (next.word != null) { result.add(next.word); next.word = null; }
+        board[r][c] = '#';
+        dfs(board, r+1, c, next, result);
+        dfs(board, r-1, c, next, result);
+        dfs(board, r, c+1, next, result);
+        dfs(board, r, c-1, next, result);
+        board[r][c] = ch;
+    }
+
+    public static void main(String[] args) {
+        char[][] board = {{'o','a','a','n'},{'e','t','a','e'},{'i','h','k','r'},{'i','f','l','v'}};
+        System.out.println(findWords(board, new String[]{"oath","pea","eat","rain"}));  // [eat, oath]
+    }
+}`,
     },
   },
 
@@ -5235,6 +6043,29 @@ console.log(JSON.stringify(subsets([1,2,3]))); // 8 subsets
 print(subsets([1,2,3]))  # 8 subsets
 print(subsets([0]))      # [[], [0]]
 `,
+      java: `import java.util.*;
+
+public class Solution {
+    public static List<List<Integer>> subsets(int[] nums) {
+        List<List<Integer>> result = new ArrayList<>();
+        backtrack(nums, 0, new ArrayList<>(), result);
+        return result;
+    }
+
+    private static void backtrack(int[] nums, int start, List<Integer> current, List<List<Integer>> result) {
+        result.add(new ArrayList<>(current));
+        for (int i = start; i < nums.length; i++) {
+            current.add(nums[i]);
+            backtrack(nums, i + 1, current, result);
+            current.remove(current.size() - 1);
+        }
+    }
+
+    public static void main(String[] args) {
+        System.out.println(subsets(new int[]{1,2,3}));  // 8 subsets
+        System.out.println(subsets(new int[]{0}));       // [[], [0]]
+    }
+}`,
     },
   },
 
@@ -5298,6 +6129,31 @@ console.log(JSON.stringify(combinationSum([2,3,6,7], 7))); // [[2,2,3],[7]]
 print(combination_sum([2,3,6,7], 7))  # [[2,2,3],[7]]
 print(combination_sum([2,3,5], 8))    # [[2,2,2,2],[2,3,3],[3,5]]
 `,
+      java: `import java.util.*;
+
+public class Solution {
+    public static List<List<Integer>> combinationSum(int[] candidates, int target) {
+        List<List<Integer>> result = new ArrayList<>();
+        Arrays.sort(candidates);
+        backtrack(candidates, target, 0, new ArrayList<>(), result);
+        return result;
+    }
+
+    private static void backtrack(int[] candidates, int remaining, int start, List<Integer> current, List<List<Integer>> result) {
+        if (remaining == 0) { result.add(new ArrayList<>(current)); return; }
+        for (int i = start; i < candidates.length; i++) {
+            if (candidates[i] > remaining) break;
+            current.add(candidates[i]);
+            backtrack(candidates, remaining - candidates[i], i, current, result);
+            current.remove(current.size() - 1);
+        }
+    }
+
+    public static void main(String[] args) {
+        System.out.println(combinationSum(new int[]{2,3,6,7}, 7));  // [[2,2,3],[7]]
+        System.out.println(combinationSum(new int[]{2,3,5}, 8));    // [[2,2,2,2],[2,3,3],[3,5]]
+    }
+}`,
     },
   },
 
@@ -5365,6 +6221,40 @@ print(find_order(2, [[1,0]]))          # [0,1]
 print(find_order(2, [[1,0],[0,1]]))    # []
 print(find_order(4, [[1,0],[2,1],[3,2]]))  # [0,1,2,3]
 `,
+      java: `import java.util.*;
+
+public class Solution {
+    public static int[] findOrder(int numCourses, int[][] prerequisites) {
+        int[] inDegree = new int[numCourses];
+        List<List<Integer>> adj = new ArrayList<>();
+        for (int i = 0; i < numCourses; i++) adj.add(new ArrayList<>());
+
+        for (int[] pre : prerequisites) {
+            adj.get(pre[1]).add(pre[0]);
+            inDegree[pre[0]]++;
+        }
+
+        Queue<Integer> queue = new LinkedList<>();
+        for (int i = 0; i < numCourses; i++) if (inDegree[i] == 0) queue.offer(i);
+
+        int[] order = new int[numCourses];
+        int idx = 0;
+        while (!queue.isEmpty()) {
+            int course = queue.poll();
+            order[idx++] = course;
+            for (int next : adj.get(course)) {
+                if (--inDegree[next] == 0) queue.offer(next);
+            }
+        }
+        return idx == numCourses ? order : new int[]{};
+    }
+
+    public static void main(String[] args) {
+        System.out.println(Arrays.toString(findOrder(2, new int[][]{{1,0}})));         // [0,1]
+        System.out.println(Arrays.toString(findOrder(2, new int[][]{{1,0},{0,1}})));   // []
+        System.out.println(Arrays.toString(findOrder(4, new int[][]{{1,0},{2,1},{3,2}})));  // [0,1,2,3]
+    }
+}`,
     },
   },
 
@@ -5429,6 +6319,50 @@ def alien_order(words):
 print(alien_order(['wrt','wrf','er','ett','rftt']))  # 'wertf'
 print(alien_order(['z','x','z']))                    # ''
 `,
+      java: `import java.util.*;
+
+public class Solution {
+    public static String alienOrder(String[] words) {
+        Map<Character, Set<Character>> adj = new LinkedHashMap<>();
+        Map<Character, Integer> inDegree = new LinkedHashMap<>();
+
+        for (String w : words) for (char c : w.toCharArray()) inDegree.putIfAbsent(c, 0);
+        for (String w : words) for (char c : w.toCharArray()) adj.putIfAbsent(c, new HashSet<>());
+
+        for (int i = 0; i < words.length - 1; i++) {
+            String w1 = words[i], w2 = words[i+1];
+            if (w1.length() > w2.length() && w1.startsWith(w2)) return "";
+            for (int j = 0; j < Math.min(w1.length(), w2.length()); j++) {
+                if (w1.charAt(j) != w2.charAt(j)) {
+                    if (!adj.get(w1.charAt(j)).contains(w2.charAt(j))) {
+                        adj.get(w1.charAt(j)).add(w2.charAt(j));
+                        inDegree.merge(w2.charAt(j), 1, Integer::sum);
+                    }
+                    break;
+                }
+            }
+        }
+
+        Queue<Character> queue = new LinkedList<>();
+        for (char c : inDegree.keySet()) if (inDegree.get(c) == 0) queue.offer(c);
+
+        StringBuilder sb = new StringBuilder();
+        while (!queue.isEmpty()) {
+            char c = queue.poll();
+            sb.append(c);
+            for (char nei : adj.get(c)) {
+                inDegree.merge(nei, -1, Integer::sum);
+                if (inDegree.get(nei) == 0) queue.offer(nei);
+            }
+        }
+        return sb.length() == inDegree.size() ? sb.toString() : "";
+    }
+
+    public static void main(String[] args) {
+        System.out.println(alienOrder(new String[]{"wrt","wrf","er","ett","rftt"}));  // wertf
+        System.out.println(alienOrder(new String[]{"z","x","z"}));                   // ''
+    }
+}`,
     },
   },
 
@@ -5492,6 +6426,21 @@ print(missing_number([3,0,1]))              # 2
 print(missing_number([9,6,4,2,3,5,7,0,1])) # 8
 print(missing_number([0,1]))               # 2
 `,
+      java: `public class Solution {
+    public static int missingNumber(int[] nums) {
+        int n = nums.length;
+        int expected = n * (n + 1) / 2;
+        int actual = 0;
+        for (int x : nums) actual += x;
+        return expected - actual;
+    }
+
+    public static void main(String[] args) {
+        System.out.println(missingNumber(new int[]{3,0,1}));              // 2
+        System.out.println(missingNumber(new int[]{9,6,4,2,3,5,7,0,1})); // 8
+        System.out.println(missingNumber(new int[]{0,1}));                // 2
+    }
+}`,
     },
   },
 
@@ -5554,6 +6503,31 @@ console.log(findDuplicates([1,1,2]));            // [1]
 print(find_duplicates([4,3,2,7,8,2,3,1]))  # [2,3]
 print(find_duplicates([1,1,2]))            # [1]
 `,
+      java: `import java.util.*;
+
+public class Solution {
+    public static List<Integer> findDuplicates(int[] nums) {
+        List<Integer> result = new ArrayList<>();
+        int i = 0;
+        while (i < nums.length) {
+            int correct = nums[i] - 1;
+            if (nums[i] != nums[correct]) {
+                int tmp = nums[i]; nums[i] = nums[correct]; nums[correct] = tmp;
+            } else {
+                i++;
+            }
+        }
+        for (int j = 0; j < nums.length; j++) {
+            if (nums[j] != j + 1) result.add(nums[j]);
+        }
+        return result;
+    }
+
+    public static void main(String[] args) {
+        System.out.println(findDuplicates(new int[]{4,3,2,7,8,2,3,1})); // [2,3]
+        System.out.println(findDuplicates(new int[]{1,1,2}));            // [1]
+    }
+}`,
     },
   },
 
@@ -5624,6 +6598,28 @@ console.log(searchRotated([4,5,6,7,0,1,2], 3)); // -1
 print(search_rotated([4,5,6,7,0,1,2], 0))  # 4
 print(search_rotated([4,5,6,7,0,1,2], 3))  # -1
 `,
+      java: `public class Solution {
+    public static int searchRotated(int[] nums, int target) {
+        int lo = 0, hi = nums.length - 1;
+        while (lo <= hi) {
+            int mid = lo + (hi - lo) / 2;
+            if (nums[mid] == target) return mid;
+            if (nums[lo] <= nums[mid]) {
+                if (nums[lo] <= target && target < nums[mid]) hi = mid - 1;
+                else lo = mid + 1;
+            } else {
+                if (nums[mid] < target && target <= nums[hi]) lo = mid + 1;
+                else hi = mid - 1;
+            }
+        }
+        return -1;
+    }
+
+    public static void main(String[] args) {
+        System.out.println(searchRotated(new int[]{4,5,6,7,0,1,2}, 0));  // 4
+        System.out.println(searchRotated(new int[]{4,5,6,7,0,1,2}, 3));  // -1
+    }
+}`,
     },
   },
 
@@ -5688,6 +6684,23 @@ print(find_min([3,4,5,1,2]))      # 1
 print(find_min([4,5,6,7,0,1,2]))  # 0
 print(find_min([11,13,15,17]))    # 11
 `,
+      java: `public class Solution {
+    public static int findMin(int[] nums) {
+        int lo = 0, hi = nums.length - 1;
+        while (lo < hi) {
+            int mid = lo + (hi - lo) / 2;
+            if (nums[mid] > nums[hi]) lo = mid + 1;
+            else hi = mid;
+        }
+        return nums[lo];
+    }
+
+    public static void main(String[] args) {
+        System.out.println(findMin(new int[]{3,4,5,1,2}));     // 1
+        System.out.println(findMin(new int[]{4,5,6,7,0,1,2})); // 0
+        System.out.println(findMin(new int[]{11,13,15,17}));   // 11
+    }
+}`,
     },
   },
 
@@ -5759,6 +6772,29 @@ console.log(findDuplicate([3,1,3,4,2])); // 3
 print(find_duplicate([1,3,4,2,2]))  # 2
 print(find_duplicate([3,1,3,4,2]))  # 3
 `,
+      java: `public class Solution {
+    public static int findDuplicate(int[] nums) {
+        // Phase 1: find intersection inside cycle
+        int slow = nums[0], fast = nums[0];
+        do {
+            slow = nums[slow];
+            fast = nums[nums[fast]];
+        } while (slow != fast);
+
+        // Phase 2: find cycle entrance
+        slow = nums[0];
+        while (slow != fast) {
+            slow = nums[slow];
+            fast = nums[fast];
+        }
+        return slow;
+    }
+
+    public static void main(String[] args) {
+        System.out.println(findDuplicate(new int[]{1,3,4,2,2}));  // 2
+        System.out.println(findDuplicate(new int[]{3,1,3,4,2}));  // 3
+    }
+}`,
     },
   },
 
@@ -6357,6 +7393,34 @@ console.log(JSON.stringify(allPathsSourceTarget([[1],[2],[]]))); // [[0,1,2]]
 print(all_paths_source_target([[1,2],[3],[3],[]]))  # [[0,1,3],[0,2,3]]
 print(all_paths_source_target([[1],[2],[]]))         # [[0,1,2]]
 `,
+      java: `import java.util.*;
+
+public class Solution {
+    public static List<List<Integer>> allPathsSourceTarget(int[][] graph) {
+        List<List<Integer>> result = new ArrayList<>();
+        List<Integer> path = new ArrayList<>();
+        path.add(0);
+        dfs(graph, 0, path, result);
+        return result;
+    }
+
+    private static void dfs(int[][] graph, int node, List<Integer> path, List<List<Integer>> result) {
+        if (node == graph.length - 1) {
+            result.add(new ArrayList<>(path));
+            return;
+        }
+        for (int nei : graph[node]) {
+            path.add(nei);
+            dfs(graph, nei, path, result);
+            path.remove(path.size() - 1);
+        }
+    }
+
+    public static void main(String[] args) {
+        System.out.println(allPathsSourceTarget(new int[][]{{1,2},{3},{3},{}}));  // [[0,1,3],[0,2,3]]
+        System.out.println(allPathsSourceTarget(new int[][]{{1},{2},{}}));        // [[0,1,2]]
+    }
+}`,
     },
   },
 
@@ -6416,6 +7480,37 @@ print(can_finish(2, [[1,0]]))        # True
 print(can_finish(2, [[1,0],[0,1]]))  # False
 print(can_finish(3, []))             # True
 `,
+      java: `import java.util.*;
+
+public class Solution {
+    public static boolean canFinish(int numCourses, int[][] prerequisites) {
+        List<List<Integer>> adj = new ArrayList<>();
+        for (int i = 0; i < numCourses; i++) adj.add(new ArrayList<>());
+        for (int[] pre : prerequisites) adj.get(pre[1]).add(pre[0]);
+
+        int[] state = new int[numCourses]; // 0=unvisited, 1=visiting, 2=done
+        for (int i = 0; i < numCourses; i++) {
+            if (state[i] == 0 && hasCycle(adj, state, i)) return false;
+        }
+        return true;
+    }
+
+    private static boolean hasCycle(List<List<Integer>> adj, int[] state, int node) {
+        state[node] = 1;
+        for (int nei : adj.get(node)) {
+            if (state[nei] == 1) return true;
+            if (state[nei] == 0 && hasCycle(adj, state, nei)) return true;
+        }
+        state[node] = 2;
+        return false;
+    }
+
+    public static void main(String[] args) {
+        System.out.println(canFinish(2, new int[][]{{1,0}}));         // true
+        System.out.println(canFinish(2, new int[][]{{1,0},{0,1}}));   // false
+        System.out.println(canFinish(3, new int[][]{}));              // true
+    }
+}`,
     },
   },
 
@@ -6483,6 +7578,47 @@ print(oranges_rotting([[2,1,1],[1,1,0],[0,1,1]]))  # 4
 print(oranges_rotting([[2,1,1],[0,1,1],[1,0,1]]))  # -1
 print(oranges_rotting([[0,2]]))                     # 0
 `,
+      java: `import java.util.*;
+
+public class Solution {
+    public static int orangesRotting(int[][] grid) {
+        int m = grid.length, n = grid[0].length;
+        Queue<int[]> queue = new LinkedList<>();
+        int fresh = 0;
+
+        for (int r = 0; r < m; r++) for (int c = 0; c < n; c++) {
+            if (grid[r][c] == 2) queue.offer(new int[]{r, c});
+            else if (grid[r][c] == 1) fresh++;
+        }
+
+        if (fresh == 0) return 0;
+        int minutes = 0;
+        int[][] dirs = {{1,0},{-1,0},{0,1},{0,-1}};
+
+        while (!queue.isEmpty()) {
+            int size = queue.size();
+            minutes++;
+            for (int i = 0; i < size; i++) {
+                int[] cell = queue.poll();
+                for (int[] d : dirs) {
+                    int r = cell[0] + d[0], c = cell[1] + d[1];
+                    if (r >= 0 && r < m && c >= 0 && c < n && grid[r][c] == 1) {
+                        grid[r][c] = 2;
+                        fresh--;
+                        queue.offer(new int[]{r, c});
+                    }
+                }
+            }
+        }
+        return fresh == 0 ? minutes - 1 : -1;
+    }
+
+    public static void main(String[] args) {
+        System.out.println(orangesRotting(new int[][]{{2,1,1},{1,1,0},{0,1,1}})); // 4
+        System.out.println(orangesRotting(new int[][]{{2,1,1},{0,1,1},{1,0,1}})); // -1
+        System.out.println(orangesRotting(new int[][]{{0,2}}));                   // 0
+    }
+}`,
     },
   },
 
