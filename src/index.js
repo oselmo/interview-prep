@@ -185,6 +185,7 @@ async function runQuestion(question, language = null) {
       { name: 'Reopen file in editor', value: 'reopen' },
       { name: 'Restart this problem  (clear workspace, start fresh)', value: 'restart' },
       { name: 'Skip this question', value: 'skip' },
+      new inquirer.Separator(),
       { name: 'Back to menu', value: 'menu' },
     ];
 
@@ -416,6 +417,7 @@ async function starterMenu() {
       value: q,
     };
   });
+  choices.push(new inquirer.Separator());
   choices.push({ name: chalk.gray('← Back'), value: null });
 
   const { question } = await inquirer.prompt([{
@@ -1042,6 +1044,7 @@ async function studyMenu() {
     const trackTag = KNOWLEDGE_TRACK_MAP[f] ? ' ' + chalk.magenta(`[${KNOWLEDGE_TRACK_MAP[f]}]`) : '';
     return { name: `${label}${trackTag}`, value: join(KNOWLEDGE_DIR, f) };
   });
+  choices.push(new inquirer.Separator());
   choices.push({ name: chalk.gray('← Back to menu'), value: null });
 
   const { filepath } = await inquirer.prompt([{
