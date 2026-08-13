@@ -1474,7 +1474,7 @@ function _buildJavaStandardRunner(question) {
                 System.out.println((_ok ? "[+]" : "[x]") + " ${desc}");
                 if (!_ok) { System.out.println("  expected: " + _e); System.out.println("  got:      " + _a); }
                 if (_ok) pass++;
-            } catch (Exception _e) { System.out.println("\\u2717 ${desc}: " + _e.getMessage()); }
+            } catch (Exception _e) { System.out.println("[x] ${desc}: " + _e.getMessage()); }
             total++;
         }`;
   })).join('\n');
@@ -1521,7 +1521,7 @@ function _buildJavaTreeRunner(question) {
                 System.out.println((_ok ? "[+]" : "[x]") + " ${desc}");
                 if (!_ok) { System.out.println("  expected: " + _e); System.out.println("  got:      " + _a); }
                 if (_ok) pass++;
-            } catch (Exception _e) { System.out.println("\\u2717 ${desc}: " + _e.getMessage()); }
+            } catch (Exception _e) { System.out.println("[x] ${desc}: " + _e.getMessage()); }
             total++;
         }`;
   }).join('\n');
@@ -1567,7 +1567,7 @@ function _buildJavaLcaRunner(question) {
                 System.out.println((_ok ? "[+]" : "[x]") + " ${desc}");
                 if (!_ok) { System.out.println("  expected: " + _expected); System.out.println("  got:      " + _actual); }
                 if (_ok) pass++;
-            } catch (Exception _e) { System.out.println("\\u2717 ${desc}: " + _e.getMessage()); }
+            } catch (Exception _e) { System.out.println("[x] ${desc}: " + _e.getMessage()); }
             total++;
         }`;
   }).join('\n');
@@ -1622,7 +1622,7 @@ function _buildJavaListRunner(question) {
                 System.out.println((_ok ? "[+]" : "[x]") + " ${desc}");
                 if (!_ok) { System.out.println("  expected: " + _expected); System.out.println("  got:      " + _actual); }
                 if (_ok) pass++;
-            } catch (Exception _e) { System.out.println("\\u2717 ${desc}: " + _e.getMessage()); }
+            } catch (Exception _e) { System.out.println("[x] ${desc}: " + _e.getMessage()); }
             total++;
         }`;
   })).join('\n');
@@ -1714,7 +1714,7 @@ function _buildJavaLinkedListTestRunner(question) {
                 System.out.println((_ok ? "[+]" : "[x]") + " ${desc}");
                 if (!_ok) { System.out.println("  expected: " + _expected); System.out.println("  got:      " + _actual); }
                 if (_ok) pass++;
-            } catch (Exception _e) { System.out.println("\\u2717 ${desc}: " + _e.getMessage()); }
+            } catch (Exception _e) { System.out.println("[x] ${desc}: " + _e.getMessage()); }
             total++;
         }`;
   }).join('\n');
