@@ -93,7 +93,7 @@ const LANG_LABELS = {
   js: 'JavaScript (.js)',
   typescript: 'TypeScript (.ts)',
   python: 'Python (.py)',
-  java: 'Java (.java)  [compile+run, no hidden tests]',
+  java: 'Java (.java)  [compile+run]',
 };
 
 function getAvailableLanguages(question) {
