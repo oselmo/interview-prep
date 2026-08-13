@@ -1752,8 +1752,7 @@ function buildCodingTemplate(question, language) {
   if (language === 'java') {
     let starter;
     if (question.starterCode?.java) {
-      const { mainBody, helpers } = _buildJavaTestSetup(question);
-      starter = _injectJavaMain(question.starterCode.java, mainBody, helpers);
+      starter = question.starterCode.java;
     } else if (question.treeTest || question.lcaTest) {
       starter = _buildJavaTreeTemplate(question);
     } else if (question.linkedListRoundTrip) {
@@ -1770,8 +1769,8 @@ function buildCodingTemplate(question, language) {
  *
 ${promptLines}
  *
- * NOTE: Hidden tests run automatically when you submit. The test calls
- * in main() below let you run and check your work during development.
+ * NOTE: Hidden tests run automatically when you submit.
+ * Use main() below to run your own examples during development.
  */
 
 ${starter}
