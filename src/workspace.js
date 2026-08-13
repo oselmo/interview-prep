@@ -1220,7 +1220,7 @@ function _javaStandardBody(question) {
   const visible = (testCases || []).filter(t => !t.hidden);
   const toShow = visible.length ? visible : (testCases || []).slice(0, 2);
   return toShow.map(t =>
-    `        System.out.println(${functionName}(${t.args.map(_javaLiteral).join(', ')})); // expected: ${JSON.stringify(t.expected)}`
+    `        System.out.println(${functionName}(${t.args.map(_javaLiteral).join(', ')}));`
   ).join('\n');
 }
 
@@ -1230,10 +1230,10 @@ function _javaTreeBody(question) {
   const toShow = visible.length ? visible : (testCases || []).slice(0, 2);
   return toShow.map(t => {
     const lo = t.args[0];
-    if (!lo || !lo.length) return `        System.out.println(${functionName}(null)); // expected: ${JSON.stringify(t.expected)}`;
+    if (!lo || !lo.length) return `        System.out.println(${functionName}(null));`;
     const hasNulls = lo.some(x => x === null);
     const lit = hasNulls ? `new Integer[]{${lo.map(v => v === null ? 'null' : v).join(',')}}` : `new Integer[]{${lo.join(',')}}`;
-    return `        System.out.println(${functionName}(_build(${lit}))); // expected: ${JSON.stringify(t.expected)}`;
+    return `        System.out.println(${functionName}(_build(${lit})));`;
   }).join('\n');
 }
 
@@ -1244,7 +1244,7 @@ function _javaLcaBody(question) {
   const toShow = visible.length ? visible : (testCases || []).slice(0, 2);
   const bst = `new TreeNode(6, new TreeNode(2, new TreeNode(0), new TreeNode(4, new TreeNode(3), new TreeNode(5))), new TreeNode(8, new TreeNode(7), new TreeNode(9)))`;
   const calls = toShow.map(t =>
-    `        System.out.println(${fn}(_bst, _find(_bst,${t.pVal}), _find(_bst,${t.qVal})).val); // expected: ${t.expected}`
+    `        System.out.println(${fn}(_bst, _find(_bst,${t.pVal}), _find(_bst,${t.qVal})).val);`
   ).join('\n');
   return `        TreeNode _bst = ${bst};\n${calls}`;
 }
@@ -1260,7 +1260,7 @@ function _javaListBody(question) {
       const vals = t.args[0] || [];
       const lit = vals.length ? `new int[]{${vals.join(',')}}` : 'new int[]{}';
       const exp = JSON.stringify(t.expected).replace(/,/g, ', ');
-      return `        System.out.println(_str(${fn}(_arr(${lit})))); // expected: ${exp}`;
+      return `        System.out.println(_str(${fn}(_arr(${lit}))));`;
     })];
   }).join('\n');
 }
@@ -1276,7 +1276,7 @@ function _javaClassBody(question) {
       const args = (step.args || []).map(_javaLiteral).join(', ');
       const call = `${varName}.${step.method}(${args})`;
       lines.push('returns' in step && step.returns !== null
-        ? `        System.out.println(${call}); // expected: ${JSON.stringify(step.returns)}`
+        ? `        System.out.println(${call});`
         : `        ${call};`);
     }
     return lines.join('\n');
