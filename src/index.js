@@ -184,9 +184,10 @@ async function runQuestion(question, language = null) {
       { name: hintLabel, value: 'hint' },
       { name: 'Reopen file in editor', value: 'reopen' },
       { name: 'Restart this problem  (clear workspace, start fresh)', value: 'restart' },
-      { name: 'Skip this question', value: 'skip' },
       new inquirer.Separator(),
       { name: 'Back to menu', value: 'menu' },
+      new inquirer.Separator(),
+      { name: 'Skip this question', value: 'skip' },
     ];
 
     const { action } = await inquirer.prompt([{
