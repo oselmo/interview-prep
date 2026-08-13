@@ -83,7 +83,7 @@ console.log(mostFrequent(words));      // "apple"
 `,
       java: `import java.util.*;
 
-public class Solution {
+class Solution {
     public static String mostFrequent(String[] words) {
         // Your solution here
         return "";
@@ -158,7 +158,7 @@ print(max_sum_subarray([2, 3, 4, 1, 5], 2))      # 7
 console.log(maxSumSubarray([2, 1, 5, 1, 3, 2], 3));  // 9
 console.log(maxSumSubarray([2, 3, 4, 1, 5], 2));      // 7
 `,
-      java: `public class Solution {
+      java: `class Solution {
     public static int maxSumSubarray(int[] nums, int k) {
         // Your solution — O(n), not O(n*k)
         return 0;
@@ -237,7 +237,7 @@ print(has_pair_sum([1, 3, 5, 7], 6))          # True
 console.log(hasPairSum([1, 2, 4, 6, 8, 9], 10));  // true
 console.log(hasPairSum([1, 2, 4, 6, 8, 9], 3));   // false
 `,
-      java: `public class Solution {
+      java: `class Solution {
     public static boolean hasPairSum(int[] nums, int target) {
         // Use two pointers — O(n) time, O(1) space
         return false;
@@ -442,7 +442,7 @@ console.log(floodFill(grid, 1, 1, 2));
 `,
       java: `import java.util.Arrays;
 
-public class Solution {
+class Solution {
     public static int[][] floodFill(int[][] grid, int row, int col, int newColor) {
         // Implement with DFS (recursion)
         return grid;
@@ -537,7 +537,7 @@ print(valid_path(6, [[0,1],[0,2],[3,5],[5,4],[4,3]], 0, 5))  # False
 `,
       java: `import java.util.*;
 
-public class Solution {
+class Solution {
     public static boolean validPath(int n, int[][] edges, int source, int destination) {
         // Your solution here
         return false;
@@ -631,7 +631,7 @@ print(has_cycle(3, [[0,1],[1,2]]))         # False
 `,
       java: `import java.util.*;
 
-public class Solution {
+class Solution {
     public static boolean hasCycle(int n, int[][] edges) {
         // Build directed adjacency list, detect cycle with DFS (3-color)
         return false;
@@ -831,7 +831,7 @@ print(search_insert([1,3,5,6], 0))  # 0
 console.log(searchInsert([1,3,5,6], 5));  // 2
 console.log(searchInsert([1,3,5,6], 2));  // 1
 `,
-      java: `public class Solution {
+      java: `class Solution {
     public static int searchInsert(int[] nums, int target) {
         // Binary search — O(log n)
         return 0;
@@ -919,7 +919,7 @@ console.log(minTime(0, [1, 1, 1, 1]));   // 2
 `,
       java: `import java.util.Arrays;
 
-public class Solution {
+class Solution {
     public static int minTime(int[] tasks, int delay) {
         // tasks: durations, delay: when processor B starts (A starts at 0)
         return 0;
@@ -1032,7 +1032,7 @@ function climbDP(n: number): number {
 console.log(climbDP(2));  // 2
 console.log(climbDP(5));  // 8
 `,
-      java: `public class Solution {
+      java: `class Solution {
     public static int climbDP(int n) {
         // Bottom-up DP, O(n) time, O(1) space
         return 0;
@@ -1273,7 +1273,7 @@ console.log(s.getMin());  // 3
 `,
       java: `import java.util.*;
 
-public class Solution {
+class Solution {
     static class MinStack {
         private Deque<Integer> stack = new ArrayDeque<>();
         private Deque<Integer> minStack = new ArrayDeque<>();
@@ -1601,7 +1601,7 @@ print(two_sum([3, 2, 4], 6))        # [1, 2]
 `,
       java: `import java.util.*;
 
-public class Solution {
+class Solution {
     public static int[] twoSum(int[] nums, int target) {
         // Your solution here
         return new int[]{};
@@ -1746,7 +1746,7 @@ print(flatten(data))
 `,
       java: `import java.util.*;
 
-public class Solution {
+class Solution {
     public static Map<String, String> flatten(Map<String, Object> obj) {
         // Recursively flatten nested map to dot-notation keys
         return new HashMap<>();
@@ -1998,7 +1998,7 @@ print(cache.get(3))   # 3
 `,
       java: `import java.util.*;
 
-public class Solution {
+class Solution {
     static class LRUCache {
         private final int capacity;
         private final Map<Integer, Integer> map;
@@ -2097,7 +2097,7 @@ print(min_makespan([0, 0], [3, 3, 3, 3, 3, 3, 3, 3]))    # 12
 `,
       java: `import java.util.*;
 
-public class Solution {
+class Solution {
     public static int minMakespan(int[] delays, int[] tasks) {
         // delays: length n, tasks: length 4n
         return 0;
@@ -2754,7 +2754,7 @@ print(search([-1,0,3,5,9,12], 9))  # 4
 print(search([-1,0,3,5,9,12], 2))  # -1
 print(search([5], 5))               # 0
 `,
-      java: `public class Solution {
+      java: `class Solution {
     public static int search(int[] nums, int target) {
         // Binary search — O(log n)
         return -1;
@@ -2822,7 +2822,7 @@ print(length_of_longest_substring("abcabcbb"))  # 3
 print(length_of_longest_substring("bbbbb"))     # 1
 print(length_of_longest_substring("pwwkew"))    # 3
 `,
-      java: `public class Solution {
+      java: `class Solution {
     public static int lengthOfLongestSubstring(String s) {
         // Sliding window with a hash map
         return 0;
@@ -2923,7 +2923,7 @@ print(num_islands([
     ["0","0","0","1","1"]
 ]))  # 3
 `,
-      java: `public class Solution {
+      java: `class Solution {
     public static int numIslands(char[][] grid) {
         // DFS or BFS on char[][] grid
         return 0;
@@ -3106,7 +3106,7 @@ print(top_k_frequent([1], 1))             # [1]
 `,
       java: `import java.util.*;
 
-public class Solution {
+class Solution {
     public static int[] topKFrequent(int[] nums, int k) {
         // Your solution — must be better than O(n log n)
         return new int[]{};
@@ -3169,7 +3169,7 @@ print(product_except_self([-1,1,0,-3,3]))   # [0,0,9,0,0]
 `,
       java: `import java.util.*;
 
-public class Solution {
+class Solution {
     public static int[] productExceptSelf(int[] nums) {
         // O(n) time, O(1) extra space (output array doesn't count)
         return new int[]{};
@@ -3235,7 +3235,7 @@ print(group_anagrams(["eat","tea","tan","ate","nat","bat"]))
 `,
       java: `import java.util.*;
 
-public class Solution {
+class Solution {
     public static List<List<String>> groupAnagrams(String[] strs) {
         // Your solution
         return new ArrayList<>();
@@ -3472,7 +3472,7 @@ print(min_meeting_rooms([[1,5],[2,6],[3,7]]))       # 3
 `,
       java: `import java.util.*;
 
-public class Solution {
+class Solution {
     public static int minMeetingRooms(int[][] intervals) {
         // Sort by start time, use min-heap of end times
         return 0;
@@ -3548,7 +3548,7 @@ def least_interval(tasks, n):
 print(least_interval(["A","A","A","B","B","B"], 2))  # 8
 print(least_interval(["A","A","A","B","B","B"], 0))  # 6
 `,
-      java: `public class Solution {
+      java: `class Solution {
     public static int leastInterval(char[] tasks, int n) {
         // Your solution here
         return 0;
@@ -3624,7 +3624,7 @@ print(can_jump([2,3,1,1,4]))  # True
 print(can_jump([3,2,1,0,4]))  # False
 print(jump([2,3,1,1,4]))      # 2
 `,
-      java: `public class Solution {
+      java: `class Solution {
     public static boolean canJump(int[] nums) {
         // Greedy — track farthest reachable index
         return false;
@@ -3692,7 +3692,7 @@ print(num_rescue_boats([3,5,3,4], 5))    # 4
 `,
       java: `import java.util.Arrays;
 
-public class Solution {
+class Solution {
     public static int numRescueBoats(int[] people, int limit) {
         // Sort, then two pointers
         return 0;
@@ -3833,7 +3833,7 @@ print(job_scheduling([[1,2,50],[3,5,20],[6,9,100]]))           # 170
 `,
       java: `import java.util.*;
 
-public class Solution {
+class Solution {
     public static int jobScheduling(int[][] jobs) {
         // Sort by end time, DP with binary search for last non-overlapping job
         // Each job is [start, end, profit]
@@ -4032,7 +4032,7 @@ m1, m2 = ListNode(1), ListNode(2)
 m1.next = m2
 print(has_cycle(m1))    # False
 print(has_cycle(None))  # False`,
-      java: `public class Solution {
+      java: `class Solution {
     static class ListNode {
         int val;
         ListNode next;
@@ -4131,7 +4131,7 @@ console.log(isHappy(2));  // false`,
 
 print(is_happy(19))  # True
 print(is_happy(2))   # False`,
-      java: `public class Solution {
+      java: `class Solution {
     static int next(int num) {
         int sum = 0;
         while (num > 0) { int d = num % 10; sum += d * d; num /= 10; }
@@ -4213,7 +4213,7 @@ console.log(JSON.stringify(merge([[1,4],[4,5]])));                // [[1,5]]`,
 print(merge([[1,3],[2,6],[8,10],[15,18]]))  # [[1,6],[8,10],[15,18]]`,
       java: `import java.util.*;
 
-public class Solution {
+class Solution {
     public static int[][] merge(int[][] intervals) {
         // Sort by start time, then merge overlapping intervals
         return new int[][]{};
@@ -4275,7 +4275,7 @@ print(insert([[1,3],[6,9]], [2,5]))   # [[1,5],[6,9]]
 print(insert([], [5,7]))             # [[5,7]]`,
       java: `import java.util.*;
 
-public class Solution {
+class Solution {
     public static int[][] insert(int[][] intervals, int[] newInterval) {
         // Insert and merge the new interval
         return new int[][]{};
@@ -4349,7 +4349,7 @@ console.log(missingNumber([9,6,4,2,3,5,7,0,1])); // 8`,
 
 print(missing_number([3,0,1]))   # 2
 print(missing_number([9,6,4,2,3,5,7,0,1]))  # 8`,
-      java: `public class Solution {
+      java: `class Solution {
     public static int missingNumber(int[] nums) {
         // Cyclic sort or math formula
         return 0;
@@ -4440,7 +4440,7 @@ print(can_finish(2, [[1,0]]))        # True
 print(can_finish(2, [[1,0],[0,1]]))  # False`,
       java: `import java.util.*;
 
-public class Solution {
+class Solution {
     public static boolean canFinish(int numCourses, int[][] prerequisites) {
         // Kahn's BFS topological sort — return true if no cycle
         return false;
@@ -4534,7 +4534,7 @@ print(daily_temperatures([73,74,75,71,69,72,76,73]))
 # [1, 1, 4, 2, 1, 1, 0, 0]`,
       java: `import java.util.*;
 
-public class Solution {
+class Solution {
     public static int[] dailyTemperatures(int[] temps) {
         // Monotonic decreasing stack of indices
         return new int[temps.length];
@@ -4604,7 +4604,7 @@ console.log(largestRectangleArea([2,4]));          // 4`,
 print(largest_rectangle_area([2,1,5,6,2,3]))  # 10`,
       java: `import java.util.*;
 
-public class Solution {
+class Solution {
     public static int largestRectangleArea(int[] heights) {
         // Monotonic increasing stack of indices
         return 0;
@@ -4696,7 +4696,7 @@ console.log(findCircleNum([[1,0,0],[0,1,0],[0,0,1]])); // 3`,
 
 print(find_circle_num([[1,1,0],[1,1,0],[0,0,1]]))  # 2
 print(find_circle_num([[1,0,0],[0,1,0],[0,0,1]]))  # 3`,
-      java: `public class Solution {
+      java: `class Solution {
     public static int findCircleNum(int[][] isConnected) {
         // Union-Find with path compression
         return 0;
@@ -4785,7 +4785,7 @@ print(subsets([1,2,3]))  # [[], [1], [1,2], [1,2,3], [1,3], [2], [2,3], [3]]
 print(subsets([0]))      # [[], [0]]`,
       java: `import java.util.*;
 
-public class Solution {
+class Solution {
     public static List<List<Integer>> subsets(int[] nums) {
         List<List<Integer>> result = new ArrayList<>();
         backtrack(nums, 0, new ArrayList<>(), result);
@@ -4886,7 +4886,7 @@ console.log(searchRotated([4,5,6,7,0,1,2], 3)); // -1`,
 
 print(search_rotated([4,5,6,7,0,1,2], 0))  # 4
 print(search_rotated([4,5,6,7,0,1,2], 3))  # -1`,
-      java: `public class Solution {
+      java: `class Solution {
     public static int searchRotated(int[] nums, int target) {
         int lo = 0, hi = nums.length - 1;
 
@@ -5081,7 +5081,7 @@ print(trie.search('app'))        # True`,
       java: `import java.util.HashMap;
 import java.util.Map;
 
-public class Solution {
+class Solution {
     static class TrieNode {
         Map<Character, TrieNode> children = new HashMap<>();
         boolean isEnd = false;
@@ -5409,7 +5409,7 @@ print(has_cycle_undirected(4, [[0,1],[1,2],[2,3]]))  # False
 `,
       java: `import java.util.*;
 
-public class Solution {
+class Solution {
     public static boolean hasCycleUndirected(int n, int[][] edges) {
         List<List<Integer>> adj = new ArrayList<>();
         for (int i = 0; i < n; i++) adj.add(new ArrayList<>());
@@ -5521,7 +5521,7 @@ print(count_components(5, [[0,1],[1,2],[2,3],[3,4]]))   # 1
 `,
       java: `import java.util.*;
 
-public class Solution {
+class Solution {
     static int[] parent, rank;
 
     public static int countComponents(int n, int[][] edges) {
@@ -5613,7 +5613,7 @@ print(find_redundant_connection([[1,2],[2,3],[3,4],[1,4],[1,5]]))  # [1,4]
 `,
       java: `import java.util.Arrays;
 
-public class Solution {
+class Solution {
     static int[] parent;
 
     public static int[] findRedundantConnection(int[][] edges) {
@@ -5795,7 +5795,7 @@ print(trie.search('apple'))     # True
 print(trie.search('app'))       # False
 print(trie.starts_with('app'))  # True
 `,
-      java: `public class Solution {
+      java: `class Solution {
     static class Trie {
         private TrieNode root;
 
@@ -5930,7 +5930,7 @@ print(find_words(
 `,
       java: `import java.util.*;
 
-public class Solution {
+class Solution {
     static class TrieNode {
         Map<Character, TrieNode> children = new HashMap<>();
         String word = null;
@@ -6045,7 +6045,7 @@ print(subsets([0]))      # [[], [0]]
 `,
       java: `import java.util.*;
 
-public class Solution {
+class Solution {
     public static List<List<Integer>> subsets(int[] nums) {
         List<List<Integer>> result = new ArrayList<>();
         backtrack(nums, 0, new ArrayList<>(), result);
@@ -6131,7 +6131,7 @@ print(combination_sum([2,3,5], 8))    # [[2,2,2,2],[2,3,3],[3,5]]
 `,
       java: `import java.util.*;
 
-public class Solution {
+class Solution {
     public static List<List<Integer>> combinationSum(int[] candidates, int target) {
         List<List<Integer>> result = new ArrayList<>();
         Arrays.sort(candidates);
@@ -6223,7 +6223,7 @@ print(find_order(4, [[1,0],[2,1],[3,2]]))  # [0,1,2,3]
 `,
       java: `import java.util.*;
 
-public class Solution {
+class Solution {
     public static int[] findOrder(int numCourses, int[][] prerequisites) {
         int[] inDegree = new int[numCourses];
         List<List<Integer>> adj = new ArrayList<>();
@@ -6321,7 +6321,7 @@ print(alien_order(['z','x','z']))                    # ''
 `,
       java: `import java.util.*;
 
-public class Solution {
+class Solution {
     public static String alienOrder(String[] words) {
         Map<Character, Set<Character>> adj = new LinkedHashMap<>();
         Map<Character, Integer> inDegree = new LinkedHashMap<>();
@@ -6426,7 +6426,7 @@ print(missing_number([3,0,1]))              # 2
 print(missing_number([9,6,4,2,3,5,7,0,1])) # 8
 print(missing_number([0,1]))               # 2
 `,
-      java: `public class Solution {
+      java: `class Solution {
     public static int missingNumber(int[] nums) {
         int n = nums.length;
         int expected = n * (n + 1) / 2;
@@ -6505,7 +6505,7 @@ print(find_duplicates([1,1,2]))            # [1]
 `,
       java: `import java.util.*;
 
-public class Solution {
+class Solution {
     public static List<Integer> findDuplicates(int[] nums) {
         List<Integer> result = new ArrayList<>();
         int i = 0;
@@ -6598,7 +6598,7 @@ console.log(searchRotated([4,5,6,7,0,1,2], 3)); // -1
 print(search_rotated([4,5,6,7,0,1,2], 0))  # 4
 print(search_rotated([4,5,6,7,0,1,2], 3))  # -1
 `,
-      java: `public class Solution {
+      java: `class Solution {
     public static int searchRotated(int[] nums, int target) {
         int lo = 0, hi = nums.length - 1;
         while (lo <= hi) {
@@ -6684,7 +6684,7 @@ print(find_min([3,4,5,1,2]))      # 1
 print(find_min([4,5,6,7,0,1,2]))  # 0
 print(find_min([11,13,15,17]))    # 11
 `,
-      java: `public class Solution {
+      java: `class Solution {
     public static int findMin(int[] nums) {
         int lo = 0, hi = nums.length - 1;
         while (lo < hi) {
@@ -6772,7 +6772,7 @@ console.log(findDuplicate([3,1,3,4,2])); // 3
 print(find_duplicate([1,3,4,2,2]))  # 2
 print(find_duplicate([3,1,3,4,2]))  # 3
 `,
-      java: `public class Solution {
+      java: `class Solution {
     public static int findDuplicate(int[] nums) {
         // Phase 1: find intersection inside cycle
         int slow = nums[0], fast = nums[0];
@@ -7395,7 +7395,7 @@ print(all_paths_source_target([[1],[2],[]]))         # [[0,1,2]]
 `,
       java: `import java.util.*;
 
-public class Solution {
+class Solution {
     public static List<List<Integer>> allPathsSourceTarget(int[][] graph) {
         List<List<Integer>> result = new ArrayList<>();
         List<Integer> path = new ArrayList<>();
@@ -7482,7 +7482,7 @@ print(can_finish(3, []))             # True
 `,
       java: `import java.util.*;
 
-public class Solution {
+class Solution {
     public static boolean canFinish(int numCourses, int[][] prerequisites) {
         List<List<Integer>> adj = new ArrayList<>();
         for (int i = 0; i < numCourses; i++) adj.add(new ArrayList<>());
@@ -7580,7 +7580,7 @@ print(oranges_rotting([[0,2]]))                     # 0
 `,
       java: `import java.util.*;
 
-public class Solution {
+class Solution {
     public static int orangesRotting(int[][] grid) {
         int m = grid.length, n = grid[0].length;
         Queue<int[]> queue = new LinkedList<>();
