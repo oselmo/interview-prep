@@ -1471,7 +1471,7 @@ function _buildJavaStandardRunner(question) {
                 Object _expected = ${expected};
                 String _a = ${sort} ? _sortS(_actual) : _s(_actual), _e = ${sort} ? _sortS(_expected) : _s(_expected);
                 boolean _ok = _a.equals(_e);
-                System.out.println((_ok ? "\\u2713" : "\\u2717") + " ${desc}");
+                System.out.println((_ok ? "[+]" : "[x]") + " ${desc}");
                 if (!_ok) { System.out.println("  expected: " + _e); System.out.println("  got:      " + _a); }
                 if (_ok) pass++;
             } catch (Exception _e) { System.out.println("\\u2717 ${desc}: " + _e.getMessage()); }
@@ -1518,7 +1518,7 @@ function _buildJavaTreeRunner(question) {
                 Object _expected = ${expected};
                 String _a = ${sort} ? _sortS(_actual) : _s(_actual), _e = ${sort} ? _sortS(_expected) : _s(_expected);
                 boolean _ok = _a.equals(_e);
-                System.out.println((_ok ? "\\u2713" : "\\u2717") + " ${desc}");
+                System.out.println((_ok ? "[+]" : "[x]") + " ${desc}");
                 if (!_ok) { System.out.println("  expected: " + _e); System.out.println("  got:      " + _a); }
                 if (_ok) pass++;
             } catch (Exception _e) { System.out.println("\\u2717 ${desc}: " + _e.getMessage()); }
@@ -1564,7 +1564,7 @@ function _buildJavaLcaRunner(question) {
                 TreeNode _r = Solution.${fn}(_bst, _p, _q);
                 int _actual = _r != null ? _r.val : -999, _expected = ${t.expected};
                 boolean _ok = _actual == _expected;
-                System.out.println((_ok ? "\\u2713" : "\\u2717") + " ${desc}");
+                System.out.println((_ok ? "[+]" : "[x]") + " ${desc}");
                 if (!_ok) { System.out.println("  expected: " + _expected); System.out.println("  got:      " + _actual); }
                 if (_ok) pass++;
             } catch (Exception _e) { System.out.println("\\u2717 ${desc}: " + _e.getMessage()); }
@@ -1619,7 +1619,7 @@ function _buildJavaListRunner(question) {
                 String _actual = _str(Solution.${fn}(_arr(${inLit})));
                 String _expected = _str(_arr(${expLit}));
                 boolean _ok = _actual.equals(_expected);
-                System.out.println((_ok ? "\\u2713" : "\\u2717") + " ${desc}");
+                System.out.println((_ok ? "[+]" : "[x]") + " ${desc}");
                 if (!_ok) { System.out.println("  expected: " + _expected); System.out.println("  got:      " + _actual); }
                 if (_ok) pass++;
             } catch (Exception _e) { System.out.println("\\u2717 ${desc}: " + _e.getMessage()); }
@@ -1676,7 +1676,7 @@ function _buildJavaClassRunner(question) {
                 ${className} _inst = new ${className}(${ctorArgs});
 ${steps}
             } catch (Exception _e) { _ok = false; System.out.println("  exception: " + _e.getMessage()); }
-            System.out.println((_ok ? "\\u2713" : "\\u2717") + " ${desc}");
+            System.out.println((_ok ? "[+]" : "[x]") + " ${desc}");
             if (_ok) pass++;
             total++;
         }`;
@@ -1711,7 +1711,7 @@ function _buildJavaLinkedListTestRunner(question) {
                 Object _actual = _res != null ? _res.val : null;
                 Object _expected = ${expected};
                 boolean _ok = String.valueOf(_actual).equals(String.valueOf(_expected));
-                System.out.println((_ok ? "\\u2713" : "\\u2717") + " ${desc}");
+                System.out.println((_ok ? "[+]" : "[x]") + " ${desc}");
                 if (!_ok) { System.out.println("  expected: " + _expected); System.out.println("  got:      " + _actual); }
                 if (_ok) pass++;
             } catch (Exception _e) { System.out.println("\\u2717 ${desc}: " + _e.getMessage()); }
