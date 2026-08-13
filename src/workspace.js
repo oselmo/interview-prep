@@ -1313,7 +1313,7 @@ const _JAVA_LIST_HELPERS = `
         return h;
     }
     static String _str(ListNode h) {
-        java.util.StringBuilder sb = new java.util.StringBuilder("[");
+        StringBuilder sb = new StringBuilder("[");
         while (h != null) { sb.append(h.val); if (h.next != null) sb.append(", "); h = h.next; }
         return sb.append("]").toString();
     }`;
@@ -1638,7 +1638,7 @@ ${_JAVA_RUNNER_HELPERS}
         return h;
     }
     static String _str(ListNode h) {
-        java.util.StringBuilder sb = new java.util.StringBuilder("[");
+        StringBuilder sb = new StringBuilder("[");
         while (h != null) { sb.append(h.val); if (h.next != null) sb.append(", "); h = h.next; }
         return sb.append("]").toString();
     }
