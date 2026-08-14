@@ -1,6 +1,6 @@
 # Interview Prep CLI
 
-A terminal-based AI-powered interview practice tool for senior full stack and GenAI engineering roles. Practice DSA, system design, behavioral, TypeScript, Python, and Java questions with hidden test cases, AI feedback, and a step-by-step tutor.
+A terminal-based AI-powered interview practice tool for full stack, GenAI, and cloud engineering roles. Practice DSA, system design, behavioral, TypeScript, Python, and Java questions with hidden test cases, AI feedback, and a step-by-step tutor.
 
 ## Quick Start
 
@@ -21,10 +21,11 @@ export ANTHROPIC_API_KEY=sk-ant-...
 
 ## Features
 
-- **416 questions** across coding, architecture, trivia, and behavioral categories
+- **448 questions** across coding, architecture, trivia, and behavioral categories
+- **Role track badges** — questions tagged `[JS Frontend]`, `[GenAI]`, or `[Cloud SWE]` in the question list and knowledge menus
 - **Hidden test cases** — edge-case inputs injected at run time, never visible in your solution file (same as a real interview)
 - **Per-problem language selection** — choose JS, TypeScript, Python, or Java after selecting the problem; language badge `[JS TS PY JV]` shown in the question list
-- **Java support** — compile-and-run via `javac`/`java`; hidden tests run automatically for standard function problems; all test calls pre-built in `main()` for every problem type
+- **Java support** — compile-and-run via `javac`/`java`; hidden tests run automatically via `_HiddenTestRunner` for all problem types; `main()` contains only the hand-written starter examples (test inputs are not exposed)
 - **Teacher mode** — walks you through starter problems one step at a time; explains concepts without giving the answer away
 - **Tutor mode** — Socratic guidance for harder problems; names the pattern and explains why it applies, but never writes your code
 - **Interviewer chat** — live back-and-forth with a simulated technical interviewer mid-problem
@@ -40,24 +41,24 @@ export ANTHROPIC_API_KEY=sk-ant-...
 
 | Category | Count |
 |---|---|
-| Starter (guided, teacher mode) | 24 |
-| Easy coding | ~10 |
-| Medium coding | ~40 |
-| Hard coding | ~10 |
-| Architecture / System Design | 50 |
-| Trivia / Concepts | 283 |
+| Starter (guided, teacher mode) | 25 |
+| Easy coding | 5 |
+| Medium coding | 42 |
+| Hard coding | 6 |
+| Architecture / System Design | 53 |
+| Trivia / Concepts | 312 |
 | Behavioral | 5 |
-| **Total** | **416** |
+| **Total** | **448** |
 
 ## Supported Languages
 
 JavaScript · TypeScript · Python · Java — selected per problem from a list of languages relevant to that question. Solution files are preserved per language when you switch.
 
 Java notes:
-- Compiles with `javac` and runs with `java -cp . Solution`
+- Compiles with `javac` and runs with `java -cp . _HiddenTestRunner`
 - All problem types (standard fn, tree, LCA, linked list, class) run hidden tests via a generated `_HiddenTestRunner` class — same as JS/TS/Python
-- `main()` also has pre-built test calls for development use
-- Exception: questions with LeetCode-style `starterCode.java` (where `TreeNode`/`ListNode` are inner classes) fall back to `main()` only
+- `TreeNode` and `ListNode` are top-level classes so both `Solution` and `_HiddenTestRunner` share the same type
+- `main()` contains only the hand-written starter examples; hidden test inputs are never written to your file
 
 ## DSA Patterns Covered
 
@@ -137,6 +138,6 @@ src/
   workspace.js   — File creation, hidden test runner, Java compile/run, Java template generation
   feedback.js    — Claude API calls (tutor, teacher, interviewer, knowledge review, feedback)
   display.js     — Chalk-based UI helpers
-knowledge/       — 27 pattern guides with templates, ASCII visuals, complexity tables
+knowledge/       — 31 pattern and topic guides with templates, ASCII visuals, complexity tables
 workspace/       — Your solution files (git-ignored)
 ```
